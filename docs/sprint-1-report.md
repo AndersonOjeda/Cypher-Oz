@@ -75,6 +75,7 @@ E2E; migraciones completas aprobadas. `makemigrations --check --dry-run`:
 | Next.js production build | PASS |
 | Migraciones / comprobación de cambios | PASS |
 | PostgreSQL y health directo/vía Next.js | PASS |
+| CI GitHub Actions, commit 9128ccf | PASS, incluye E2E Linux |
 
 Cobertura: registro válido, email duplicado/inválido, contraseña inválida y hash,
 escalamiento de rol, integridad UNIQUE/CHECK, login válido/inválido/inexistente,
@@ -112,11 +113,11 @@ El reporte completo local está en frontend/playwright-report/index.html.
 
 | Jira | Hallazgo | Solución |
 |---|---|---|
-| [CO-73](https://cypher-oz.atlassian.net/browse/CO-73) | Setup Sprint 0 ausente; remoto solo contenía README | Monorepo, PostgreSQL, Django/Next, entornos, health, pruebas y CI preparados |
-| [CO-74](https://cypher-oz.atlassian.net/browse/CO-74) | Caracteres españoles dañados por pipe de PowerShell | Escritura UTF-8 corregida, DOM inspeccionado y título comprobado en E2E |
+| [CO-73](https://cypher-oz.atlassian.net/browse/CO-73) | Setup Sprint 0 ausente; remoto solo contenía README | Listo: monorepo, PostgreSQL, Django/Next, entornos, health, pruebas y CI preparados |
+| [CO-74](https://cypher-oz.atlassian.net/browse/CO-74) | Caracteres españoles dañados por pipe de PowerShell | Listo: escritura UTF-8 corregida, DOM inspeccionado y título comprobado en E2E |
 
-Sin defectos críticos conocidos en el alcance probado. CO-30 se reutilizó para
-el setup; no se duplicaron las historias oficiales.
+Sin defectos críticos conocidos en el alcance probado. CO-30 se reutilizó y quedó
+Listo para el setup; no se duplicaron las historias oficiales.
 
 ## Git, PR, CI y Jira
 
@@ -126,7 +127,9 @@ el setup; no se duplicaron las historias oficiales.
 - 788c946: frontend, WhatsApp y pruebas UI/E2E.
 - 9128ccf: CI, README y fuente documental.
 - Evidencia local publicada en comentarios de CO-36, CO-55 y CO-41.
-- CI remota: ejecución iniciada; resultado se actualizará tras su finalización.
+- [CI remota completa aprobada](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/34274950496)
+  sobre commit 9128ccf: todos los pasos, incluido E2E, finalizaron en success.
+  Los commits posteriores solo incorporan documentación y capturas.
 - La herramienta Atlassian disponible para issues permite leer y escribir. La
   operación listJiraBoards y el acceso al conector que gestiona sprints devuelven
   INVALID_ARGUMENT. El navegador Jira pide login. Se solicitó reconexión, sin
@@ -136,7 +139,8 @@ el setup; no se duplicaron las historias oficiales.
 
 1. Recuperar acceso a gestión de sprints; identificar o crear Sprint 1 de una
    semana y asignar CO-36, CO-55 y CO-41; verificar su planificación.
-2. Registrar resultado de CI y cerrar las historias tras verificar la coherencia Jira.
+2. Cerrar las historias tras verificar la coherencia y asignación en Jira. La CI
+   y las evidencias técnicas ya están aprobadas.
 3. Configurar el número comercial cuando se proporcione; el canal permanece
    deshabilitado en la base normal, conforme al criterio «visible cuando habilitado».
 
