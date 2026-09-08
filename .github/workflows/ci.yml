@@ -1,0 +1,65 @@
+name: TTI validation
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: tti
+          POSTGRES_PASSWORD: ci-isolated-password
+          POSTGRES_DB: tti
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U tti -d tti"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://tti:ci-isolated-password@127.0.0.1:5432/tti
+      DJANGO_SECRET_KEY: ci-only-isolated-signing-key-not-a-production-secret-0123456789
+      FRONTEND_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install backend
+        run: |
+          python -m venv backend/.venv
+          backend/.venv/bin/python -m pip install -r backend/requirements.txt
+      - name: Backend lint, migrations, regression
+        working-directory: backend
+        run: |
+          .venv/bin/ruff check .
+          .venv/bin/ruff format --check .
+          .venv/bin/python manage.py migrate --noinput
+          .venv/bin/python manage.py makemigrations --check --dry-run
+          .venv/bin/python -m pytest -q
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Frontend checks
+        working-directory: frontend
+        run: |
+          npm run lint
+          npm run typecheck
+          npm test
+          npm run build
+      - name: Browser regression
+        working-directory: frontend
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-evidence
+          path: frontend/playwright-report/
+          retention-days: 14
