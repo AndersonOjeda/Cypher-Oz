@@ -8,8 +8,11 @@ Fechas planificadas: pendientes de un rango concreto del usuario.
 | [CO-63](https://cypher-oz.atlassian.net/browse/CO-63) | Categorías y marcas | 5 |
 | [CO-42](https://cypher-oz.atlassian.net/browse/CO-42) | Productos e imágenes | 8 |
 
-Implementación local de las dos historias completada y validación responsive
-aprobada. El cierre formal del Sprint 2 en Jira no
+Implementación del catálogo publicada y validación responsive aprobada. La regla
+de exclusión de productos inactivos está probada; su uso en la compra se deberá
+verificar en [CO-57/HU-09, Sprint 7](https://cypher-oz.atlassian.net/browse/CO-57),
+donde se registró esa regresión. La casilla de compra de CO-42 sigue pendiente;
+no se afirma una compra E2E antes de implementar checkout. El cierre formal del Sprint 2 en Jira no
 está realizado: las historias siguen En curso y no tienen sprint nativo asignado.
 La consulta de sprints del tablero 2 sigue fallando con `INVALID_ARGUMENT`.
 
@@ -35,6 +38,7 @@ La consulta de sprints del tablero 2 sigue fallando con `INVALID_ARGUMENT`.
 | Build de producción Next.js | PASS |
 | Migración PostgreSQL local | Aplicada |
 | Cambios de migraciones sin generar | No changes detected |
+| CI GitHub del commit `20145d2` (push y PR) | SUCCESS |
 
 Cobertura del backend: permisos visitante/cliente/admin, CSRF, entradas inválidas,
 unicidad, relaciones, paginación, desactivación, archivos falsos/corruptos, MIME,
@@ -70,7 +74,29 @@ Evidencias visuales revisadas: [móvil 390 px](evidence/sprint-2/390-catalog.png
 La integración S3 está validada localmente; falta configurar el proveedor y bucket
 de producción al desplegar. No se hizo despliegue de producción. Rama
 `feature/CO-63-sprint-2`, basada en `feature/CO-36-sprint-1`, cuyo PR aún no se
-ha fusionado. La publicación y CI remota se registrarán al verificarlas.
+ha fusionado.
+
+- [PR #2 — Sprint 2](https://github.com/AndersonOjeda/Cypher-Oz/pull/2), en borrador.
+- [Commit de implementación 20145d2](https://github.com/AndersonOjeda/Cypher-Oz/commit/20145d24ce5ea07237e684444e1ec38c5755d3a1).
+- [CI del PR aprobada](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/34298578484).
+- [CI del push aprobada](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/34298560514).
+- Todos los pasos de CI terminaron con éxito: lint/migraciones/backend,
+  almacenamiento aislado, frontend/build, E2E y publicación de evidencias.
+
+La CI anterior valida el commit de implementación; las actualizaciones
+documentales posteriores tienen sus comprobaciones enlazadas desde el PR.
+
+## Control de cierre
+
+- [x] Código, pruebas y capturas guardados en GitHub.
+- [x] PR separado, con dependencia del PR #1 explícita.
+- [x] CI de la implementación aprobada.
+- [x] Reporte técnico y arquitectura registrados.
+- [x] Evidencias vinculadas y verificadas en ambas historias de Jira; responsable Ander Ojeda.
+- [x] Seguimiento de aceptación integrado registrado en CO-42 y CO-57 (Sprint 7).
+- [ ] Sprint nativo identificado, con ambas historias asignadas y 13 SP.
+- [ ] Fechas planificadas confirmadas y sprint iniciado.
+- [ ] Revisión de criterios, estado Listo y cierre formal verificado en Jira.
 
 Para cerrar formalmente: crear o identificar CO Sprint 2 en el tablero 2, asignar
 CO-63 y CO-42, registrar las fechas reales de planificación e iniciar el sprint
