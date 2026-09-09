@@ -1,26 +1,30 @@
 # Sprint 2 — Reporte de implementación
 
 Fecha de ejecución: 8 de septiembre de 2026 (America/Bogota).
-Fechas planificadas en Jira: 25 de agosto a 1 de septiembre de 2026,
-19:42:13 en ambos extremos (America/Bogota). Valores UTC:
-`2026-08-26T00:42:13.000Z` a `2026-09-02T00:42:13.000Z`.
+Fechas del sprint cerrado en Jira: 1 de septiembre de 2026, 20:39:10,
+a 8 de septiembre de 2026, 19:42:00 (America/Bogota). Valores UTC:
+`2026-09-02T01:39:10.064Z` a `2026-09-09T00:42:00.000Z`.
+Antes del inicio figuraban 25 de agosto a 1 de septiembre; al iniciar el usuario,
+Jira devolvió las fechas actuales. Se registra el cambio sin sobrescribirlas.
 Estas fechas reflejan la planificación; la implementación se ejecutó el 8 de septiembre.
 
-| Historia | Alcance | SP |
-|---|---|---:|
-| [CO-63](https://cypher-oz.atlassian.net/browse/CO-63) | Categorías y marcas | 5 |
-| [CO-42](https://cypher-oz.atlassian.net/browse/CO-42) | Productos e imágenes | 8 |
+| Historia | Alcance | SP | Estado |
+|---|---|---:|---|
+| [CO-63](https://cypher-oz.atlassian.net/browse/CO-63) | Categorías y marcas | 5 | Listo |
+| [CO-42](https://cypher-oz.atlassian.net/browse/CO-42) | Productos e imágenes | 8 | Listo |
 
 Implementación del catálogo publicada y validación responsive aprobada. La regla
 de exclusión de productos inactivos está probada; su uso en la compra se deberá
 verificar en [CO-57/HU-09, Sprint 7](https://cypher-oz.atlassian.net/browse/CO-57),
-donde se registró esa regresión. La casilla de compra de CO-42 sigue pendiente;
-no se afirma una compra E2E antes de implementar checkout. El cierre formal del
-Sprint 2 en Jira no está realizado: las historias siguen En curso.
+donde se registró esa regresión. El usuario aceptó el alcance de catálogo de CO-42
+y trasladó su validación integrada de compra a CO-57; la decisión consta en Jira.
+No se afirma una compra E2E antes de implementar checkout. Ambas historias están
+Listo: **13/13 SP**. **SPRINT COMPLETADO**: cierre confirmado el 8 de septiembre
+de 2026 a las 20:51:40 America/Bogota (`2026-09-09T01:51:40.019Z`).
 
 La asignación nativa quedó verificada en **CO Sprint 2 (id 2, tablero 2)**:
-CO-63 y CO-42, 13 SP en total. Estado del sprint al verificar: `future`, pendiente
-de inicio. El usuario asignó CO-63 y se añadió CO-42 mediante el campo Sprint;
+CO-63 y CO-42, 13 SP en total. Estado del sprint al verificar: `closed`, terminado
+por el usuario. El usuario asignó CO-63 y se añadió CO-42 mediante el campo Sprint;
 la consulta JQL `project = CO AND sprint = 2` devolvió exactamente ambas historias.
 La consulta directa de sprints sigue fallando con `INVALID_ARGUMENT`; los campos
 Sprint de las historias permitieron comprobar el identificador, fechas y estado.
@@ -104,13 +108,14 @@ documentales posteriores tienen sus comprobaciones enlazadas desde el PR.
 - [x] Evidencias vinculadas y verificadas en ambas historias de Jira; responsable Ander Ojeda.
 - [x] Seguimiento de aceptación integrado registrado en CO-42 y CO-57 (Sprint 7).
 - [x] Sprint nativo identificado, con ambas historias asignadas y 13 SP.
-- [x] Fechas planificadas verificadas en Jira: 25 de agosto a 1 de septiembre de 2026.
-- [ ] Sprint iniciado (último estado verificado: future).
-- [ ] Revisión de criterios, estado Listo y cierre formal verificado en Jira.
+- [x] Fechas actuales verificadas en Jira: 1 a 8 de septiembre de 2026; cambio conservado.
+- [x] Sprint iniciado (estado verificado: active).
+- [x] CO-63: criterios revisados y estado Listo registrado.
+- [x] CO-42: alcance de catálogo aceptado por el usuario; compra integrada en CO-57.
+- [x] Cierre formal verificado en Jira: closed, 13/13 SP en Listo.
 
-Siguiente paso administrativo: iniciar CO Sprint 2 desde el backlog del tablero 2,
-conservando sus fechas planificadas. El cierre posterior debe reflejar los criterios
-efectivamente aceptados: CO-42 mantiene pendiente la comprobación integrada de
-compra registrada en CO-57. No se han pasado las historias a Listo ni cerrado el
-sprint. El fallo del conector requiere realizar las operaciones de inicio/cierre
-desde Jira mientras persista.
+El sprint está cerrado, con 13 SP en Listo. La decisión de aceptación figura en
+CO-42 y mantiene la regresión de compra en CO-57 del Sprint 7. CI del último commit
+de esta implementación documental, 8e9a4b3, aprobada:
+https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/34300132561.
+El usuario autorizó continuar con Sprint 3 después de terminar Sprint 2 en Jira.
