@@ -10,11 +10,11 @@ Sprint permanece vacío. No se declara cerrado un sprint que Jira no permite ver
 
 | Jira | Historia | SP | Implementación | Estado formal |
 |---|---|---:|---|---|
-| [CO-36](https://cypher-oz.atlassian.net/browse/CO-36) | HU-01 Registro | 5 | Implementada y validada | En curso, cierre pendiente |
-| [CO-55](https://cypher-oz.atlassian.net/browse/CO-55) | HU-02 Login/logout | 5 | Implementada y validada | En curso, cierre pendiente |
-| [CO-41](https://cypher-oz.atlassian.net/browse/CO-41) | HU-30 WhatsApp general | 2 | Implementada y validada | En curso, cierre pendiente |
+| [CO-36](https://cypher-oz.atlassian.net/browse/CO-36) | HU-01 Registro | 5 | Implementada y validada | Listo (Done) |
+| [CO-55](https://cypher-oz.atlassian.net/browse/CO-55) | HU-02 Login/logout | 5 | Implementada y validada | Listo (Done) |
+| [CO-41](https://cypher-oz.atlassian.net/browse/CO-41) | HU-30 WhatsApp general | 2 | Implementada y validada | Listo (Done) |
 
-**12/12 SP implementados y probados; 0/12 SP formalmente cerrados.**
+**12/12 SP implementados, probados y en historias Listo (Done).** La asignación y el cierre del objeto Sprint en Jira siguen pendientes; no hay velocidad de sprint verificable.
 Épicas existentes reutilizadas: CO-24/EP-01 y CO-54/EP-12. SP comprobados en el campo
 customfield_10016; customfield_10020 (Sprint) vacío en las tres historias.
 Prioridad P0 de registro/login reflejada como Highest; WhatsApp corresponde a P1.
@@ -139,9 +139,13 @@ Listo para el setup; no se duplicaron las historias oficiales.
 
 1. Recuperar acceso a gestión de sprints; identificar o crear Sprint 1 de una
    semana y asignar CO-36, CO-55 y CO-41; verificar su planificación.
-2. Cerrar las historias tras verificar la coherencia y asignación en Jira. La CI
+2. Cerrar formalmente el Sprint tras verificar la asignación. Las tres historias ya están Listo. La CI
    y las evidencias técnicas ya están aprobadas.
 3. Configurar el número comercial cuando se proporcione; el canal permanece
    deshabilitado en la base normal, conforme al criterio «visible cuando habilitado».
 
 No se implementó Sprint 2 ni se realizó despliegue de producción.
+
+## Revisión de cierre de historias
+
+CO-36, CO-55 y CO-41 pasaron a Listo con evidencia registrada. La Definition of Done de las HU está cumplida; la asignación al Sprint es un pendiente administrativo separado. El conector sigue devolviendo INVALID_ARGUMENT al consultar tableros y recursos. Se verificó también la CI del commit 98a2735: https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/34275327048 (success). No se inició Sprint 2.
