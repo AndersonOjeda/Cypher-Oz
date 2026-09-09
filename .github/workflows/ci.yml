@@ -20,6 +20,11 @@ jobs:
       DATABASE_URL: postgresql://tti:ci-isolated-password@127.0.0.1:5432/tti
       DJANGO_SECRET_KEY: ci-only-isolated-signing-key-not-a-production-secret-0123456789
       FRONTEND_URL: http://localhost:3000
+      CATALOG_S3_ENDPOINT: http://127.0.0.1:9000
+      CATALOG_S3_REGION: us-east-1
+      CATALOG_S3_BUCKET: tti-catalog-ci
+      CATALOG_S3_ACCESS_KEY: ci-catalog
+      CATALOG_S3_SECRET_KEY: ci-isolated-catalog-password
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -42,6 +47,14 @@ jobs:
           .venv/bin/python manage.py migrate --noinput
           .venv/bin/python manage.py makemigrations --check --dry-run
           .venv/bin/python -m pytest -q
+      - name: Start isolated object storage
+        run: |
+          docker run -d --name tti-media-ci -p 127.0.0.1:9000:9000 -e MINIO_ROOT_USER=ci-catalog -e MINIO_ROOT_PASSWORD=ci-isolated-catalog-password minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e server /data
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:9000/minio/health/live; then exit 0; fi
+            sleep 1
+          done
+          exit 1
       - name: Install frontend
         working-directory: frontend
         run: npm ci

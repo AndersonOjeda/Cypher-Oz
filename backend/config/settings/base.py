@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.users",
     "apps.configuration",
+    "apps.catalog",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -68,3 +69,13 @@ SIMPLE_JWT = {
 }
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
+
+CATALOG_S3_ENDPOINT = os.getenv("CATALOG_S3_ENDPOINT", "")
+CATALOG_S3_REGION = os.getenv("CATALOG_S3_REGION", "us-east-1")
+CATALOG_S3_BUCKET = os.getenv("CATALOG_S3_BUCKET", "")
+CATALOG_S3_ACCESS_KEY = os.getenv("CATALOG_S3_ACCESS_KEY", "")
+CATALOG_S3_SECRET_KEY = os.getenv("CATALOG_S3_SECRET_KEY", "")
+CATALOG_IMAGE_MAX_BYTES = int(os.getenv("CATALOG_IMAGE_MAX_BYTES", "5242880"))
+CATALOG_IMAGE_MAX_DIMENSION = int(os.getenv("CATALOG_IMAGE_MAX_DIMENSION", "4096"))
+CATALOG_IMAGE_MAX_COUNT = int(os.getenv("CATALOG_IMAGE_MAX_COUNT", "8"))
+DATA_UPLOAD_MAX_MEMORY_SIZE = CATALOG_IMAGE_MAX_BYTES + 65536

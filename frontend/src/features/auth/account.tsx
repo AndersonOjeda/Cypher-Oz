@@ -52,6 +52,11 @@ export function Account() {
             <dt>Tipo de cuenta</dt>
             <dd>{user.role === "ADMIN" ? "Administrador" : "Cliente"}</dd>
           </dl>
+          {user.role === "ADMIN" && (
+            <Link className="button primary" href="/admin/catalogo">
+              Administrar catálogo
+            </Link>
+          )}
           <button className="button primary" onClick={logout} disabled={busy}>
             {busy ? "Cerrando sesión…" : "Cerrar sesión"}
           </button>
