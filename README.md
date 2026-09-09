@@ -224,4 +224,5 @@ entradas inválidas con 400, sin sesión con 401 y cliente/CSRF inválido con 40
 
 Ejecutar migraciones y la suite completa con los comandos anteriores. La migración
 crea variantes/atributos sin cambiar los productos existentes. Ver
-[arquitectura y límites del Sprint 3](docs/architecture-sprint-3.md).
+[arquitectura y límites del Sprint 3](docs/architecture-sprint-3.md) y
+[reporte de pruebas y estado de cierre](docs/sprint-3-report.md).
