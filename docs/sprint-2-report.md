@@ -1,7 +1,10 @@
 # Sprint 2 — Reporte de implementación
 
 Fecha de ejecución: 8 de septiembre de 2026 (America/Bogota).
-Fechas planificadas: pendientes de un rango concreto del usuario.
+Fechas planificadas en Jira: 25 de agosto a 1 de septiembre de 2026,
+19:42:13 en ambos extremos (America/Bogota). Valores UTC:
+`2026-08-26T00:42:13.000Z` a `2026-09-02T00:42:13.000Z`.
+Estas fechas reflejan la planificación; la implementación se ejecutó el 8 de septiembre.
 
 | Historia | Alcance | SP |
 |---|---|---:|
@@ -12,9 +15,15 @@ Implementación del catálogo publicada y validación responsive aprobada. La re
 de exclusión de productos inactivos está probada; su uso en la compra se deberá
 verificar en [CO-57/HU-09, Sprint 7](https://cypher-oz.atlassian.net/browse/CO-57),
 donde se registró esa regresión. La casilla de compra de CO-42 sigue pendiente;
-no se afirma una compra E2E antes de implementar checkout. El cierre formal del Sprint 2 en Jira no
-está realizado: las historias siguen En curso y no tienen sprint nativo asignado.
-La consulta de sprints del tablero 2 sigue fallando con `INVALID_ARGUMENT`.
+no se afirma una compra E2E antes de implementar checkout. El cierre formal del
+Sprint 2 en Jira no está realizado: las historias siguen En curso.
+
+La asignación nativa quedó verificada en **CO Sprint 2 (id 2, tablero 2)**:
+CO-63 y CO-42, 13 SP en total. Estado del sprint al verificar: `future`, pendiente
+de inicio. El usuario asignó CO-63 y se añadió CO-42 mediante el campo Sprint;
+la consulta JQL `project = CO AND sprint = 2` devolvió exactamente ambas historias.
+La consulta directa de sprints sigue fallando con `INVALID_ARGUMENT`; los campos
+Sprint de las historias permitieron comprobar el identificador, fechas y estado.
 
 ## Entrega
 
@@ -94,11 +103,14 @@ documentales posteriores tienen sus comprobaciones enlazadas desde el PR.
 - [x] Reporte técnico y arquitectura registrados.
 - [x] Evidencias vinculadas y verificadas en ambas historias de Jira; responsable Ander Ojeda.
 - [x] Seguimiento de aceptación integrado registrado en CO-42 y CO-57 (Sprint 7).
-- [ ] Sprint nativo identificado, con ambas historias asignadas y 13 SP.
-- [ ] Fechas planificadas confirmadas y sprint iniciado.
+- [x] Sprint nativo identificado, con ambas historias asignadas y 13 SP.
+- [x] Fechas planificadas verificadas en Jira: 25 de agosto a 1 de septiembre de 2026.
+- [ ] Sprint iniciado (último estado verificado: future).
 - [ ] Revisión de criterios, estado Listo y cierre formal verificado en Jira.
 
-Para cerrar formalmente: crear o identificar CO Sprint 2 en el tablero 2, asignar
-CO-63 y CO-42, registrar las fechas reales de planificación e iniciar el sprint
-antes de pasar ambas historias a Listo. El fallo del conector requiere completar
-las operaciones del sprint desde Jira mientras persista.
+Siguiente paso administrativo: iniciar CO Sprint 2 desde el backlog del tablero 2,
+conservando sus fechas planificadas. El cierre posterior debe reflejar los criterios
+efectivamente aceptados: CO-42 mantiene pendiente la comprobación integrada de
+compra registrada en CO-57. No se han pasado las historias a Listo ni cerrado el
+sprint. El fallo del conector requiere realizar las operaciones de inicio/cierre
+desde Jira mientras persista.
