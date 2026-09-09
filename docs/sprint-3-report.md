@@ -4,9 +4,10 @@ Ejecución: 8 de septiembre de 2026, America/Bogota. Duración planificada: una 
 Alcance oficial: 11 SP. Sprint 2 cerrado por el usuario y verificado en Jira antes
 de comenzar: `completeDate=2026-09-09T01:51:40.019Z`.
 
-**SPRINT INCOMPLETO**: alcance administrativo aceptado, implementado y probado;
-11/11 SP en Listo y CI remota aprobada. Solo falta el cierre del sprint nativo
-en Jira: la última lectura devuelve `future` y el conector falla al iniciarlo.
+**SPRINT COMPLETADO**: alcance administrativo aceptado, implementado y probado;
+11/11 SP en Listo, con CI remota aprobada. Cierre formal verificado en Jira:
+`state=closed`, `completeDate=2026-09-09T02:28:21.805Z`
+(8 de septiembre de 2026, 21:28:21 America/Bogota).
 
 ## Historias, Jira y Story Points
 
@@ -15,14 +16,19 @@ en Jira: la última lectura devuelve `future` y el conector falla al iniciarlo.
 | [CO-64 — HU-22 Variantes](https://cypher-oz.atlassian.net/browse/CO-64) | 8 | Implementada, probada y aceptada | Listo |
 | [CO-68 — HU-26 Precios](https://cypher-oz.atlassian.net/browse/CO-68) | 3 | Implementada, probada y aceptada | Listo |
 
-**11/11 SP implementados y en historias Done.** Épicas CO-26 y CO-52
+**11/11 SP implementados, aceptados y en historias Done.** Épicas CO-26 y CO-52
 reutilizadas; prioridad Highest conforme P0, responsable Ander Ojeda.
 `CO Sprint 3`, id **3**, tablero **2**, identificado mediante el campo Sprint
 de CO-64. Las dos historias y los bugs CO-75/CO-76 están asignados al mismo sprint.
-Consulta completa `project = CO AND sprint = 3`: cuatro issues, todas con estado
-y resolución Listo; los bugs no añaden SP a los 11 oficiales.
-El conector de sprints devuelve `INVALID_ARGUMENT` al listar e iniciar; el sprint
-sigue `future`. Se solicitó al usuario iniciarlo y completarlo desde el tablero.
+Consulta completa `project = CO AND sprint = 3`: cuatro issues, todas Listo.
+Los bugs no añaden SP a los 11 oficiales. El usuario inició y completó el sprint
+desde Jira, debido al error `INVALID_ARGUMENT` del conector de gestión de sprints.
+Se verificó la asignación, el estado y las fechas mediante el campo Sprint de
+las cuatro incidencias: `closed`, `startDate=2026-09-09T02:26:40.644Z`,
+`endDate=2026-09-15T05:00:00.000Z`, `completeDate=2026-09-09T02:28:21.805Z`.
+Las historias se restauraron a Listo después del inicio y antes de completar.
+Estas fechas reflejan la regularización administrativa del trabajo ya ejecutado;
+no se usan para presentar la duración del sprint como tiempo de desarrollo.
 
 ## Backend y PostgreSQL
 
@@ -79,6 +85,7 @@ tres tablas nuevas sin alterar datos comerciales de productos existentes.
 | Migraciones / Django check | PASS |
 | CI remota, commit a1c4ce4 | **PASS**, todos los pasos incluidos E2E y artefactos |
 | CI remota, commit ff731b6 | **PASS**, ejecución completada con success |
+| CI remota, commit 26d40ef | **PASS**, job y todos sus pasos success |
 
 Se cubren precio cero/máximo/inválido, atributos duplicados o de otra categoría,
 campos desconocidos, paginación, estándar, persistencia, disponibilidad,
@@ -126,6 +133,8 @@ ejercitar PostgreSQL directamente, ya que Django lo rechazaba antes de llegar a 
   job 102310582820: todos los pasos success sobre a1c4ce4.
 - [CI posterior aprobada](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/34302348108)
   sobre ff731b6, verificada durante el cierre formal.
+- [CI del registro de aceptación aprobada](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/34302997556)
+  sobre 26d40ef, job 102313747032 y todos sus pasos success.
   Las actualizaciones posteriores del reporte solo contienen documentación.
 
 ## Decisión de aceptación y cierre
@@ -149,9 +158,21 @@ CO-57 y CO-39 conservan estado Por hacer y sus estimaciones; los recorridos de c
 y pedidos históricos no se declaran probados. Los criterios originales se mantienen
 trazables y no se modificó silenciosamente el Documento Maestro.
 
-Pendiente administrativo único: iniciar y completar **CO Sprint 3** en el tablero 2,
-y verificar `state=closed` y `completeDate` devueltos por Jira. No se declara cerrado
-mientras la lectura siga mostrando `future`.
+## Corrección del orden de cierre en Jira
+
+El usuario informó que Sprint 3 aparecía vacío. La consulta confirmó que las cuatro
+incidencias seguían asignadas correctamente, pero todas estaban Listo mientras el
+sprint todavía era futuro. Haberlas terminado antes del inicio es compatible con
+la ocultación del trabajo terminado en el backlog; la configuración del tablero
+no pudo inspeccionarse porque el conector también falla en esa lectura.
+
+Se registró la explicación en CO-64 y CO-68 y se devolvieron temporalmente a En curso
+para permitir iniciar el sprint desde la interfaz. Sus criterios, aceptación y
+resultados de pruebas permanecen completos; no se ha reabierto ningún defecto.
+El usuario respondió «ya lo inicie»; se verificó `active` y se restauraron ambas
+historias a Listo. Después indicó «ya le di a completar»; la consulta de las cuatro
+incidencias confirmó `state=closed` y `completeDate=2026-09-09T02:28:21.805Z`.
+La reapertura administrativa y el cierre formal están resueltos.
 
 No se implementó Sprint 4 ni se desplegó producción. La aplicación puede ejecutarse
 localmente con las instrucciones del README; los datos ficticios E2E permanecen
