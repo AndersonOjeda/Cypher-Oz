@@ -26,6 +26,7 @@ with psycopg.connect(
         conn.execute("CREATE DATABASE tti_e2e")
 os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings.e2e"
 subprocess.run([sys.executable, "manage.py", "migrate", "--noinput"], cwd=root, check=True)
+subprocess.run([sys.executable, "manage.py", "prepare_catalog_storage"], cwd=root, check=True)
 sys.path.insert(0, str(root))
 import django  # noqa: E402
 

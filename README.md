@@ -1,8 +1,9 @@
 # TTI — Tienda Tecnológica Inteligente
 
-Monorepo del Sprint 1: Next.js + TypeScript + Tailwind, Django/DRF y PostgreSQL.
+Monorepo de TTI: Next.js + TypeScript + Tailwind, Django/DRF y PostgreSQL.
 Fuente de verdad: `TTI_Documento_Maestro_Ingenieria_Software_v3.0_COMPLETO.docx`.
 Historias: CO-36 (registro), CO-55 (login/logout) y CO-41 (WhatsApp).
+Sprint 2: CO-63 (categorías y marcas), CO-42 (productos e imágenes).
 
 ## Ejecutar en Windows
 
@@ -120,6 +121,68 @@ con un servidor WSGI y terminación TLS correctamente configurados; `runserver` 
 solo desarrollo. No usar `config.settings.e2e` en producción. Next.js:
 `npm run build` y `npm start`, con DJANGO_URL definido al construir.
 No se realizó despliegue de producción en este Sprint.
+
+## Administración del catálogo — Sprint 2
+
+Ingresar con una cuenta ADMIN en `/login`, abrir **Mi cuenta → Administrar catálogo**
+(`/admin/catalogo`). Crear primero una categoría y una marca, después el producto.
+El producto comienza inactivo. Las imágenes se añaden después de guardar el producto.
+El backend valida permisos y CSRF en cada escritura; un cliente recibe 403.
+
+La categoría o marca inactiva oculta sus productos sin borrar relaciones.
+La eliminación de registros relacionados devuelve 409; los productos deben estar
+inactivos y sin imágenes para borrarse. SKU, precios, inventario y catálogo público
+corresponden a los sprints siguientes del plan.
+
+Para habilitar el almacenamiento de imágenes en desarrollo, desde la raíz:
+
+```powershell
+backend/.venv/Scripts/python backend/scripts/local_catalog_storage.py
+docker compose --profile media up -d
+backend/.venv/Scripts/python backend/manage.py prepare_catalog_storage
+backend/.venv/Scripts/python backend/manage.py migrate
+```
+
+El script prepara claves aleatorias locales en los `.env` ignorados por Git; no
+sobrescribe valores ya configurados. Reiniciar Django si estaba ejecutándose.
+MinIO usa un volumen persistente y escucha solo en loopback (9000; consola 9001).
+La base normal y los E2E usan buckets separados: `tti-catalog-local` y `tti-catalog-e2e`.
+La suite E2E completa requiere este servicio; crea su bucket privado automáticamente.
+
+En producción, configurar las variables `CATALOG_S3_*` de `backend/.env.example`
+con un bucket privado S3 compatible ya provisionado; puede usarse el proveedor
+de credenciales de AWS en lugar de claves explícitas. No ejecutar el preparador
+local contra producción. Los archivos se validan, decodifican y reescriben como
+WebP sin metadatos originales; la base almacena ubicación y metadatos. Las vistas
+administrativas reciben enlaces de lectura firmados por 15 minutos.
+
+Los límites configurables por entorno son 5 MiB, 4096 px por lado y 8 imágenes
+por producto. El formulario consulta `/api/v1/admin/catalog/limits/` para mostrarlos.
+Las imágenes fallidas o eliminadas dejan tareas de limpieza persistentes. Ejecutar
+periódicamente (por ejemplo, cada hora con el programador del host):
+
+```powershell
+backend/.venv/Scripts/python backend/manage.py cleanup_catalog_images
+```
+
+Las cargas incompletas tienen una hora de margen antes de limpiarse. La retirada
+de una imagen de la galería es inmediata aunque el proveedor falle; la eliminación
+del objeto se reintenta con el comando. Sin configuración S3, el CRUD sin imágenes
+sigue disponible y las operaciones de almacenamiento devuelven un 503 controlado.
+
+| Métodos | Ruta relativa a `/api/v1/admin/` | Uso |
+|---|---|---|
+| GET, POST | `categories/`, `brands/`, `products/` | Listar y crear |
+| GET, PATCH, DELETE | `categories/{id}/`, `brands/{id}/`, `products/{id}/` | Consultar, editar, eliminar con restricciones |
+| GET, POST multipart | `products/{id}/images/` | Galería y carga con `file`, `alt_text` |
+| PATCH, DELETE | `products/{id}/images/{image_id}/` | Texto alternativo, orden y eliminación |
+| GET | `catalog/limits/` | Límites de imágenes |
+
+Listados paginados: `page`, `page_size` (máximo 100), `search` por nombre/identificador
+y `active=true|false`. Respuestas privadas `Cache-Control: no-store`.
+
+Ver [decisiones del Sprint 2](docs/architecture-sprint-2.md) y
+[reporte del Sprint 2](docs/sprint-2-report.md).
 
 Ver [decisiones y trazabilidad](docs/architecture-sprint-1.md) y
 [reporte del Sprint 1](docs/sprint-1-report.md).

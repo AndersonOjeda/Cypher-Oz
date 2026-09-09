@@ -68,3 +68,25 @@ test("HTML upstream failure is shown as a readable error", async () => {
     "El servicio no está disponible",
   );
 });
+
+test("multipart upload preserves browser boundary and sends CSRF after refresh", async () => {
+  const fetch = vi
+    .fn()
+    .mockResolvedValueOnce(response(200, { csrfToken: "csrf" }))
+    .mockResolvedValueOnce(response(401, {}))
+    .mockResolvedValueOnce(response(200, { csrfToken: "rotated" }))
+    .mockResolvedValueOnce(response(201, { id: 2 }));
+  vi.stubGlobal("fetch", fetch);
+  const { api } = await import("./api");
+  const body = new FormData();
+  body.append("file", new Blob(["image"]), "image.png");
+  expect(
+    await api("/admin/products/1/images/", { method: "POST", body }),
+  ).toEqual({ id: 2 });
+  for (const call of [fetch.mock.calls[1], fetch.mock.calls[3]]) {
+    expect(call[1].headers.has("Content-Type")).toBe(false);
+    expect(call[1].body).toBe(body);
+    expect(call[1].credentials).toBe("include");
+  }
+  expect(fetch.mock.calls[3][1].headers.get("X-CSRFToken")).toBe("rotated");
+});
