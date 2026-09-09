@@ -191,7 +191,7 @@ export function TaxonomyManager({ kind }: { kind: "categories" | "brands" }) {
                 id="tax-slug"
                 required
                 maxLength={140}
-                pattern="[a-z0-9_-]+"
+                pattern={"[a-z0-9_\\-]+"}
                 value={form.slug}
                 onChange={(e) => setForm({ ...form, slug: e.target.value })}
               />

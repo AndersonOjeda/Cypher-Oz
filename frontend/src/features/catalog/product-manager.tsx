@@ -11,6 +11,7 @@ import {
   useResource,
 } from "./shared";
 import { ImageManager } from "./image-manager";
+import { VariantManager } from "./variant-manager";
 import type { Limits, Page, Product, Taxonomy } from "./types";
 
 const blank = {
@@ -65,6 +66,22 @@ export function ProductManager() {
     setEditing(undefined);
     setForm(blank);
     setError("");
+  }
+  async function variantsChanged(productId: number) {
+    setRevision((value) => value + 1);
+    try {
+      const updated = await api<Product>(`/admin/products/${productId}/`);
+      // Preserve the product form and image editor while updating availability.
+      setEditing((current) =>
+        current?.id === productId
+          ? { ...current, catalog_available: updated.catalog_available }
+          : current,
+      );
+    } catch (err) {
+      setError(
+        `La variante se guardó. No pudimos actualizar la disponibilidad: ${errorText(err)}`,
+      );
+    }
   }
   async function edit(id: number) {
     setBusy(true);
@@ -202,6 +219,13 @@ export function ProductManager() {
                       {item.is_active && !item.catalog_visible && (
                         <small>Oculto: categoría o marca inactiva.</small>
                       )}
+                      {item.catalog_visible && (
+                        <small>
+                          {item.catalog_available
+                            ? "Disponible en catálogo."
+                            : "No disponible: sin variantes activas."}
+                        </small>
+                      )}
                     </div>
                     <div className="catalog-actions">
                       <button
@@ -279,7 +303,7 @@ export function ProductManager() {
                   id="product-slug"
                   required
                   maxLength={200}
-                  pattern="[a-z0-9_-]+"
+                  pattern={"[a-z0-9_\\-]+"}
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}
                 />
@@ -382,6 +406,13 @@ export function ProductManager() {
           </form>
         </section>
       </div>
+      {editing && (
+        <VariantManager
+          key={`${editing.id}-${editing.category}`}
+          product={editing}
+          onChange={variantsChanged}
+        />
+      )}
       {editing && options && (
         <ImageManager
           key={editing.id}

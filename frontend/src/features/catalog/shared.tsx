@@ -19,12 +19,27 @@ export function errorText(error: unknown): string {
       alt_text: "Descripción de imagen",
       description: "Descripción",
       warranty: "Garantía",
+      sku: "SKU",
+      price: "Precio",
+      attributes: "Atributos",
+      code: "Código",
+      is_active: "Estado",
+      attribute: "Atributo",
+      value: "Valor",
     };
+    function describe(value: unknown): string {
+      if (Array.isArray(value)) return value.map(describe).join(" ");
+      if (value && typeof value === "object")
+        return Object.entries(value)
+          .map(
+            ([field, detail]) =>
+              `${fields[field] ?? field}: ${describe(detail)}`,
+          )
+          .join(" · ");
+      return String(value ?? "");
+    }
     const details = Object.entries(error.details)
-      .map(
-        ([field, value]) =>
-          `${fields[field] ?? field}: ${Array.isArray(value) ? value.join(" ") : String(value)}`,
-      )
+      .map(([field, value]) => `${fields[field] ?? field}: ${describe(value)}`)
       .join(" · ");
     if (details) return details;
   }

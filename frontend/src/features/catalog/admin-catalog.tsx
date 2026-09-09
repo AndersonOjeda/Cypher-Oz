@@ -39,8 +39,8 @@ export function AdminCatalog() {
           <p className="eyebrow">ADMINISTRACIÓN</p>
           <h1>Tu catálogo, organizado.</h1>
           <p>
-            Gestiona productos, categorías, marcas e imágenes desde un solo
-            lugar.
+            Gestiona productos, variantes, precios, categorías, marcas e
+            imágenes desde un solo lugar.
           </p>
         </div>
         <Link href="/cuenta">← Mi cuenta</Link>
