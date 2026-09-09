@@ -83,9 +83,12 @@ class CatalogViewSet(PrivateAdminMixin, viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         try:
             with transaction.atomic():
-                instance = get_object_or_404(
-                    self.get_queryset().select_for_update(of=("self",)), pk=kwargs["pk"]
+                # Lock the base row before loading joins: a concurrent category change can
+                # invalidate a joined SELECT FOR UPDATE snapshot in PostgreSQL.
+                locked = get_object_or_404(
+                    self.queryset.model.objects.select_for_update(), pk=kwargs["pk"]
                 )
+                instance = get_object_or_404(self.get_queryset(), pk=locked.pk)
                 serializer = self.get_serializer(instance, data=request.data, partial=True)
                 serializer.is_valid(raise_exception=True)
                 changes = {}

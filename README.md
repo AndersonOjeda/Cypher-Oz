@@ -4,6 +4,7 @@ Monorepo de TTI: Next.js + TypeScript + Tailwind, Django/DRF y PostgreSQL.
 Fuente de verdad: `TTI_Documento_Maestro_Ingenieria_Software_v3.0_COMPLETO.docx`.
 Historias: CO-36 (registro), CO-55 (login/logout) y CO-41 (WhatsApp).
 Sprint 2: CO-63 (categorías y marcas), CO-42 (productos e imágenes).
+Sprint 3: CO-64 (variantes), CO-68 (precios por variante).
 
 ## Ejecutar en Windows
 
@@ -131,8 +132,9 @@ El backend valida permisos y CSRF en cada escritura; un cliente recibe 403.
 
 La categoría o marca inactiva oculta sus productos sin borrar relaciones.
 La eliminación de registros relacionados devuelve 409; los productos deben estar
-inactivos y sin imágenes para borrarse. SKU, precios, inventario y catálogo público
-corresponden a los sprints siguientes del plan.
+inactivos y sin imágenes ni variantes para borrarse. Las variantes con sus SKU y
+precios se gestionan desde Sprint 3; inventario y catálogo público corresponden a
+los sprints siguientes del plan.
 
 Para habilitar el almacenamiento de imágenes en desarrollo, desde la raíz:
 
@@ -186,3 +188,41 @@ Ver [decisiones del Sprint 2](docs/architecture-sprint-2.md) y
 
 Ver [decisiones y trazabilidad](docs/architecture-sprint-1.md) y
 [reporte del Sprint 1](docs/sprint-1-report.md).
+
+## Variantes y precios — Sprint 3
+
+En **Administrar catálogo → Productos**, guardar o editar un producto y bajar a
+**Variantes del producto**. Ingresar SKU y precio COP; usar «Estándar» cuando no
+existan opciones o un nombre representativo para una variante con opciones. SKU y
+precio pertenecen a la variante. No se crean automáticamente para datos existentes.
+
+El precio admite cero y hasta dos decimales, con máximo 9999999999.99. Se guarda
+como decimal exacto en PostgreSQL y se intercambia como texto JSON, por ejemplo
+`"12345.67"`. No se admite stock desde estos formularios o endpoints.
+
+**Atributos de la categoría** permite definir especificaciones por código y nombre.
+Sus valores son opcionales por variante. Para cambiar la categoría de un producto,
+primero deben resolverse los valores incompatibles; no se borran automáticamente.
+Los atributos pertenecen a la categoría y se comparten entre sus productos.
+
+Desactivar conserva SKU, precio, atributos y auditoría. Una variante inactiva queda
+fuera de la política de disponibilidad, al igual que sus productos o taxonomías
+inactivos. El indicador no representa existencias: el inventario será Sprint 4.
+Un producto sin variantes activas puede guardarse, pero no queda disponible.
+
+| Método | Ruta relativa a `/api/v1/admin/` | Uso |
+|---|---|---|
+| GET, POST | `products/{id}/variants/` | Listado paginado y creación |
+| GET, PATCH | `variants/{id}/` | Consulta y edición de variante/precio |
+| GET, POST | `categories/{id}/attributes/` | Definiciones de atributos |
+| PATCH | `attributes/{id}/` | Edición de definición |
+
+Ejemplo de creación: `{"sku":"CABLE-USB-A","price":"15000.00","name":"Estándar","is_active":true,"attributes":[]}`.
+Para editar solo precio: `{"price":"16500.50"}`. Los atributos se mantienen si
+se omiten; un arreglo explícito los reemplaza. Rechaza SKU duplicado con 409,
+entradas inválidas con 400, sin sesión con 401 y cliente/CSRF inválido con 403.
+
+Ejecutar migraciones y la suite completa con los comandos anteriores. La migración
+crea variantes/atributos sin cambiar los productos existentes. Ver
+[arquitectura y límites del Sprint 3](docs/architecture-sprint-3.md) y
+[reporte de pruebas y estado de cierre](docs/sprint-3-report.md).

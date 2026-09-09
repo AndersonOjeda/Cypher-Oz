@@ -49,6 +49,7 @@ class ProductSerializer(StrictModelSerializer):
     category_name = serializers.CharField(source="category.name", read_only=True)
     brand_name = serializers.CharField(source="brand.name", read_only=True)
     catalog_visible = serializers.BooleanField(read_only=True)
+    catalog_available = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Product
@@ -64,12 +65,25 @@ class ProductSerializer(StrictModelSerializer):
             "brand_name",
             "is_active",
             "catalog_visible",
+            "catalog_available",
             "images",
             "updated_at",
         ]
         read_only_fields = ["id", "updated_at"]
 
     def validate(self, attrs):
+        category = attrs.get("category")
+        if (
+            self.instance
+            and category
+            and category.pk != self.instance.category_id
+            and self.instance.variants.filter(attribute_values__isnull=False)
+            .exclude(attribute_values__attribute__category=category)
+            .exists()
+        ):
+            raise serializers.ValidationError(
+                {"category": "Las variantes tienen atributos de la categoría actual."}
+            )
         for field in ["category", "brand"]:
             related = attrs.get(field, getattr(self.instance, field, None))
             # Existing inactive associations are kept for history, but cannot be newly selected.
