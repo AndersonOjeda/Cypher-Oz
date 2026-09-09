@@ -4,22 +4,25 @@ Ejecución: 8 de septiembre de 2026, America/Bogota. Duración planificada: una 
 Alcance oficial: 11 SP. Sprint 2 cerrado por el usuario y verificado en Jira antes
 de comenzar: `completeDate=2026-09-09T01:51:40.019Z`.
 
-**SPRINT INCOMPLETO**: implementación y validación local terminadas. Falta la
-asignación formal al Sprint 3 y resolver la aceptación de las verificaciones
-integradas que dependen de compra/pedidos. La CI remota está aprobada.
+**SPRINT INCOMPLETO**: alcance administrativo aceptado, implementado y probado;
+11/11 SP en Listo y CI remota aprobada. Solo falta el cierre del sprint nativo
+en Jira: la última lectura devuelve `future` y el conector falla al iniciarlo.
 
 ## Historias, Jira y Story Points
 
 | Historia | SP | Implementación | Estado Jira |
 |---|---:|---|---|
-| [CO-64 — HU-22 Variantes](https://cypher-oz.atlassian.net/browse/CO-64) | 8 | Implementada y probada | En curso |
-| [CO-68 — HU-26 Precios](https://cypher-oz.atlassian.net/browse/CO-68) | 3 | Implementada y probada | En curso |
+| [CO-64 — HU-22 Variantes](https://cypher-oz.atlassian.net/browse/CO-64) | 8 | Implementada, probada y aceptada | Listo |
+| [CO-68 — HU-26 Precios](https://cypher-oz.atlassian.net/browse/CO-68) | 3 | Implementada, probada y aceptada | Listo |
 
-**11/11 SP implementados; 0/11 SP en historias Done.** Épicas CO-26 y CO-52
-reutilizadas; prioridad Highest conforme P0, responsable Ander Ojeda. El campo
-Sprint sigue vacío en la última consulta. El conector de sprints devuelve
-`INVALID_ARGUMENT`; se solicitó al usuario asignar las historias e iniciar Sprint 3
-en el tablero 2. No se inventó un identificador ni se duplicaron historias.
+**11/11 SP implementados y en historias Done.** Épicas CO-26 y CO-52
+reutilizadas; prioridad Highest conforme P0, responsable Ander Ojeda.
+`CO Sprint 3`, id **3**, tablero **2**, identificado mediante el campo Sprint
+de CO-64. Las dos historias y los bugs CO-75/CO-76 están asignados al mismo sprint.
+Consulta completa `project = CO AND sprint = 3`: cuatro issues, todas con estado
+y resolución Listo; los bugs no añaden SP a los 11 oficiales.
+El conector de sprints devuelve `INVALID_ARGUMENT` al listar e iniciar; el sprint
+sigue `future`. Se solicitó al usuario iniciarlo y completarlo desde el tablero.
 
 ## Backend y PostgreSQL
 
@@ -75,6 +78,7 @@ tres tablas nuevas sin alterar datos comerciales de productos existentes.
 | Next.js production build | PASS |
 | Migraciones / Django check | PASS |
 | CI remota, commit a1c4ce4 | **PASS**, todos los pasos incluidos E2E y artefactos |
+| CI remota, commit ff731b6 | **PASS**, ejecución completada con success |
 
 Se cubren precio cero/máximo/inválido, atributos duplicados o de otra categoría,
 campos desconocidos, paginación, estándar, persistencia, disponibilidad,
@@ -120,20 +124,34 @@ ejercitar PostgreSQL directamente, ya que Django lo rechazaba antes de llegar a 
 - `a1c4ce4`: arquitectura, README y capturas.
 - [CI remota aprobada](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/34301969262),
   job 102310582820: todos los pasos success sobre a1c4ce4.
-  Las actualizaciones posteriores de reporte/README solo contienen documentación.
+- [CI posterior aprobada](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/34302348108)
+  sobre ff731b6, verificada durante el cierre formal.
+  Las actualizaciones posteriores del reporte solo contienen documentación.
 
-## Pendientes de aceptación y cierre
+## Decisión de aceptación y cierre
 
-1. Asignar las dos historias al Sprint 3 nativo e iniciar/cerrar según corresponda;
-   verificar el estado devuelto por Jira.
-2. Confirmar la aceptación del alcance administrativo probado. HU-22 exige impedir
-   compra de variante inactiva y HU-26 preservar pedidos antiguos. Sus políticas se
-   implementan ahora, pero compra y snapshots son de sprints posteriores según el
-   propio Documento Maestro. Se pidió al usuario aceptar esa separación, sin presumir
-   respuesta. Seguimiento explícito registrado en [CO-57/Sprint 7](https://cypher-oz.atlassian.net/browse/CO-57)
-   y [CO-39/Sprint 10](https://cypher-oz.atlassian.net/browse/CO-39).
-3. Una vez aceptado el alcance, completar las transiciones y cierre formal en Jira.
-   CI y evidencias finales ya están registradas; CO-75 y CO-76 están Listo.
+Después de presentar las evidencias y proponer el traslado de las comprobaciones
+integradas, el usuario indicó **«prosigamos con el cierre formal»**. Se registra
+la aceptación del alcance administrativo de variantes/precios probado en Sprint 3.
+La decisión, los criterios ajustados, la Definition of Done y las evidencias están
+registrados en CO-64 y CO-68, antes de sus transiciones a Listo.
+
+- **CO-64:** exclusión de variantes inactivas probada en la política de disponibilidad.
+  La comprobación de impedir continuar la compra con una variante inactiva, incluso
+  retenida en el carrito, queda como criterio pendiente en
+  [CO-57/Sprint 7](https://cypher-oz.atlassian.net/browse/CO-57).
+- **CO-68:** edición y auditoría del precio probadas. Los snapshots de pedidos se
+  implementarán en Sprint 10. **CP-HIST-001**, crear un pedido, editar SKU/nombre/precio
+  y comprobar que sus datos y totales históricos se conservan, queda pendiente en
+  [CO-39/Sprint 10](https://cypher-oz.atlassian.net/browse/CO-39).
+
+CO-57 y CO-39 conservan estado Por hacer y sus estimaciones; los recorridos de compra
+y pedidos históricos no se declaran probados. Los criterios originales se mantienen
+trazables y no se modificó silenciosamente el Documento Maestro.
+
+Pendiente administrativo único: iniciar y completar **CO Sprint 3** en el tablero 2,
+y verificar `state=closed` y `completeDate` devueltos por Jira. No se declara cerrado
+mientras la lectura siga mostrando `future`.
 
 No se implementó Sprint 4 ni se desplegó producción. La aplicación puede ejecutarse
 localmente con las instrucciones del README; los datos ficticios E2E permanecen
