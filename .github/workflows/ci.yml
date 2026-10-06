@@ -49,7 +49,8 @@ jobs:
           .venv/bin/python -m pytest -q --junitxml=../reports/backend.xml
       - name: Start isolated object storage
         run: |
-          docker run -d --name tti-media-ci -p 127.0.0.1:9000:9000 -e MINIO_ROOT_USER=ci-catalog -e MINIO_ROOT_PASSWORD=ci-isolated-catalog-password minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e server /data
+          docker build -t tti-minio:7aac2a2 infra/minio
+          docker run -d --name tti-media-ci -p 127.0.0.1:9000:9000 -e MINIO_ROOT_USER=ci-catalog -e MINIO_ROOT_PASSWORD=ci-isolated-catalog-password tti-minio:7aac2a2 server /data
           for attempt in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:9000/minio/health/live; then exit 0; fi
             sleep 1
@@ -72,6 +73,7 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           npm run test:e2e -- --reporter=list,html,junit
+          node scripts/verify-wireframes.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -82,4 +84,6 @@ jobs:
             docs/evidence/sprint-1-current/*-mobile.png
             docs/evidence/sprint-1-current/*-tablet.png
             docs/evidence/sprint-1-current/*-desktop.png
+            docs/evidence/sprint-1-current/wireframes-*.png
+            docs/evidence/sprint-1-current/wireframes-checks.json
           retention-days: 14

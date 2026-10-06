@@ -8,6 +8,9 @@ CO-63 (categorías/marcas), CO-41 (WhatsApp), CO-58 (checkout) y CO-39 (pedidos)
 Las dos últimas se adelantaron por autorización del usuario el 06/10/2026:
 48 SP, 24 subtareas, 96 actividades. [Estado y evidencia actual](docs/sprint-1-expanded.md).
 
+[PR de la entrega vigente](https://github.com/AndersonOjeda/Cypher-Oz/pull/4).
+La PR permanece sin merge; consultar sus comprobaciones para el estado de CI.
+
 **Exposición del Sprint 1:** [guion, acceso demo y evidencias](docs/sprint-1-current.md).
 [Arquitectura vigente](docs/architecture-current.md) y [28 wireframes](docs/wireframes.html).
 Los reportes `sprint-1-report.md`, `sprint-2-report.md` y `sprint-3-report.md`
@@ -25,6 +28,13 @@ didácticas están en la guía y no se crean en la base normal.
 ## Ejecutar en Windows
 
 Requisitos: Python 3.14, Node.js 24 y Docker Desktop con motor Linux iniciado.
+
+El perfil opcional `media` compila MinIO desde fuente oficial fijada en
+`infra/minio/Dockerfile`: las imágenes precompiladas anteriores ya no se pudieron
+descargar en la CI del 06/10/2026. La primera compilación necesita Internet y puede
+tardar varios minutos. No requiere instalar Go en Windows y conserva el volumen
+`tti_media`. Esta dependencia archivada se usa solo para desarrollo/CI; revisar un
+servicio S3 mantenido antes de producción. [Fuente oficial y licencia](https://github.com/minio/minio).
 
 1. Copiar `.env.example` a `.env` y definir una contraseña local de PostgreSQL.
 2. Copiar `backend/.env.example` a `backend/.env`. Completar DATABASE_URL con la
