@@ -14,10 +14,6 @@ La PR permanece sin merge; no se atribuye aprobación al profesor.
 No se presenta el sprint antiguo id 1 como evidencia del sprint vigente.
 Consultar el [acta de cierre](sprint-1-closeout.md) y la [matriz de 96 actividades](sprint-1-expanded.md).
 
-El usuario autorizó adelantar HU-11 (CO-58, 8 SP) y HU-12 (CO-39, 13 SP), junto
-con sus seis subtareas. Sprint 1: siete HU + EN-01, 24 subtareas y 96 actividades,
-además de cuatro apoyos CO-28/29/31/73. Las 27 nuevas comprobaciones cubren las
-24 actividades añadidas y las tres dependencias de direcciones que estaban pendientes.
 Consulta directa del tablero tras el cierre: sprint 71 CLOSED; los sprints 72 a 77
 permanecen futuros. Los 12 elementos principales y 24 subtareas están Listo.
 El fin planificado conserva 6 de octubre a las 00:00 America/Bogota; no se alteró
