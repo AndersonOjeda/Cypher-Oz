@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="32" failures="0" errors="0" time="16.2305591">
+    <testsuite name="src/components/whatsapp-button.test.tsx" timestamp="2026-10-06T16:35:55.189Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="0.3695184">
+        <testcase classname="src/components/whatsapp-button.test.tsx" name="URL encodes configured message" time="0.0056251">
+        </testcase>
+        <testcase classname="src/components/whatsapp-button.test.tsx" name="disabled channel is hidden" time="0.0528772">
+        </testcase>
+        <testcase classname="src/components/whatsapp-button.test.tsx" name="invalid number is not linked" time="0.0008867">
+        </testcase>
+        <testcase classname="src/components/whatsapp-button.test.tsx" name="accessible safe new-tab link" time="0.3067059">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/auth/account.test.tsx" timestamp="2026-10-06T16:35:55.203Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="2.3380257">
+        <testcase classname="src/features/auth/account.test.tsx" name="session displays server user and logout clears access" time="0.7456842">
+        </testcase>
+        <testcase classname="src/features/auth/account.test.tsx" name="profile and addresses can be edited" time="1.4628005">
+        </testcase>
+        <testcase classname="src/features/auth/account.test.tsx" name="unauthenticated account redirects to login" time="0.0981049">
+        </testcase>
+        <testcase classname="src/features/auth/account.test.tsx" name="network failure shows controlled error" time="0.0272723">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/auth/auth-form.test.tsx" timestamp="2026-10-06T16:35:55.207Z" hostname="DESKTOP-TAOVHM8" tests="8" failures="0" errors="0" skipped="0" time="5.8346307">
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="registration feedback after API success" time="1.3881642">
+        </testcase>
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="invalid email stops request" time="0.2395257">
+        </testcase>
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="duplicate email is displayed" time="0.9069477">
+        </testcase>
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="backend password policy errors are displayed at field" time="0.8289936">
+        </testcase>
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="login goes to account" time="0.6271366">
+        </testcase>
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="checkout login preserves the allowed return route" time="0.6379202">
+        </testcase>
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="wrong password keeps form available and shows error" time="0.600801">
+        </testcase>
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="pending request disables submit" time="0.6008795">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/catalog/category-attributes.test.tsx" timestamp="2026-10-06T16:35:55.214Z" hostname="DESKTOP-TAOVHM8" tests="2" failures="0" errors="0" skipped="0" time="1.7410719">
+        <testcase classname="src/features/catalog/category-attributes.test.tsx" name="creates a category attribute and preserves conflicting values for correction" time="1.4067532">
+        </testcase>
+        <testcase classname="src/features/catalog/category-attributes.test.tsx" name="edits a category attribute without moving its category" time="0.3308458">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/catalog/taxonomy-manager.test.tsx" timestamp="2026-10-06T16:35:55.216Z" hostname="DESKTOP-TAOVHM8" tests="2" failures="0" errors="0" skipped="0" time="1.3294542">
+        <testcase classname="src/features/catalog/taxonomy-manager.test.tsx" name="creates category with derived slug and preserves server validation errors" time="1.2024682">
+        </testcase>
+        <testcase classname="src/features/catalog/taxonomy-manager.test.tsx" name="failure can be retried and empty list is not confused with loading" time="0.1235985">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/catalog/variant-manager.test.tsx" timestamp="2026-10-06T16:35:55.218Z" hostname="DESKTOP-TAOVHM8" tests="7" failures="0" errors="0" skipped="0" time="4.5591702">
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="creates a standard variant with a decimal string and only filled category attributes" time="1.4569406">
+        </testcase>
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="duplicate SKU error preserves editable values and allows correction" time="0.9277964">
+        </testcase>
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="edits price including zero as a decimal string and changes active status separately" time="0.5956826">
+        </testcase>
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="blocks save until category attributes load and retries their failure" time="0.1589317">
+        </testcase>
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="switching the selected product clears the previous SKU and category values" time="0.3541048">
+        </testcase>
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="keeps the save action disabled while the mutation is pending" time="0.4617326">
+        </testcase>
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="shows nested attribute validation from the API without losing the entered value" time="0.600088">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/services/api.test.ts" timestamp="2026-10-06T16:35:55.225Z" hostname="DESKTOP-TAOVHM8" tests="5" failures="0" errors="0" skipped="0" time="0.058688">
+        <testcase classname="src/services/api.test.ts" name="unsafe request gets CSRF and includes cookies" time="0.0344818">
+        </testcase>
+        <testcase classname="src/services/api.test.ts" name="expired access refreshes then retries protected request" time="0.0037577">
+        </testcase>
+        <testcase classname="src/services/api.test.ts" name="invalid refresh terminates without retry loop" time="0.0058342">
+        </testcase>
+        <testcase classname="src/services/api.test.ts" name="HTML upstream failure is shown as a readable error" time="0.005107">
+        </testcase>
+        <testcase classname="src/services/api.test.ts" name="multipart upload preserves browser boundary and sends CSRF after refresh" time="0.0056316">
+        </testcase>
+    </testsuite>
+</testsuites>

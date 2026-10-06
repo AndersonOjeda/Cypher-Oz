@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TTI | Wireframes del MVP</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 Arial,sans-serif;color:#17212b;background:#f8fafc}header{padding:20px 24px;background:#fff;border-bottom:1px solid #cbd5e1}header strong{font-size:24px}header p{margin:4px 0;color:#475569}.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1400px;margin:auto}nav{padding:16px;border-right:1px solid #cbd5e1}nav a{display:block;color:#334155;padding:9px;border-radius:4px}a[aria-current=page]{background:#e0e7ff;color:#1e40af;font-weight:bold}main{padding:24px;min-width:0}h1{font-size:26px;margin:8px 0}h2{font-size:18px}button,input,select{font:inherit;padding:10px;border:1px solid #94a3b8;border-radius:4px;max-width:100%;background:white}button,a{min-height:44px}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #2563eb;outline-offset:3px}label{display:grid;gap:6px;margin:12px 0}input{width:100%}.toolbar{display:flex;gap:16px;flex-wrap:wrap;align-items:center;border-bottom:1px solid #cbd5e1;padding-bottom:18px}.screen{border:2px solid #64748b;background:#fff;min-height:480px;margin:20px 0}.screen-head{padding:16px;border-bottom:1px solid #cbd5e1;display:flex;gap:20px;flex-wrap:wrap}.body{padding:24px}.columns{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(200px,1fr);gap:28px}.row{border-bottom:1px solid #cbd5e1;padding:14px 0;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.primary{background:#2563eb;color:white;border-color:#2563eb}.placeholder{height:130px;border:2px dashed #94a3b8;display:grid;place-items:center;color:#475569}.notice{background:#eff6ff;border-left:4px solid #2563eb;padding:12px}.error{background:#fff1f2;border-color:#be123c}.caption{color:#475569}.status{border:1px solid #94a3b8;padding:5px 8px}.annotation{border-top:1px solid #cbd5e1;padding-top:16px}a{color:#1d4ed8}fieldset{border:0;padding:0;min-width:0}legend{font-weight:bold}@media(max-width:700px){.layout{grid-template-columns:minmax(0,1fr)}nav{display:flex;gap:8px;overflow:auto;max-height:145px;flex-wrap:wrap}nav a{font-size:13px}main{padding:16px}.columns{grid-template-columns:minmax(0,1fr)}.body{padding:16px}h1{font-size:23px}}
+</style>
+<header><strong>TTI / Prototipos de baja fidelidad</strong><p>CO-31 · 28 vistas del documento maestro · Diseños para revisión, sin operaciones reales.</p></header>
+<div class="layout"><nav id="views" aria-label="Vistas del MVP"></nav><main>
+<div class="toolbar"><label>Estado de la vista<select id="state"><option value="normal">Normal</option><option value="loading">Cargando</option><option value="empty">Vacío</option><option value="error">Error</option><option value="stock">Sin stock</option></select></label><label>Estado del pago<select id="payment"><option>Pendiente</option><option>Reportado</option><option>Confirmado</option><option>Rechazado</option><option>Vencido</option></select></label></div>
+<h1 id="title"></h1><p id="scope" class="caption"></p><section class="screen" aria-label="Wireframe"><div class="screen-head"><strong>TTI</strong><a href="#UI-02">Catálogo</a><a href="#UI-06">Carrito</a><a href="#UI-11">Mi cuenta</a></div><div id="body" class="body"></div></section><p id="rules" class="annotation"></p>
+</main></div>
+<script>
+const views = [
+['UI-01','Home','Pública','HU-04 / HU-30','list',['Categorías','Productos destacados','Promociones vigentes'],'Ver catálogo','UI-02','Exploración pública. WhatsApp solo cuando esté configurado.'],
+['UI-02','Catálogo','Pública','HU-04','list',['Buscar productos','Categoría / Marca / Precio','Producto · Variante · Precio COP'],'Ver producto','UI-04','Solo productos, categorías, marcas y variantes activos.'],
+['UI-03','Resultados de búsqueda','Pública','HU-05','list',['Consulta de búsqueda','Filtros activos','Resultados ordenados'],'Ver producto','UI-04','Mantener filtros al volver del detalle. Vacío ofrece ajustar búsqueda.'],
+['UI-04','Detalle de producto','Pública','HU-06 / HU-08','product',['Producto','Variante / SKU','Precio COP / Disponibilidad'],'Agregar al carrito','UI-06','Seleccionar variante. Sin stock deshabilita compra; no reservar al agregar.'],
+['UI-05','Comparador','Pública','HU-07','compare',['Producto A','Producto B','Precio / RAM / Almacenamiento'],'Ver producto','UI-04','Entre 2 y 4 productos compatibles. Diferencias en filas comparables.'],
+['UI-06','Carrito','Pública','HU-08 / HU-09','list',['Producto / Variante','Cantidad / Quitar','Subtotal preliminar COP'],'Continuar','UI-07','No requiere registro ni reserva stock. Revalidar precio, promoción y stock.'],
+['UI-07','Login','Pública','HU-02 / HU-10','form',['Correo electrónico','Contraseña'],'Iniciar sesión','UI-11','Conservar carrito y destino al autenticar. Credenciales inválidas no revelan cuentas.'],
+['UI-08','Registro','Pública','HU-01','form',['Nombre completo','Correo electrónico','Contraseña'],'Crear cuenta','UI-07','Siempre CLIENT. Duplicado y datos inválidos conservan campos corregibles.'],
+['UI-09','Checkout','Cliente','HU-11 / HU-28','form',['Dirección guardada','Destinatario / Teléfono','Modalidad de entrega'],'Confirmar pedido','UI-10','Total calculado por servidor. Zona especial pendiente de tarifa impide confirmar.'],
+['UI-10','Confirmación de pedido','Cliente','HU-12 / HU-13','order',['Pedido TTI-0001','Total final COP','Instrucciones de pago externo'],'Ver pedido','UI-14','Número único; estado de pedido y pago separados. Sin pasarela integrada.'],
+['UI-11','Perfil','Cliente','HU-03','form',['Nombre completo','Correo electrónico'],'Guardar perfil','UI-11','Datos propios. Rol no editable. Correo duplicado se rechaza.'],
+['UI-12','Direcciones','Cliente','HU-03','form',['Etiqueta / Destinatario','Teléfono / Dirección','Ciudad / Departamento / Notas'],'Guardar dirección','UI-12','Listado propio, principal opcional, edición y eliminación con confirmación.'],
+['UI-13','Mis pedidos','Cliente','HU-16','list',['Número / Fecha','Estado del pedido / Estado del pago','Total COP'],'Ver pedido','UI-14','Solo pedidos propios, con paginación y filtros.'],
+['UI-14','Detalle de pedido','Cliente','HU-16 / HU-18 / HU-31','order',['Items y precios históricos','Entrega histórica','Cronología del pedido'],'Reportar pago','UI-15','Cancelación según reglas. WhatsApp contextual no cambia el pedido.'],
+['UI-15','Reportar pago','Cliente','HU-14','form',['Pedido / Total','Referencia del pago externo','Observación'],'Reportar pago','UI-14','Pendiente pasa a Reportado. Nunca equivale a Confirmado. Mostrar deadline T1.'],
+['UI-16','Dashboard administrativo','Administrador','HU-17 / HU-15','list',['Pagos reportados por revisar','Pedidos por preparar','Entregas pendientes'],'Revisar pedidos','UI-24','Priorizar trabajo pendiente; sin gráficos decorativos.'],
+['UI-17','Categorías','Administrador','HU-20','taxonomy',['Nombre','Identificador','Descripción'],'Guardar categoría','UI-17','Listado paginado, estado activo, duplicados y relaciones protegidas.'],
+['UI-18','Marcas','Administrador','HU-20','taxonomy',['Nombre','Identificador','Descripción'],'Guardar marca','UI-18','Desactivar conserva relaciones y oculta productos asociados.'],
+['UI-19','Productos','Administrador','HU-21','list',['Buscar / Estado / Categoría','Producto / Marca / Visibilidad','Acciones de edición'],'Crear producto','UI-20','Listado paginado y estados de carga, vacío y error.'],
+['UI-20','Crear/editar producto','Administrador','HU-21','form',['Nombre / Identificador','Categoría / Marca','Descripción / Garantía / Imágenes'],'Guardar producto','UI-19','Imágenes en storage externo; validar tipo, tamaño y texto alternativo.'],
+['UI-21','Variantes','Administrador','HU-22 / HU-26','form',['Nombre / SKU','Precio COP / Estado','Atributos de categoría'],'Guardar variante','UI-21','SKU único y precio decimal no negativo. Stock se gestiona en inventario.'],
+['UI-22','Inventario','Administrador','HU-23','list',['SKU / Producto','Cantidad disponible','Entrada: cantidad y motivo'],'Registrar entrada','UI-23','Stock nunca editable directamente. Operación transaccional con movimiento.'],
+['UI-23','Movimientos de inventario','Administrador','HU-24','list',['Fecha / Actor / SKU','Tipo / Cantidad / Saldo','Motivo del ajuste'],'Registrar ajuste','UI-23','Ledger inmutable; ajuste requiere motivo. Sin saldos negativos.'],
+['UI-24','Pedidos','Administrador','HU-17','list',['Número / Cliente / Fecha','Pedido / Pago / Total','Filtros de estado'],'Ver pedido','UI-25','Pedido y pago tienen estados distintos. Listado paginado.'],
+['UI-25','Detalle administrativo de pedido','Administrador','HU-15 / HU-17 / HU-29','order',['Cliente / Items históricos','Pago reportado / Referencia','Entrega / Transportador / Guía'],'Confirmar pago','UI-25','Confirmar/rechazar con confirmación y auditoría. No preparar sin pago confirmado. Política T2 pendiente de CO-130.'],
+['UI-26','Clientes','Administrador','HU-19','list',['Buscar por nombre / correo','Cliente / Contacto','Resumen necesario para operación'],'Ver cliente','UI-26','Solo datos necesarios; autorización y paginación en backend.'],
+['UI-27','Promociones','Administrador','HU-27','form',['Nombre / Vigencia','Descuento','Variantes elegibles'],'Guardar promoción','UI-27','Promociones vigentes se recalculan al comprar; conservar snapshots históricos.'],
+['UI-28','Configuración operativa','Administrador','EN-01 / HU-30','form',['T1 / T2 (horas)','Tarifa / Umbral COP / TTL días','WhatsApp: habilitado / número / mensaje'],'Guardar configuración','UI-28','Cambios afectan operaciones futuras. WhatsApp comercial deshabilitado sin número autorizado.']
+];
+const byId = Object.fromEntries(views.map(v=>[v[0],v]));
+let returnAfterLogin = null;
+const nav = document.querySelector('#views');
+for (const v of views) { const a=document.createElement('a'); a.href='#'+v[0]; a.textContent=v[0]+' '+v[1]; nav.append(a); }
+function render(){
+ const id=location.hash.slice(1); const v=byId[id]||views[0]; const [key,title,actor,hu,type,fields,action,next,rule]=v;
+ document.querySelector('#title').textContent=key+' / '+title;
+ document.querySelector('#scope').textContent=actor+' · '+hu;
+ document.querySelector('#rules').textContent='Criterios de interacción: '+rule;
+ nav.querySelectorAll('a').forEach(a=>a.setAttribute('aria-current',a.hash==='#'+key?'page':'false'));
+ const body=document.querySelector('#body'); body.replaceChildren();
+ const state=document.querySelector('#state').value;
+ if(state==='loading'||state==='empty'||state==='error'){
+  const p=document.createElement('p'); p.className='notice'+(state==='error'?' error':''); p.setAttribute('role',state==='error'?'alert':'status');
+  p.textContent=state==='loading'?'Cargando...':state==='empty'?'No hay registros disponibles.':'No pudimos completar la solicitud. Tus datos se conservan.';body.append(p);
+  if(state==='error'){const retry=document.createElement('button');retry.textContent='Reintentar';retry.onclick=()=>{document.querySelector('#state').value='normal';render()};body.append(retry)}
+  return;
+ }
+ const columns=document.createElement('div'); columns.className='columns'; const content=document.createElement('div'); const aside=document.createElement('aside');columns.append(content,aside);body.append(columns);
+ if(type==='product'){const p=document.createElement('div');p.className='placeholder';p.textContent='Fotografía del producto';content.append(p)}
+ if(type==='form'||type==='taxonomy'){
+  for(const [i,f] of fields.entries()){const label=document.createElement('label');label.textContent=f;const input=document.createElement('input');input.id=key+'-field-'+i;input.placeholder=f;input.type=f==='Contraseña'?'password':'text';label.append(input);content.append(label)}
+  if(type==='taxonomy'){const label=document.createElement('label');label.textContent='Activo';const input=document.createElement('input');input.type='checkbox';input.checked=true;label.append(input);content.append(label)}
+ }else{for(const f of fields){const row=document.createElement('div');row.className='row';row.textContent=f;content.append(row)}}
+ const h=document.createElement('h2');h.textContent=type==='order'?'Estado y seguimiento':type==='compare'?'Especificaciones':type==='taxonomy'?'Registros existentes':'Resumen';aside.append(h);
+ const p=document.createElement('p');p.textContent=type==='order'?'Pedido: Creado':'Datos ilustrativos del prototipo';aside.append(p);
+ if(type==='order'||key==='UI-15'){const status=document.createElement('p');status.className='status';status.textContent='Pago: '+document.querySelector('#payment').value;aside.append(status);if(document.querySelector('#payment').value==='Reportado'){const note=document.createElement('p');note.className='notice';note.textContent='Pago en revisión. Aún no confirmado.';aside.append(note)}}
+ if(type==='taxonomy'){const row=document.createElement('div');row.className='row';row.textContent='Registro de ejemplo · Activo';aside.append(row);const b=document.createElement('button');b.textContent='Eliminar';b.onclick=()=>{if(confirm('¿Eliminar el registro del prototipo?'))row.remove()};aside.append(b)}
+ if(state==='stock'){const p=document.createElement('p');p.className='notice error';p.textContent='Sin unidades disponibles. Revisa la cantidad o elige otra variante.';content.append(p)}
+ const payment=document.querySelector('#payment').value;
+ const actions=document.createElement('div');actions.className='actions';const button=document.createElement('button');button.className='primary';button.textContent=action;button.disabled=state==='stock'||(['UI-14','UI-15'].includes(key)&&payment!=='Pendiente')||(key==='UI-25'&&payment!=='Reportado');button.onclick=()=>{if(key==='UI-25'&&!confirm('¿Confirmar este pago en el prototipo?'))return;if(key==='UI-06')returnAfterLogin='UI-09';let target=next;if(key==='UI-07'&&returnAfterLogin){target=returnAfterLogin;returnAfterLogin=null}if(key==='UI-15')document.querySelector('#payment').value='Reportado';if(key==='UI-25'){document.querySelector('#payment').value='Confirmado';render();return}location.hash=target;if(target===key){const p=document.createElement('p');p.className='notice';p.setAttribute('role','status');p.textContent='Acción simulada para revisar el diseño.';content.append(p)}};actions.append(button);content.append(actions);
+ if(key==='UI-07'){const a=document.createElement('a');a.href='#UI-08';a.textContent='Crear cuenta';actions.append(a)}
+ if(key==='UI-11'){const a=document.createElement('a');a.href='#UI-12';a.textContent='Mis direcciones';actions.append(a)}
+}
+window.addEventListener('hashchange',render);document.querySelector('#state').addEventListener('change',render);document.querySelector('#payment').addEventListener('change',render);render();
+</script>
+</html>

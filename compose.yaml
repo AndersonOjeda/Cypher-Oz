@@ -1,0 +1,32 @@
+services:
+  minio:
+    build: ./infra/minio
+    image: tti-minio:7aac2a2
+    profiles: [media]
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: ${CATALOG_S3_ACCESS_KEY:-local-catalog}
+      MINIO_ROOT_PASSWORD: ${CATALOG_S3_SECRET_KEY:-local-development-only-change-me}
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    volumes:
+      - tti_media:/data
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: tti
+      POSTGRES_USER: tti
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:54329:5432"
+    volumes:
+      - tti_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tti -d tti"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  tti_media:
+  tti_postgres:
