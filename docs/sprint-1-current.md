@@ -6,19 +6,23 @@ id **71**, nombre **CO Sprint 1 | 29 sep 2026**, **48 SP** tras ampliación auto
 
 La funcionalidad base, checkout y creación de pedidos están implementados y probados
 localmente. Se añadió el reporte mínimo de pago con T2 y el usuario confirmó las
-políticas comerciales el 06/10/2026. NO se declara cierre al 100%: quedan
-publicación PR/CI y aceptación. No se presenta el sprint antiguo id 1 como
-evidencia del sprint vigente. Consultar la [matriz actual de 96 actividades](sprint-1-expanded.md).
+políticas comerciales el 06/10/2026. **Cierre técnico autorizado y registrado en
+Jira el 06/10/2026 a las 12:58:07 America/Bogota:** 96/96 actividades y 36 elementos
+Listo, con [PR #4](https://github.com/AndersonOjeda/Cypher-Oz/pull/4) y
+[CI verde](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/37505844409).
+La PR permanece sin merge; no se atribuye aprobación al profesor.
+No se presenta el sprint antiguo id 1 como evidencia del sprint vigente.
+Consultar el [acta de cierre](sprint-1-closeout.md) y la [matriz de 96 actividades](sprint-1-expanded.md).
 
 El usuario autorizó adelantar HU-11 (CO-58, 8 SP) y HU-12 (CO-39, 13 SP), junto
 con sus seis subtareas. Sprint 1: siete HU + EN-01, 24 subtareas y 96 actividades,
 además de cuatro apoyos CO-28/29/31/73. Las 27 nuevas comprobaciones cubren las
 24 actividades añadidas y las tres dependencias de direcciones que estaban pendientes.
-Consulta directa del tablero el 6 de octubre de 2026: el sprint 71 está ACTIVO,
-iniciado por el usuario; los sprints 72 a 77 permanecen futuros. Los 10 elementos
-principales de la línea base pasaron a 12: 11 En curso, 1 Por hacer (CO-28), 0 Listo. El fin configurado
-sigue siendo 6 de octubre a las 00:00 de America/Bogota; iniciar el sprint no
-actualizó ese plazo. No se cambiaron fechas ni se cerró el sprint.
+Consulta directa del tablero tras el cierre: sprint 71 CLOSED; los sprints 72 a 77
+permanecen futuros. Los 12 elementos principales y 24 subtareas están Listo.
+El fin planificado conserva 6 de octubre a las 00:00 America/Bogota; no se alteró
+el calendario para ocultar el cierre posterior. Jira registra completeDate
+2026-10-06T17:58:07.255Z.
 
 ## Abrir para el profesor
 
@@ -110,13 +114,15 @@ conserva el diagnóstico previo, no el estado vigente.
 | ESLint, TypeScript, producción Next.js | Aprobados |
 | Migraciones | Sin cambios pendientes de generar; aplicadas en bases aisladas |
 | Demo local | Health, login admin, cuenta, configuración, categorías, preview y consulta de inventario aprobados en 390/1440 px |
-| Wireframes CO-31 | 28 vistas, navegación móvil/escritorio, sin overflow, recuperación de error y pago Reportado verificados |
+| Wireframes CO-31 | 28 vistas, móvil/escritorio, teclado/foco, contraste básico >=4,5:1, sin overflow, carga/vacío/error/sin stock y pago Reportado verificados |
 | Dependencias de producción | npm audit --omit=dev: 0 vulnerabilidades reportadas |
 
 La instalación actualizó Next.js de 16.3.4 a 16.3.8 y sus dependencias compatibles.
 Quedan cinco avisos npm de desarrollo derivados de `braces` en ESLint; npm propone
 una degradación incompatible para resolverlos. No se aplicó esa degradación.
-No hay ejecución nueva de GitHub Actions vinculada a estos cambios locales.
+La [CI 37505844409](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/37505844409)
+reprodujo los resultados desde una instalación limpia. Se corrigió el almacenamiento
+no descargable compilando fuente oficial fijada, sin tocar los volúmenes de demo.
 
 Comandos de repetición:
 
@@ -156,6 +162,8 @@ parte de este incremento de T2; dependen de CO-130 y de los sprints posteriores.
 - [Checkout móvil](evidence/sprint-1-current/checkout-mobile.png), [pedido](evidence/sprint-1-current/order-mobile.png) e [inventario](evidence/sprint-1-current/inventory-mobile.png).
 - [Pago reportado móvil](evidence/sprint-1-current/payment-mobile.png), [tablet](evidence/sprint-1-current/payment-tablet.png) y [escritorio](evidence/sprint-1-current/payment-desktop.png).
 - Regresión vigente: [backend JUnit](evidence/sprint-1-current/backend-t2-junit.xml), [frontend JUnit](evidence/sprint-1-current/frontend-t2-junit.xml) y [Playwright JUnit](evidence/sprint-1-current/playwright-t2-junit.xml).
+- CI remota descargada: [backend](evidence/sprint-1-current/ci-backend.xml), [frontend](evidence/sprint-1-current/ci-frontend.xml), [navegador](evidence/sprint-1-current/ci-browser.xml) y [metadatos verificables](evidence/sprint-1-current/ci-validation.json).
+- [Teclado, foco y contraste básico de wireframes](evidence/sprint-1-current/wireframes-checks.json).
 
 ## Conservar cada sprint para exponer
 

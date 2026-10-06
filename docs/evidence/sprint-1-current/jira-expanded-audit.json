@@ -2,12 +2,18 @@
   "date": "2026-10-06",
   "timezone": "America/Bogota",
   "sprint": 71,
-  "state": "active",
+  "state": "closed",
+  "completeDate": "2026-10-06T17:58:07.255Z",
   "storyPoints": 48,
   "subtasks": 24,
   "activities": 96,
-  "verifiedActivities": 94,
-  "acceptanceComplete": false,
+  "verifiedActivities": 96,
+  "doneIssues": 36,
+  "technicalAcceptanceComplete": true,
+  "academicAcceptanceRecorded": false,
+  "closureAuthorizedByUser": true,
+  "pullRequest": "https://github.com/AndersonOjeda/Cypher-Oz/pull/4",
+  "ciRun": "https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/37505844409",
   "rows": [
     {
       "issue": "CO-88",
@@ -134,8 +140,8 @@
       "parent": "CO-36",
       "id": "HU-01-T03-A4",
       "activity": "Vincular pruebas, PR y evidencia a la historia.",
-      "checked": false,
-      "evidence": "Pendiente: PR publicada y vinculación"
+      "checked": true,
+      "evidence": "PR #4, CI 37505844409 y acta de cierre"
     },
     {
       "issue": "CO-92",
@@ -774,8 +780,8 @@
       "parent": "CO-30",
       "id": "EN-01-T03-A4",
       "activity": "Vincular README, arquitectura, PR y CI registrados como cierre del enabler.",
-      "checked": false,
-      "evidence": "Pendiente: PR y CI remota de estos cambios"
+      "checked": true,
+      "evidence": "PR #4, CI 37505844409, README y arquitectura publicados"
     }
   ]
 }

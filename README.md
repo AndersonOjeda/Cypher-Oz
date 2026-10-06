@@ -10,6 +10,8 @@ Las dos últimas se adelantaron por autorización del usuario el 06/10/2026:
 
 [PR de la entrega vigente](https://github.com/AndersonOjeda/Cypher-Oz/pull/4).
 La PR permanece sin merge; consultar sus comprobaciones para el estado de CI.
+**Sprint 1 cerrado en Jira:** [acta, CI y evidencia permanente](docs/sprint-1-closeout.md).
+El cierre técnico autorizado no equivale a aprobación académica del profesor.
 
 **Exposición del Sprint 1:** [guion, acceso demo y evidencias](docs/sprint-1-current.md).
 [Arquitectura vigente](docs/architecture-current.md) y [28 wireframes](docs/wireframes.html).

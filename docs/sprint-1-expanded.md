@@ -2,25 +2,28 @@
 
 Verificado el 6 de octubre de 2026, America/Bogota.
 [Jira, tablero CO](https://cypher-oz.atlassian.net/jira/software/projects/CO/boards/2/backlog),
-sprint 71 ACTIVO. Fuente: consulta directa de los 12 elementos principales y de las
+sprint 71 CERRADO. Fuente: consulta directa de los 12 elementos principales y de las
 24 subtareas por sus padres; no se infiere el estado del sprint a partir de las tareas.
 
 ## Dictamen
 
 **Checkout y creación de pedidos ya funcionan localmente y quedaron adelantados al
-Sprint 1 en Jira por autorización del usuario. No se declara el sprint cerrado.**
+Sprint 1 en Jira por autorización del usuario. Cierre técnico registrado el
+06/10/2026 a las 12:58:07 America/Bogota, con PR y CI verde.**
 
 - Alcance: 7 HU + EN-01, **48 SP**, 24 subtareas / 96 actividades.
-- Jira confirma **94 casillas técnicas marcadas / 96**; no equivale a 97,9% de
-  aceptación ni cuenta los criterios de los cuatro apoyos CO-28/29/31/73.
-- Los 12 elementos principales: 11 En curso, CO-28 Por hacer; 0 Listo.
-  Las 24 subtareas permanecen En curso, sujetas a revisión.
+- Jira confirma **96 casillas técnicas marcadas / 96**; las dos de publicación
+  CO-91-A4 y CO-178-A4 ya tienen PR, CI y evidencia real.
+- **36 elementos Listo**: 12 principales y 24 subtareas. También se verificaron
+  los criterios/DoD técnicos y los apoyos CO-28/29/31/73; la evaluación del profesor
+  no se presenta como realizada.
 - Las tres dependencias anteriores CO-88-A4, CO-95-A4 y CO-96-A4 ya están probadas
   con pedidos reales: dirección actualizada en checkout y snapshots históricos.
 - Sprint 4 queda en 21 SP / 12 subtareas / 48 actividades. Sprint 5 queda en
   16 SP / 9 subtareas / 36 actividades. Total del proyecto: 193 SP sin duplicación.
 - Fechas intactas: Sprint 1 termina según Jira el **06/10/2026 00:00 -05:00**, ya
-  pasado. No se cerró ni se amplió el plazo automáticamente.
+  pasado. Cierre real: **06/10/2026 12:58:07 -05:00**, posterior al fin planificado.
+  No se amplió el plazo ni se inició Sprint 2.
 
 ## Continuación: reporte de pago y T2
 
@@ -30,26 +33,28 @@ propietario/CSRF, referencia, cambio a Reportado, suspensión de T1 y T2 persist
 No confirma fondos ni amplía el deadline ante reintentos. HU-14 sigue planificada
 en Sprint 5 para su validación integral y su interacción con scheduler; no se
 declara trasladada ni terminada de forma implícita. La matriz de 96 actividades
-no cambia y PR/CI siguen pendientes. La regresión completa vigente es 196/35/33,
+no cambia y PR/CI ya están vinculadas. La regresión completa vigente es 196/35/33,
 registrada abajo; sustituye al corte anterior de 178/32/33.
 
 Reglas confirmadas: recogida gratis; tarifa urbana configurable; umbral gratuito
 sobre el total descontado; zona especial bloqueada hasta cotizar; promoción fija
 sin acumulación. T2 y estas reglas ya no son pendientes de implementación local.
 
-## Pendientes de cierre
+## Cierre y límites
 
-| Pendiente | Qué falta |
+| Elemento | Resultado |
 | --- | --- |
-| CO-91 / HU-01-T03-A4 | Publicar PR y evidencias vinculadas a la historia |
-| CO-178 / EN-01-T03-A4 | PR y CI remota verde del commit entregado; README/arquitectura vinculados |
-| Aceptación | Revisión del profesor/usuario y criterios/DoD de historias y apoyos; las casillas técnicas no sustituyen esa aprobación |
+| CO-91 / HU-01-T03-A4 | PR #4 y evidencias públicas vinculadas; verificada |
+| CO-178 / EN-01-T03-A4 | CI 37505844409 verde; README/arquitectura/PR vinculados; verificada |
+| Cierre autorizado | Usuario autorizó terminar Sprint 1; Jira 71 cerrado tras verificar criterios técnicos y DoD |
+| Evaluación académica | No registrada; el profesor revisará la entrega. No se inventa su aprobación |
+| Integración a main | PR abierta sin merge, según autorización de publicación |
 
 El usuario autorizó publicar una rama y PR sin merge el 06/10/2026, incluyendo
-inventario preexistente necesario para pedidos. Se inicia la publicación y validación
-remota; sus enlaces y resultados se registrarán al finalizar, sin anticipar éxito.
-No se inventa una CI ni una aprobación. Las reglas comerciales ya se confirmaron; no se
-cargaron promociones, cuentas bancarias ni instrucciones comerciales reales.
+inventario preexistente necesario para pedidos. [PR #4](https://github.com/AndersonOjeda/Cypher-Oz/pull/4),
+[CI verde](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/37505844409)
+y [acta con trazabilidad](sprint-1-closeout.md). Las reglas comerciales se confirmaron;
+no se cargaron promociones, cuentas bancarias ni instrucciones comerciales reales.
 
 ## Resultados y reproducción
 
@@ -65,7 +70,10 @@ cargaron promociones, cuentas bancarias ni instrucciones comerciales reales.
 
 [Comandos y guion de 26 pasos](sprint-1-current.md).
 [Reporte interactivo Playwright](../frontend/playwright-report/index.html).
-Los XML son evidencia local ejecutada; no son GitHub Actions.
+Los XML de la tabla son evidencia local. La CI reprodujo 196/35/33 y los wireframes;
+sus reportes descargados son [ci-backend.xml](evidence/sprint-1-current/ci-backend.xml),
+[ci-frontend.xml](evidence/sprint-1-current/ci-frontend.xml) y
+[ci-browser.xml](evidence/sprint-1-current/ci-browser.xml).
 `e2e-junit.xml` y `orders-junit.xml` conservan ejecuciones anteriores
 (28 E2E aprobadas / 5 fallidas y 27 casos focalizados aprobados).
 `orders-t2-junit.xml` conserva una corrida inicial de 46 aprobadas / 1 fallida por
@@ -153,7 +161,7 @@ Se conserva el texto literal de cada actividad de Jira.
 | [CO-91](https://cypher-oz.atlassian.net/browse/CO-91) | HU-01-T03-A1 | Comprobar registro válido y persistencia del usuario. | Verificada | AUTH |
 | [CO-91](https://cypher-oz.atlassian.net/browse/CO-91) | HU-01-T03-A2 | Rechazar correo duplicado, datos inválidos y escalamiento de rol. | Verificada | AUTH |
 | [CO-91](https://cypher-oz.atlassian.net/browse/CO-91) | HU-01-T03-A3 | Verificar formulario y errores en navegador. | Verificada | AUTH-UI, E2E |
-| [CO-91](https://cypher-oz.atlassian.net/browse/CO-91) | HU-01-T03-A4 | Vincular pruebas, PR y evidencia a la historia. | Pendiente | Pendiente: PR publicada y vinculación |
+| [CO-91](https://cypher-oz.atlassian.net/browse/CO-91) | HU-01-T03-A4 | Vincular pruebas, PR y evidencia a la historia. | Verificada | PR #4, CI 37505844409, acta de cierre |
 | [CO-92](https://cypher-oz.atlassian.net/browse/CO-92) | HU-02-T01-A1 | Implementar login, refresh y logout según el contrato vigente. | Verificada | AUTH |
 | [CO-92](https://cypher-oz.atlassian.net/browse/CO-92) | HU-02-T01-A2 | Proteger tokens sensibles mediante cookies HttpOnly/Secure y controles CSRF/SameSite. | Verificada | AUTH |
 | [CO-92](https://cypher-oz.atlassian.net/browse/CO-92) | HU-02-T01-A3 | Validar permisos en Django y revocar el acceso según la estrategia de sesión. | Verificada | AUTH |
@@ -233,4 +241,4 @@ Se conserva el texto literal de cada actividad de Jira.
 | [CO-178](https://cypher-oz.atlassian.net/browse/CO-178) | EN-01-T03-A1 | Ejecutar pruebas base con PostgreSQL y health integrado. | Verificada | CFG |
 | [CO-178](https://cypher-oz.atlassian.net/browse/CO-178) | EN-01-T03-A2 | Configurar lint, typecheck y build reproducibles. | Verificada | INFRA (checks de la ejecución anterior) |
 | [CO-178](https://cypher-oz.atlassian.net/browse/CO-178) | EN-01-T03-A3 | Verificar secretos fuera del repositorio y entornos separados. | Verificada | INFRA (separación de entornos; no auditoría exhaustiva de secretos) |
-| [CO-178](https://cypher-oz.atlassian.net/browse/CO-178) | EN-01-T03-A4 | Vincular README, arquitectura, PR y CI registrados como cierre del enabler. | Pendiente | Pendiente: PR y CI remota de estos cambios |
+| [CO-178](https://cypher-oz.atlassian.net/browse/CO-178) | EN-01-T03-A4 | Vincular README, arquitectura, PR y CI registrados como cierre del enabler. | Verificada | PR #4, CI 37505844409, README y arquitectura públicos |
