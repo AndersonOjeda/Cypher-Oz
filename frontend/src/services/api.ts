@@ -85,4 +85,17 @@ export type User = {
   name: string;
   email: string;
   role: "CLIENT" | "ADMIN";
+  addresses?: Address[];
+};
+
+export type Address = {
+  id: number;
+  label: string;
+  recipient_name: string;
+  phone: string;
+  address_line: string;
+  city: string;
+  state: string;
+  notes: string;
+  is_default: boolean;
 };

@@ -2,9 +2,25 @@
 
 Monorepo de TTI: Next.js + TypeScript + Tailwind, Django/DRF y PostgreSQL.
 Fuente de verdad: `TTI_Documento_Maestro_Ingenieria_Software_v3.0_COMPLETO.docx`.
-Historias: CO-36 (registro), CO-55 (login/logout) y CO-41 (WhatsApp).
-Sprint 2: CO-63 (categorías y marcas), CO-42 (productos e imágenes).
-Sprint 3: CO-64 (variantes), CO-68 (precios por variante).
+Planificación vigente: siete sprints en Jira. Sprint 1 (id 71): CO-30
+(configuración), CO-36 (registro), CO-55 (sesión), CO-56 (perfil/direcciones),
+CO-63 (categorías/marcas), CO-41 (WhatsApp), CO-58 (checkout) y CO-39 (pedidos).
+Las dos últimas se adelantaron por autorización del usuario el 06/10/2026:
+48 SP, 24 subtareas, 96 actividades. [Estado y evidencia actual](docs/sprint-1-expanded.md).
+
+**Exposición del Sprint 1:** [guion, acceso demo y evidencias](docs/sprint-1-current.md).
+[Arquitectura vigente](docs/architecture-current.md) y [28 wireframes](docs/wireframes.html).
+Los reportes `sprint-1-report.md`, `sprint-2-report.md` y `sprint-3-report.md`
+conservan los resultados de la planificación anterior de septiembre.
+
+Después de instalar las dependencias y configurar PostgreSQL, iniciar la demo aislada:
+
+```powershell
+./scripts/start-sprint1.ps1
+```
+
+Abrir http://localhost:3002. Esta demo usa `tti_sprint1_demo`; las credenciales
+didácticas están en la guía y no se crean en la base normal.
 
 ## Ejecutar en Windows
 
@@ -62,6 +78,7 @@ el número internacional real, sin `+` ni espacios, sustituyendo el marcador:
 También existe GET/PATCH `/api/v1/admin/settings/` restringido a ADMIN y protegido
 por CSRF. Los cambios quedan auditados. El endpoint público expone solamente las
 claves del canal WhatsApp. Nunca se envían mensajes automáticamente.
+La misma configuración puede editarse desde `/cuenta` > Configuración.
 
 ## API del Sprint 1
 
@@ -73,7 +90,10 @@ claves del canal WhatsApp. Nunca se envían mensajes automáticamente.
 | POST | /api/v1/auth/login/ | Público + CSRF |
 | POST | /api/v1/auth/refresh/ | Refresh cookie + CSRF |
 | POST | /api/v1/auth/logout/ | CSRF, revoca sesión y limpia cookies |
-| GET | /api/v1/users/me/ | CLIENT/ADMIN |
+| GET/PATCH | /api/v1/users/me/ | CLIENT/ADMIN; solo perfil propio |
+| GET/POST | /api/v1/users/me/addresses/ | Direcciones propias |
+| GET/PATCH/DELETE | /api/v1/users/me/addresses/{id}/ | Propietario |
+| GET | /api/v1/categories/, /api/v1/brands/ | Público; activas, paginadas |
 | GET | /api/v1/settings/public/ | Público |
 | GET/PATCH | /api/v1/admin/settings/ | ADMIN; PATCH requiere CSRF |
 

@@ -12,6 +12,7 @@ from .models import SettingChange, StoreSetting
 
 
 class SettingsSerializer(serializers.Serializer):
+    payment_instructions = serializers.CharField(allow_blank=True, max_length=2000, required=False)
     whatsapp_enabled = serializers.BooleanField()
     whatsapp_number = serializers.CharField(allow_blank=True, max_length=15)
     whatsapp_message = serializers.CharField(max_length=500)

@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.db import transaction
 from django.middleware.csrf import get_token, rotate_token
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
@@ -15,8 +16,14 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .authentication import enforce_csrf
-from .models import AuthSession
-from .serializers import LoginSerializer, RegisterSerializer, UserSerializer
+from .models import AuthSession, User
+from .serializers import (
+    AddressSerializer,
+    LoginSerializer,
+    RegisterSerializer,
+    UserSerializer,
+    UserUpdateSerializer,
+)
 
 
 class AuthThrottle(AnonRateThrottle):
@@ -160,3 +167,40 @@ class LogoutView(PublicAuthView):
 class MeView(APIView):
     def get(self, request):
         return private_response(UserSerializer(request.user).data)
+
+    def patch(self, request):
+        serializer = UserUpdateSerializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return private_response(UserSerializer(user).data)
+
+
+class AddressListView(APIView):
+    def get(self, request):
+        return private_response(AddressSerializer(request.user.addresses.all(), many=True).data)
+
+    def post(self, request):
+        serializer = AddressSerializer(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        address = serializer.save()
+        return private_response(AddressSerializer(address).data, status=201)
+
+
+class AddressDetailView(APIView):
+    def get_object(self, request, pk):
+        return get_object_or_404(request.user.addresses, pk=pk)
+
+    def get(self, request, pk):
+        return private_response(AddressSerializer(self.get_object(request, pk)).data)
+
+    def patch(self, request, pk):
+        address = self.get_object(request, pk)
+        serializer = AddressSerializer(address, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        return private_response(AddressSerializer(serializer.save()).data)
+
+    @transaction.atomic
+    def delete(self, request, pk):
+        User.objects.select_for_update().get(pk=request.user.pk)
+        self.get_object(request, pk).delete()
+        return private_response(status=204)

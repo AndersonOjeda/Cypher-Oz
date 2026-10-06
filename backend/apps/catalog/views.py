@@ -8,10 +8,11 @@ from django.db.models.deletion import ProtectedError
 from django.utils import timezone
 from rest_framework import serializers, status, viewsets
 from rest_framework.exceptions import APIException
-from rest_framework.generics import get_object_or_404
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
@@ -129,6 +130,21 @@ class CategoryViewSet(CatalogViewSet):
 
 class BrandViewSet(CatalogViewSet):
     queryset = Brand.objects.all()
+    serializer_class = BrandSerializer
+
+
+class PublicCategoriesView(ListAPIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+    queryset = Category.objects.filter(is_active=True)
+    serializer_class = CategorySerializer
+    pagination_class = CatalogPagination
+    filter_backends = [SearchFilter]
+    search_fields = ["name", "slug"]
+
+
+class PublicBrandsView(PublicCategoriesView):
+    queryset = Brand.objects.filter(is_active=True)
     serializer_class = BrandSerializer
 
 

@@ -18,7 +18,13 @@ const schema = z.object({
 });
 type Values = z.infer<typeof schema>;
 
-export function AuthForm({ mode }: { mode: "register" | "login" }) {
+export function AuthForm({
+  mode,
+  returnTo,
+}: {
+  mode: "register" | "login";
+  returnTo?: "/comprar";
+}) {
   const router = useRouter();
   const registerMode = mode === "register";
   const [error, setError] = useState("");
@@ -51,7 +57,7 @@ export function AuthForm({ mode }: { mode: "register" | "login" }) {
       });
       if (registerMode) setSuccess(true);
       else {
-        router.push("/cuenta");
+        router.push(returnTo ?? "/cuenta");
         router.refresh();
       }
     } catch (err) {
@@ -79,7 +85,10 @@ export function AuthForm({ mode }: { mode: "register" | "login" }) {
         <p role="status">
           Te registraste correctamente. Inicia sesión para acceder a tu cuenta.
         </p>
-        <Link className="button primary" href="/login">
+        <Link
+          className="button primary"
+          href={returnTo ? `/login?next=${returnTo}` : "/login"}
+        >
           Iniciar sesión
         </Link>
       </div>
@@ -171,7 +180,9 @@ export function AuthForm({ mode }: { mode: "register" | "login" }) {
       </form>
       <p className="form-switch">
         {registerMode ? "¿Ya tienes una cuenta?" : "¿Primera vez en TTI?"}{" "}
-        <Link href={registerMode ? "/login" : "/registro"}>
+        <Link
+          href={`${registerMode ? "/login" : "/registro"}${returnTo ? `?next=${returnTo}` : ""}`}
+        >
           {registerMode ? "Inicia sesión" : "Crea tu cuenta"}
         </Link>
       </p>

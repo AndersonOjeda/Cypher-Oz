@@ -33,6 +33,8 @@ test("administrar catálogo completo con imágenes en almacenamiento real", asyn
     await page.getByLabel("Nombre", { exact: true }).fill(name);
     await page.getByRole("button", { name: "Guardar", exact: true }).click();
     await expect(page.getByText("Cambios guardados.")).toBeVisible();
+    await page.getByLabel("Buscar por nombre").fill(name);
+    await page.getByRole("button", { name: "Buscar", exact: true }).click();
     await expect(
       page.getByRole("button", { name: `Editar ${name}`, exact: true }),
     ).toBeVisible();
@@ -100,6 +102,8 @@ test("administrar catálogo completo con imágenes en almacenamiento real", asyn
     page.getByRole("img", { name: "Imagen principal actualizada" }),
   ).toBeVisible();
   await page.reload();
+  await page.getByLabel("Buscar productos").fill(product);
+  await page.getByRole("button", { name: "Buscar", exact: true }).click();
   await page
     .getByRole("button", { name: `Editar ${product}`, exact: true })
     .click();
@@ -135,6 +139,8 @@ test("administrar catálogo completo con imágenes en almacenamiento real", asyn
     "no es válida",
   );
   await page.getByRole("button", { name: "Categorías", exact: true }).click();
+  await page.getByLabel("Buscar por nombre").fill(category);
+  await page.getByRole("button", { name: "Buscar", exact: true }).click();
   await page
     .getByRole("button", { name: `Editar ${category}`, exact: true })
     .click();
@@ -156,6 +162,8 @@ test("administrar catálogo completo con imágenes en almacenamiento real", asyn
     "relaciones",
   );
   await page.getByRole("button", { name: "Productos", exact: true }).click();
+  await page.getByLabel("Buscar productos").fill(product);
+  await page.getByRole("button", { name: "Buscar", exact: true }).click();
   await page
     .getByRole("button", { name: `Editar ${product}`, exact: true })
     .click();
@@ -184,6 +192,8 @@ test("administrar catálogo completo con imágenes en almacenamiento real", asyn
     ["Marcas", brand],
   ]) {
     await page.getByRole("button", { name: tab, exact: true }).click();
+    await page.getByLabel("Buscar por nombre").fill(name);
+    await page.getByRole("button", { name: "Buscar", exact: true }).click();
     page.once("dialog", (dialog) => dialog.accept());
     await page
       .getByRole("button", { name: `Eliminar ${name}`, exact: true })

@@ -8,9 +8,11 @@
 **/node_modules/
 **/.next/
 **/.next-e2e/
+**/.next-demo/
 **/coverage/
 **/test-results/
 **/playwright-report/
 **/*.tsbuildinfo
 .runtime/
+reports/
 *.log

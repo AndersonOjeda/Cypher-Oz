@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
+from unittest.mock import patch
 
 import pytest
 from django.db import IntegrityError, close_old_connections, connections, transaction
@@ -7,7 +8,7 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import AccessToken
 
-from apps.users.models import AuthSession, User
+from apps.users.models import Address, AuthSession, User
 from apps.users.serializers import DuplicateEmail, RegisterSerializer
 from tests.conftest import PASSWORD
 
@@ -15,6 +16,7 @@ pytestmark = pytest.mark.django_db
 REGISTER = "/api/v1/auth/register/"
 LOGIN = "/api/v1/auth/login/"
 ME = "/api/v1/users/me/"
+ADDRESSES = "/api/v1/users/me/addresses/"
 
 
 def test_register_persists_hash_and_client_role(client):
@@ -117,6 +119,56 @@ def test_protected_with_session(logged_in, user):
     assert logged_in.get(ME).data["email"] == user.email
 
 
+def test_profile_patch_updates_allowed_fields(logged_in, user):
+    r = logged_in.patch(ME, {"name": "Ana Cliente", "email": "ANA2@example.com"}, format="json")
+    assert r.status_code == 200
+    user.refresh_from_db()
+    assert user.name == "Ana Cliente"
+    assert user.email == "ana2@example.com"
+    assert r.data["email"] == "ana2@example.com"
+
+
+def test_profile_patch_rejects_duplicate_and_role(logged_in):
+    User.objects.create_user("otra@example.com", PASSWORD, name="Otra")
+    assert logged_in.patch(ME, {"email": "OTRA@example.com"}, format="json").status_code == 409
+    r = logged_in.patch(ME, {"role": "ADMIN"}, format="json")
+    assert r.status_code == 400
+
+
+def test_address_crud_is_owner_scoped(logged_in, user):
+    other = User.objects.create_user("otra@example.com", PASSWORD, name="Otra")
+    other_address = Address.objects.create(
+        user=other,
+        label="Casa",
+        recipient_name="Otra",
+        phone="3001234567",
+        address_line="Calle ajena",
+    )
+    payload = {
+        "label": "Casa",
+        "recipient_name": "Cliente TTI",
+        "phone": "3009876543",
+        "address_line": "Calle 18 # 20-30",
+        "city": "Pasto",
+        "state": "Nariño",
+        "notes": "Portería",
+    }
+    created = logged_in.post(ADDRESSES, payload, format="json")
+    assert created.status_code == 201
+    address_id = created.data["id"]
+    assert created.data["is_default"] is True
+    updated = logged_in.patch(
+        f"{ADDRESSES}{address_id}/", {"label": "Oficina", "is_default": True}, format="json"
+    )
+    assert updated.status_code == 200
+    assert updated.data["label"] == "Oficina"
+    listed = logged_in.get(ADDRESSES)
+    assert [row["id"] for row in listed.data] == [address_id]
+    assert logged_in.get(f"{ADDRESSES}{other_address.id}/").status_code == 404
+    assert logged_in.delete(f"{ADDRESSES}{address_id}/").status_code == 204
+    assert user.addresses.count() == 0
+
+
 def test_client_denied_admin(logged_in, user):
     assert logged_in.get("/api/v1/admin/settings/").status_code == 403
     user.refresh_from_db()
@@ -184,13 +236,15 @@ def test_disabled_user_existing_session_rejected(logged_in, user):
 
 
 def test_throttle_rejects_excessive_login(client):
-    statuses = [
-        client.post(
-            LOGIN, {"email": "nobody@example.com", "password": "bad"}, format="json"
-        ).status_code
-        for _ in range(31)
-    ]
-    assert statuses[-1] == 429
+    # Password hashing under load must not move the test outside the rate window.
+    with patch("apps.users.views.AuthThrottle.timer", return_value=1000.0):
+        statuses = [
+            client.post(
+                LOGIN, {"email": "nobody@example.com", "password": "bad"}, format="json"
+            ).status_code
+            for _ in range(31)
+        ]
+    assert statuses == [401] * 30 + [429]
 
 
 def test_racing_duplicate_is_controlled(client):

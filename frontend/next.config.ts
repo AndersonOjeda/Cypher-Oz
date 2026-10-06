@@ -1,7 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  distDir: process.env.TTI_E2E === "1" ? ".next-e2e" : ".next",
+  devIndicators:
+    process.env.TTI_DEMO === "1" || process.env.TTI_E2E === "1"
+      ? false
+      : undefined,
+  distDir:
+    process.env.TTI_E2E === "1"
+      ? ".next-e2e"
+      : process.env.TTI_DEMO === "1"
+        ? ".next-demo"
+        : ".next",
   async rewrites() {
     const backend = process.env.DJANGO_URL ?? "http://127.0.0.1:8000";
     return [

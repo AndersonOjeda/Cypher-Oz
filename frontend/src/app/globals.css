@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./catalog.css";
+@import "./purchase.css";
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
@@ -370,6 +371,33 @@ footer p span {
 .field input[aria-invalid="true"] {
   border-color: #b91c1c;
 }
+.account-card .field-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+.account-card .form-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.account-card .checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #334155;
+}
+.account-card .checkbox-row input {
+  width: 18px;
+  height: 18px;
+}
+.account-card h2,
+.account-card h3 {
+  font-size: 18px;
+  line-height: 1.25;
+  margin: 30px 0 16px;
+}
 .field-hint,
 .field-error {
   display: block;
@@ -406,6 +434,14 @@ footer p span {
   font-size: 13px;
   line-height: 1.5;
 }
+.account-card .success-message {
+  padding: 12px;
+  border-radius: 6px;
+  background: #ecfdf5;
+  color: #166534 !important;
+  font-size: 13px;
+  line-height: 1.5;
+}
 .success-icon {
   width: 46px;
   height: 46px;
@@ -415,6 +451,33 @@ footer p span {
   display: grid;
   place-items: center;
   font-size: 24px;
+}
+.account-card {
+  width: 100%;
+  max-width: 980px;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+.account-card h1 {
+  font-size: 28px;
+  line-height: 1.25;
+  margin: 18px 0;
+}
+.account-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  gap: 48px;
+  border-top: 1px solid #e2e8f0;
+  margin: 24px 0;
+}
+.account-card fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.account-card .button {
+  margin-top: 16px;
+  gap: 10px;
 }
 .account-card dl {
   margin-top: 28px;
@@ -428,6 +491,66 @@ footer p span {
   margin: 6px 0;
   font-size: 15px;
   overflow-wrap: anywhere;
+}
+.account-card .address-section {
+  min-width: 0;
+}
+.account-card .address-section > p {
+  color: #64748b;
+  font-size: 13px;
+}
+.account-card .address-list {
+  display: grid;
+  gap: 12px;
+}
+.account-card .address-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px;
+}
+.account-card .address-item strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.account-card .address-item p {
+  color: #526175;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 4px 0;
+}
+.account-card .address-actions {
+  display: grid;
+  grid-template-columns: 44px 44px;
+  gap: 8px;
+}
+.account-card .address-actions .button {
+  min-height: 44px;
+  padding: 10px;
+}
+.account-card .subtle {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+.account-card .danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.settings-form {
+  max-width: 700px;
+}
+.settings-form fieldset {
+  padding: 24px 0;
+  border: 0;
+  border-bottom: 1px solid #e2e8f0;
+  min-width: 0;
+}
+.settings-form legend {
+  font-size: 18px;
+  font-weight: 600;
+}
+.settings-form > button {
+  margin-top: 24px;
 }
 .whatsapp {
   position: fixed;
@@ -490,6 +613,10 @@ footer p span {
   }
 }
 @media (max-width: 600px) {
+  .account-columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
   .brand-description {
     display: none;
   }

@@ -46,7 +46,7 @@ jobs:
           .venv/bin/ruff format --check .
           .venv/bin/python manage.py migrate --noinput
           .venv/bin/python manage.py makemigrations --check --dry-run
-          .venv/bin/python -m pytest -q
+          .venv/bin/python -m pytest -q --junitxml=../reports/backend.xml
       - name: Start isolated object storage
         run: |
           docker run -d --name tti-media-ci -p 127.0.0.1:9000:9000 -e MINIO_ROOT_USER=ci-catalog -e MINIO_ROOT_PASSWORD=ci-isolated-catalog-password minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e server /data
@@ -63,16 +63,23 @@ jobs:
         run: |
           npm run lint
           npm run typecheck
-          npm test
+          npm test -- --reporter=default --reporter=junit --outputFile=../reports/frontend.xml
           npm run build
       - name: Browser regression
         working-directory: frontend
+        env:
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: ../reports/browser.xml
         run: |
           npx playwright install --with-deps chromium
-          npm run test:e2e
+          npm run test:e2e -- --reporter=list,html,junit
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: browser-evidence
-          path: frontend/playwright-report/
+          name: sprint-validation-${{ github.sha }}
+          path: |
+            reports/
+            frontend/playwright-report/
+            docs/evidence/sprint-1-current/*-mobile.png
+            docs/evidence/sprint-1-current/*-tablet.png
+            docs/evidence/sprint-1-current/*-desktop.png
           retention-days: 14

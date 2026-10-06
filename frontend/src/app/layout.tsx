@@ -34,6 +34,7 @@ export default function RootLayout({
             </span>
           </Link>
           <nav aria-label="Navegación principal">
+            <Link href="/comprar">Comprar</Link>
             <Link href="/cuenta">Mi cuenta</Link>
             <Link className="header-login" href="/login">
               Iniciar sesión <span aria-hidden="true">↗</span>

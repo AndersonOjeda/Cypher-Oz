@@ -20,6 +20,9 @@ INSTALLED_APPS = [
     "apps.users",
     "apps.configuration",
     "apps.catalog",
+    "apps.inventory.apps.InventoryConfig",
+    "apps.orders",
+    "apps.promotions",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

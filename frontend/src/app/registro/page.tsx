@@ -1,9 +1,17 @@
 import { AuthForm } from "@/features/auth/auth-form";
 
-export default function RegisterPage() {
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
   return (
     <div className="auth-shell">
-      <AuthForm mode="register" />
+      <AuthForm
+        mode="register"
+        returnTo={next === "/comprar" ? "/comprar" : undefined}
+      />
     </div>
   );
 }

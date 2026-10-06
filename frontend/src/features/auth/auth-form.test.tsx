@@ -95,6 +95,18 @@ test("login goes to account", async () => {
   await waitFor(() => expect(push).toHaveBeenCalledWith("/cuenta"));
 });
 
+test("checkout login preserves the allowed return route", async () => {
+  vi.mocked(api).mockResolvedValue({});
+  render(<AuthForm mode="login" returnTo="/comprar" />);
+  const user = await fill();
+  expect(screen.getByRole("link", { name: "Crea tu cuenta" })).toHaveAttribute(
+    "href",
+    "/registro?next=/comprar",
+  );
+  await user.click(screen.getByRole("button", { name: /Iniciar sesión/ }));
+  await waitFor(() => expect(push).toHaveBeenCalledWith("/comprar"));
+});
+
 test("wrong password keeps form available and shows error", async () => {
   vi.mocked(api).mockRejectedValue(
     new ApiError(
