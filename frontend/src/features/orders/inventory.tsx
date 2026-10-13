@@ -17,8 +17,10 @@ type Movement = {
   sku: string;
   type: string;
   quantity: number;
+  previous_quantity: number;
   resulting_quantity: number;
   reason: string;
+  actor_name: string;
   created_at: string;
 };
 
@@ -30,14 +32,19 @@ function InventoryContent() {
   const [selected, setSelected] = useState<Balance | null>(null);
   const [quantity, setQuantity] = useState("1");
   const [reason, setReason] = useState("");
+  const [operation, setOperation] = useState<"entry" | "adjustment">("entry");
+  const [movementType, setMovementType] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const balances = useResource<Page<Balance>>(
     `/admin/inventory/?page=${page}&search=${encodeURIComponent(search)}`,
     revision,
   );
   const movements = useResource<Page<Movement>>(
-    `/admin/inventory/movements/?page=${historyPage}${selected ? `&variant=${selected.variant}` : ""}`,
+    `/admin/inventory/movements/?page=${historyPage}${selected ? `&variant=${selected.variant}` : ""}${movementType ? `&type=${movementType}` : ""}${dateFrom ? `&from=${dateFrom}` : ""}${dateTo ? `&to=${dateTo}` : ""}`,
     revision,
   );
   async function save(event: React.FormEvent) {
@@ -45,17 +52,31 @@ function InventoryContent() {
     if (!selected || busy) return;
     setBusy(true);
     setError("");
+    setMessage("");
     try {
-      await api("/admin/inventory/entries/", {
-        method: "POST",
-        body: JSON.stringify({
-          variant: selected.variant,
-          quantity: Number(quantity),
-          reason,
-        }),
-      });
+      if (
+        operation === "adjustment" &&
+        !window.confirm("¿Registrar este ajuste de inventario?")
+      ) {
+        setBusy(false);
+        return;
+      }
+      await api(
+        `/admin/inventory/${operation === "entry" ? "entries" : "adjustments"}/`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            variant: selected.variant,
+            quantity: Number(quantity),
+            reason,
+          }),
+        },
+      );
       setQuantity("1");
       setReason("");
+      setMessage(
+        operation === "entry" ? "Entrada registrada." : "Ajuste registrado.",
+      );
       setRevision((n) => n + 1);
     } catch (err) {
       setError(errorText(err));
@@ -81,6 +102,7 @@ function InventoryContent() {
           {error || balances.error}
         </p>
       )}
+      {message && <p role="status">{message}</p>}
       <div className="purchase-layout">
         <section>
           <h2>Existencias</h2>
@@ -103,6 +125,9 @@ function InventoryContent() {
               </li>
             ))}
           </ul>
+          {movements.data?.count === 0 && (
+            <p>No hay movimientos para los filtros seleccionados.</p>
+          )}
           {balances.data?.count === 0 && (
             <p>
               No hay variantes.{" "}
@@ -116,13 +141,32 @@ function InventoryContent() {
         <section>
           {selected && (
             <form onSubmit={save}>
-              <h2>Entrada de {selected.sku}</h2>
+              <h2>
+                {operation === "entry" ? "Entrada" : "Ajuste"} de {selected.sku}
+              </h2>
               <fieldset disabled={busy}>
                 <label className="field">
-                  Cantidad de entrada
+                  Operación
+                  <select
+                    value={operation}
+                    onChange={(event) => {
+                      setOperation(
+                        event.target.value as "entry" | "adjustment",
+                      );
+                      setQuantity("1");
+                    }}
+                  >
+                    <option value="entry">Entrada</option>
+                    <option value="adjustment">Ajuste</option>
+                  </select>
+                </label>
+                <label className="field">
+                  {operation === "entry"
+                    ? "Cantidad de entrada"
+                    : "Variación del stock"}
                   <input
                     type="number"
-                    min={1}
+                    min={operation === "entry" ? 1 : -2147483647}
                     max={2147483647}
                     required
                     value={quantity}
@@ -139,12 +183,60 @@ function InventoryContent() {
                   />
                 </label>
                 <button className="button primary">
-                  {busy ? "Guardando..." : "Guardar entrada"}
+                  {busy
+                    ? "Guardando..."
+                    : operation === "entry"
+                      ? "Guardar entrada"
+                      : "Guardar ajuste"}
                 </button>
               </fieldset>
             </form>
           )}
           <h2>Movimientos</h2>
+          <div className="purchase-actions">
+            <label className="field">
+              Tipo
+              <select
+                aria-label="Filtrar por tipo"
+                value={movementType}
+                onChange={(event) => {
+                  setMovementType(event.target.value);
+                  setHistoryPage(1);
+                }}
+              >
+                <option value="">Todos</option>
+                <option value="ENTRY">Entradas</option>
+                <option value="ADJUSTMENT">Ajustes</option>
+                <option value="SALE">Ventas</option>
+                <option value="RETURN">Devoluciones</option>
+                <option value="CANCELLATION">Cancelaciones</option>
+              </select>
+            </label>
+            <label className="field">
+              Desde
+              <input
+                aria-label="Fecha desde"
+                type="date"
+                value={dateFrom}
+                onChange={(event) => {
+                  setDateFrom(event.target.value);
+                  setHistoryPage(1);
+                }}
+              />
+            </label>
+            <label className="field">
+              Hasta
+              <input
+                aria-label="Fecha hasta"
+                type="date"
+                value={dateTo}
+                onChange={(event) => {
+                  setDateTo(event.target.value);
+                  setHistoryPage(1);
+                }}
+              />
+            </label>
+          </div>
           {movements.loading && <p role="status">Cargando movimientos...</p>}
           {movements.error && <p role="alert">{movements.error}</p>}
           <ul className="order-items">
@@ -155,9 +247,14 @@ function InventoryContent() {
                 </strong>
                 <p>
                   {movement.quantity > 0 ? "+" : ""}
-                  {movement.quantity} · Saldo {movement.resulting_quantity}
+                  {movement.quantity} · Saldo {movement.previous_quantity} →{" "}
+                  {movement.resulting_quantity}
                 </p>
                 <p>{movement.reason}</p>
+                <p>
+                  {movement.actor_name} ·{" "}
+                  {new Date(movement.created_at).toLocaleString("es-CO")}
+                </p>
               </li>
             ))}
           </ul>

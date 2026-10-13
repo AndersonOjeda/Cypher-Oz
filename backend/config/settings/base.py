@@ -63,13 +63,23 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "EXCEPTION_HANDLER": "apps.core.errors.exception_handler",
-    "DEFAULT_THROTTLE_RATES": {"auth": "30/min"},
+    "DEFAULT_THROTTLE_RATES": {"auth": "30/min", "password_reset": "5/hour"},
 }
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+PASSWORD_RESET_TOKEN_LIFETIME = timedelta(
+    minutes=int(os.getenv("PASSWORD_RESET_TOKEN_MINUTES", "30"))
+)
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@tti.local")
+EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").lower() == "true"
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 

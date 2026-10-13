@@ -84,3 +84,15 @@ class AuthSession(models.Model):
     expires_at = models.DateTimeField()
     revoked_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="password_reset_tokens")
+    token_hash = models.CharField(max_length=64, unique=True)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "password_reset_tokens"
+        indexes = [models.Index(fields=["token_hash", "expires_at"])]

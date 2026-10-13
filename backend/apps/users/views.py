@@ -1,8 +1,13 @@
+import hashlib
+import secrets
 from datetime import datetime
 from datetime import timezone as datetime_timezone
 
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.mail import send_mail
 from django.db import transaction
 from django.middleware.csrf import get_token, rotate_token
 from django.shortcuts import get_object_or_404
@@ -16,10 +21,12 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .authentication import enforce_csrf
-from .models import AuthSession, User
+from .models import AuthSession, PasswordResetToken, User
 from .serializers import (
     AddressSerializer,
     LoginSerializer,
+    PasswordResetConfirmSerializer,
+    PasswordResetRequestSerializer,
     RegisterSerializer,
     UserSerializer,
     UserUpdateSerializer,
@@ -28,6 +35,10 @@ from .serializers import (
 
 class AuthThrottle(AnonRateThrottle):
     scope = "auth"
+
+
+class PasswordResetThrottle(AnonRateThrottle):
+    scope = "password_reset"
 
 
 def private_response(data=None, status=200):
@@ -162,6 +173,81 @@ class LogoutView(PublicAuthView):
             response.delete_cookie(name, path="/api/v1/", samesite=settings.AUTH_COOKIE_SAMESITE)
         rotate_token(request)
         return response
+
+
+def reset_token_hash(token):
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+class PasswordResetRequestView(PublicAuthView):
+    throttle_classes = [PasswordResetThrottle]
+
+    def post(self, request):
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = User.objects.filter(
+            email__iexact=serializer.validated_data["email"], is_active=True
+        ).first()
+        if user:
+            token = secrets.token_urlsafe(48)
+            PasswordResetToken.objects.create(
+                user=user,
+                token_hash=reset_token_hash(token),
+                expires_at=timezone.now() + settings.PASSWORD_RESET_TOKEN_LIFETIME,
+            )
+            url = f"{settings.FRONTEND_URL}/restablecer-contrasena?token={token}"
+            send_mail(
+                "Restablece tu contraseña de TTI",
+                f"Abre este enlace para establecer una nueva contraseña: {url}\n\n"
+                "El enlace es temporal y solo puede utilizarse una vez.",
+                settings.DEFAULT_FROM_EMAIL,
+                [user.email],
+            )
+        return private_response(
+            {"message": "Si el correo está registrado, recibirás instrucciones para continuar."}
+        )
+
+
+class PasswordResetConfirmView(PublicAuthView):
+    throttle_classes = [PasswordResetThrottle]
+
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token_hash = reset_token_hash(serializer.validated_data["token"])
+        with transaction.atomic():
+            reset = (
+                PasswordResetToken.objects.select_for_update()
+                .select_related("user")
+                .filter(token_hash=token_hash)
+                .first()
+            )
+            if reset is None or reset.used_at is not None or reset.expires_at <= timezone.now():
+                return private_response(
+                    {
+                        "code": "INVALID_RESET_TOKEN",
+                        "message": "El enlace no es válido o ya venció.",
+                    },
+                    status=400,
+                )
+            try:
+                validate_password(serializer.validated_data["password"], reset.user)
+            except DjangoValidationError as exc:
+                from rest_framework.exceptions import ValidationError
+
+                raise ValidationError({"password": exc.messages}) from exc
+            reset.user.set_password(serializer.validated_data["password"])
+            reset.user.save(update_fields=["password"])
+            now = timezone.now()
+            reset.used_at = now
+            reset.save(update_fields=["used_at"])
+            AuthSession.objects.filter(user=reset.user, revoked_at__isnull=True).update(
+                revoked_at=now
+            )
+            PasswordResetToken.objects.filter(user=reset.user, used_at__isnull=True).exclude(
+                pk=reset.pk
+            ).update(used_at=now)
+        return private_response({"message": "Contraseña actualizada. Ya puedes iniciar sesión."})
 
 
 class MeView(APIView):

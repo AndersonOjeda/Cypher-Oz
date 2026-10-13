@@ -1,4 +1,7 @@
+from datetime import datetime, time
+
 from django.db.models import Q
+from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -72,6 +75,21 @@ class MovementsView(PrivateAdminMixin, APIView):
                     {"type": "Selecciona un tipo de movimiento válido."}
                 )
             query = query.filter(type=movement_type)
+        for parameter, lookup, boundary in [
+            ("from", "created_at__gte", time.min),
+            ("to", "created_at__lte", time.max),
+        ]:
+            raw = request.query_params.get(parameter)
+            if raw:
+                try:
+                    parsed = datetime.strptime(raw, "%Y-%m-%d").date()
+                except ValueError as exc:
+                    raise serializers.ValidationError(
+                        {parameter: "Usa una fecha válida en formato AAAA-MM-DD."}
+                    ) from exc
+                query = query.filter(
+                    **{lookup: timezone.make_aware(datetime.combine(parsed, boundary))}
+                )
         pagination = CatalogPagination()
         page = pagination.paginate_queryset(query, request)
         return pagination.get_paginated_response(MovementSerializer(page, many=True).data)
