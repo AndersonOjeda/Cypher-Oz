@@ -28,11 +28,8 @@ services:
         generateValue: true
       - key: DJANGO_ALLOWED_HOSTS
         value: .onrender.com,tti-staging-api
-      - key: FRONTEND_HOST
-        fromService:
-          name: tti-staging-web
-          type: web
-          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: FRONTEND_URL
+        value: https://tti-staging-web.onrender.com
       - key: EMAIL_BACKEND
         value: django.core.mail.backends.smtp.EmailBackend
       - key: EMAIL_HOST
