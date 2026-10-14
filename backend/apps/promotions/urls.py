@@ -3,5 +3,6 @@ from rest_framework.routers import SimpleRouter
 from .views import PromotionViewSet
 
 router = SimpleRouter()
-router.register("promotions", PromotionViewSet, basename="promotion")
+router.register("", PromotionViewSet, basename="promotions")
+
 urlpatterns = router.urls

@@ -98,6 +98,15 @@ export async function allTaxonomy(kind: "categories" | "brands") {
   }
 }
 
+export async function publicTaxonomy(kind: "categories" | "brands") {
+  try {
+    const response = await api<Page<Taxonomy>>(`/${kind}/?page_size=100`);
+    return response.results || [];
+  } catch {
+    return [];
+  }
+}
+
 export function Feedback({
   error,
   message,
