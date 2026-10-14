@@ -1,7 +1,7 @@
 import { beforeEach, expect, test, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { api, ApiError } from "@/services/api";
+import { api } from "@/services/api";
 import { PromotionManager } from "./promotion-manager";
 
 vi.mock("@/services/api", async (original) => ({

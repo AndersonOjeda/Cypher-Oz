@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { addToCart } from "@/features/orders/cart-storage";
 import { cop } from "@/features/orders/types";
-import { errorText, useResource } from "./shared";
+import { useResource } from "./shared";
 import type { PublicProductDetail, PublicVariant } from "./types";
 
 export function ProductDetail({ slug }: { slug: string }) {
@@ -28,22 +28,11 @@ export function ProductDetail({ slug }: { slug: string }) {
   const [quantity, setQuantity] = useState(1);
   const [addedNotice, setAddedNotice] = useState(false);
 
-  // Set default selected variant once product loads
-  useEffect(() => {
-    if (product?.variants && product.variants.length > 0) {
-      // Pick first in-stock variant, or the first variant if all out of stock
-      const preferred =
-        product.variants.find((v) => v.stock > 0) ?? product.variants[0];
-      setSelectedVariantId(preferred.id);
-      setQuantity(1);
-      setAddedNotice(false);
-    }
-  }, [product]);
-
   const selectedVariant: PublicVariant | null = useMemo(() => {
     if (!product?.variants) return null;
     return (
       product.variants.find((v) => v.id === selectedVariantId) ??
+      product.variants.find((v) => v.stock > 0) ??
       product.variants[0] ??
       null
     );

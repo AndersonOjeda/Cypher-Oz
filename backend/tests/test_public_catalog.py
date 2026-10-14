@@ -140,6 +140,8 @@ def test_public_catalog_is_accessible_without_auth(catalog_setup):
     assert "teclado-mecanico-k55" in slugs
     assert "audifonos-ocultos" not in slugs
     assert "producto-cat-inactiva" not in slugs
+    product = next(item for item in data["results"] if item["slug"] == "mouse-gamer-g502")
+    assert product["image_url"] == "http://storage.local/products/1/main.webp"
 
 
 def test_public_catalog_includes_promotion_pricing(catalog_setup):
@@ -196,11 +198,24 @@ def test_public_catalog_filter_by_price_and_availability(catalog_setup):
     assert res.data["count"] == 1
     assert res.data["results"][0]["slug"] == "teclado-mecanico-k55"
 
+    # Both bounds must match the same variant, not two different variants.
+    res_same_variant = client.get("/api/v1/products/?min_price=155000&max_price=155000")
+    assert res_same_variant.status_code == 200
+    assert res_same_variant.data["count"] == 0
+
+    res_invalid_range = client.get("/api/v1/products/?min_price=200000&max_price=100000")
+    assert res_invalid_range.status_code == 400
+
     # Filter by availability (stock > 0): p1 has stock, p2 has 0 stock
     res_avail = client.get("/api/v1/products/?available=true")
     assert res_avail.status_code == 200
     assert res_avail.data["count"] == 1
     assert res_avail.data["results"][0]["slug"] == "mouse-gamer-g502"
+
+    res_unavailable = client.get("/api/v1/products/?available=false")
+    assert res_unavailable.status_code == 200
+    assert res_unavailable.data["count"] == 1
+    assert res_unavailable.data["results"][0]["slug"] == "teclado-mecanico-k55"
 
 
 def test_public_catalog_ordering(catalog_setup):

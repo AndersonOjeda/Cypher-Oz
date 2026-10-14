@@ -19,7 +19,6 @@ import {
   clearCart,
   loadCart,
   saveCart,
-  CART_STORAGE_KEY,
 } from "./cart-storage";
 
 type Variant = {
@@ -36,7 +35,6 @@ type Attempt = {
   key: string;
   body: CheckoutBody & { quote_token: string };
 };
-const CART = CART_STORAGE_KEY;
 const ATTEMPT = "tti.purchase.attempt";
 
 export function Purchase() {

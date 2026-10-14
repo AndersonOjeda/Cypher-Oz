@@ -4,12 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Filter, Package, RefreshCw, Search, X } from "lucide-react";
+import { Package, RefreshCw, X } from "lucide-react";
 import { cop } from "@/features/orders/types";
-import { errorText, Pager, publicTaxonomy, useResource } from "./shared";
+import { Pager, publicTaxonomy, useResource } from "./shared";
 import type { Page, PublicProductSummary, Taxonomy } from "./types";
 
 export function PublicCatalog() {
+  const searchParams = useSearchParams();
+  return <PublicCatalogContent key={searchParams.toString()} />;
+}
+
+function PublicCatalogContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -32,18 +37,6 @@ export function PublicCatalog() {
   const [categories, setCategories] = useState<Taxonomy[]>([]);
   const [brands, setBrands] = useState<Taxonomy[]>([]);
   const [revision, setRevision] = useState(0);
-
-  useEffect(() => {
-    setSearchInput(currentSearch);
-  }, [currentSearch]);
-
-  useEffect(() => {
-    setMinPriceInput(currentMinPrice);
-  }, [currentMinPrice]);
-
-  useEffect(() => {
-    setMaxPriceInput(currentMaxPrice);
-  }, [currentMaxPrice]);
 
   useEffect(() => {
     let active = true;

@@ -3,7 +3,6 @@ import {
   addToCart,
   CART_STORAGE_KEY,
   clearCart,
-  DEFAULT_CART_TTL_DAYS,
   loadCart,
   removeFromCart,
   saveCart,
