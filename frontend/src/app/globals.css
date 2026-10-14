@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./catalog.css";
 @import "./purchase.css";
+@import "./public-catalog.css";
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
@@ -39,7 +40,7 @@ input {
 }
 button:disabled {
   opacity: 0.65;
-  cursor: wait;
+  cursor: not-allowed;
 }
 .skip-link {
   position: absolute;

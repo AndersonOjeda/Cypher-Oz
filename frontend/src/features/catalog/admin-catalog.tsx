@@ -6,11 +6,12 @@ import type { User } from "@/services/api";
 import { useResource } from "./shared";
 import { TaxonomyManager } from "./taxonomy-manager";
 import { ProductManager } from "./product-manager";
+import { PromotionManager } from "./promotion-manager";
 
 export function AdminCatalog() {
-  const [tab, setTab] = useState<"products" | "categories" | "brands">(
-    "products",
-  );
+  const [tab, setTab] = useState<
+    "products" | "categories" | "brands" | "promotions"
+  >("products");
   const [revision, setRevision] = useState(0);
   const user = useResource<User>("/users/me/", revision);
   if (user.loading)
@@ -51,6 +52,7 @@ export function AdminCatalog() {
             ["products", "Productos"],
             ["categories", "Categorías"],
             ["brands", "Marcas"],
+            ["promotions", "Promociones"],
           ] as const
         ).map(([key, label]) => (
           <button
@@ -64,6 +66,8 @@ export function AdminCatalog() {
       </nav>
       {tab === "products" ? (
         <ProductManager />
+      ) : tab === "promotions" ? (
+        <PromotionManager />
       ) : (
         <TaxonomyManager key={tab} kind={tab} />
       )}

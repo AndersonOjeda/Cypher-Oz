@@ -15,6 +15,12 @@ import {
   type Order,
   type Quote,
 } from "./types";
+import {
+  clearCart,
+  loadCart,
+  saveCart,
+  CART_STORAGE_KEY,
+} from "./cart-storage";
 
 type Variant = {
   id: number;
@@ -30,7 +36,7 @@ type Attempt = {
   key: string;
   body: CheckoutBody & { quote_token: string };
 };
-const CART = "tti.purchase.cart";
+const CART = CART_STORAGE_KEY;
 const ATTEMPT = "tti.purchase.attempt";
 
 export function Purchase() {
@@ -58,31 +64,16 @@ export function Purchase() {
 
   useEffect(() => {
     let active = true;
-    Promise.resolve().then(() => {
+    function syncCart() {
       if (!active) return;
-      try {
-        const saved = JSON.parse(localStorage.getItem(CART) ?? "null");
-        if (saved && Date.now() < saved.expires && Array.isArray(saved.items)) {
-          cartExpiry.current = saved.expires;
-          setCart(
-            saved.items
-              .filter(
-                (item: CartLine) =>
-                  Number.isSafeInteger(item.variant_id) &&
-                  item.variant_id > 0 &&
-                  Number.isSafeInteger(item.quantity) &&
-                  item.quantity > 0 &&
-                  item.quantity <= 10000 &&
-                  typeof item.label === "string",
-              )
-              .slice(0, 100),
-          );
-        }
-      } catch {
-        /* A damaged cart must not prevent a new purchase. */
-      }
+      const { items, expires } = loadCart();
+      cartExpiry.current = expires;
+      setCart(items);
       setReady(true);
-    });
+    }
+    syncCart();
+    window.addEventListener("cart-updated", syncCart);
+
     async function loadIdentity() {
       const generation = ++authRevision.current;
       try {
@@ -124,6 +115,7 @@ export function Purchase() {
     return () => {
       active = false;
       window.removeEventListener("focus", loadIdentity);
+      window.removeEventListener("cart-updated", syncCart);
     };
   }, []);
 
@@ -132,12 +124,8 @@ export function Purchase() {
     setQuote(null);
     setError("");
     try {
-      cartExpiry.current ??=
-        Date.now() + 86400000 * (variants.data?.cart_ttl_days ?? 0);
-      localStorage.setItem(
-        CART,
-        JSON.stringify({ items: next, expires: cartExpiry.current }),
-      );
+      const ttlDays = variants.data?.cart_ttl_days ?? 7;
+      saveCart(next, ttlDays, cartExpiry.current);
     } catch {
       setError(
         "La compra está disponible en esta pestaña, pero no pudo guardarse en el navegador.",
@@ -201,7 +189,7 @@ export function Purchase() {
       });
       try {
         sessionStorage.removeItem(ATTEMPT);
-        localStorage.removeItem(CART);
+        clearCart();
       } catch {
         /* Order is already committed. */
       }

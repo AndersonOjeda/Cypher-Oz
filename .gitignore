@@ -16,3 +16,8 @@
 .runtime/
 reports/
 *.log
+
+.vercel
+.env*
+
+.wrangler/
