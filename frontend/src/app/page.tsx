@@ -18,9 +18,14 @@ export default function Home() {
             Estamos construyendo tu tienda tecnológica en Pasto. Crea tu cuenta
             y encuentra un lugar para conectar con lo que necesitas.
           </p>
-          <Link className="button primary hero-cta" href="/registro">
-            Crear mi cuenta <span aria-hidden="true">↗</span>
-          </Link>
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", margin: "18px 0" }}>
+            <Link className="button primary hero-cta" href="/catalogo">
+              Explorar catálogo <span aria-hidden="true">→</span>
+            </Link>
+            <Link className="button secondary hero-cta" href="/registro">
+              Crear mi cuenta <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
           <p className="hero-secondary">
             ¿Ya eres parte de TTI? <Link href="/login">Inicia sesión</Link>
           </p>
