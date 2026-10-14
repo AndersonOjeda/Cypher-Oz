@@ -16,7 +16,7 @@ services:
     branch: main
     rootDir: backend
     autoDeploy: true
-    buildCommand: pip install -r requirements.txt && python manage.py migrate --noinput
+    buildCommand: pip install -r requirements.txt && python manage.py migrate --noinput && python manage.py bootstrap_staging_admin
     startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
     healthCheckPath: /health/
     envVars:
@@ -30,6 +30,10 @@ services:
         value: .onrender.com,tti-staging-api
       - key: FRONTEND_URL
         value: https://tti-staging-web.onrender.com
+      - key: STAGING_ADMIN_EMAIL
+        sync: false
+      - key: STAGING_ADMIN_NAME
+        value: Administrador Staging
       - key: EMAIL_BACKEND
         value: django.core.mail.backends.smtp.EmailBackend
       - key: EMAIL_HOST
