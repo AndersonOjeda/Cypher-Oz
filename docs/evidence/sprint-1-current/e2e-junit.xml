@@ -1,0 +1,365 @@
+<testsuites id="" name="" tests="33" failures="5" skipped="0" errors="0" time="303.61363399999993">
+<testsuite name="sprint1-current.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="mobile" tests="3" failures="0" skipped="0" time="18.605" errors="0">
+<testcase name="HU-03 perfil y direcciones persisten, cambian principal y confirman eliminación" classname="sprint1-current.spec.ts" time="7.48">
+</testcase>
+<testcase name="HU-20 categorías y marcas: alta, duplicado, edición, actividad y borrado" classname="sprint1-current.spec.ts" time="6.555">
+</testcase>
+<testcase name="EN-01 y HU-30 configuración persistente y canal habilitable" classname="sprint1-current.spec.ts" time="4.57">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="mobile" tests="1" failures="1" skipped="0" time="16.346" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="16.346">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-mobile\test-failed-1.png]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-mobile\test-failed-2.png]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-mobile\error-context.md]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-mobile\trace.zip]]
+]]>
+</system-out>
+<failure message="expect(locator).toContainText(expected) failed" type="expect.toContainText">
+<![CDATA[  [mobile] › sprint1-orders.spec.ts:9:5 › checkout relee dirección y pedido conserva snapshot; reintento no duplica 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('alert')
+    Expected substring: "Solo administradores"
+    Error: strict mode violation: getByRole('alert') resolved to 2 elements:
+        1) <p role="alert">Solo administradores pueden gestionar inventario.</p> aka getByText('Solo administradores pueden')
+        2) <div role="alert" aria-live="assertive" id="__next-route-announcer__"></div> aka locator('[id="__next-route-announcer__"]')
+
+    Call log:
+      - Expect "toContainText" getByRole('alert') with timeout 5000ms
+      - waiting for getByRole('alert')
+        2 × locator resolved to <div role="alert" aria-live="assertive" id="__next-route-announcer__"></div>
+          - unexpected value ""
+
+
+      245 |     }
+      246 |     await page.goto("/admin/inventario");
+    > 247 |     await expect(page.getByRole("alert")).toContainText("Solo administradores");
+          |                                           ^
+      248 |   } finally {
+      249 |     await admin.dispose();
+      250 |   }
+        at C:\Users\Anderson Ojeda\Downloads\Gestion de Proyectos Software\Cypher-Oz\frontend\e2e\sprint1-orders.spec.ts:247:43
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-mobile\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-mobile\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+</testcase>
+</testsuite>
+<testsuite name="sprint1.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="mobile" tests="3" failures="0" skipped="0" time="13.725" errors="0">
+<testcase name="registro, duplicado, credenciales, sesión persistente, permisos y logout" classname="sprint1.spec.ts" time="8.675">
+</testcase>
+<testcase name="WhatsApp configurado, responsive, accesible y sin cubrir CTA" classname="sprint1.spec.ts" time="2.137">
+</testcase>
+<testcase name="administrador autorizado y visitante rechazado" classname="sprint1.spec.ts" time="2.913">
+</testcase>
+</testsuite>
+<testsuite name="sprint2.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="mobile" tests="2" failures="0" skipped="0" time="13.236" errors="0">
+<testcase name="administrar catálogo completo con imágenes en almacenamiento real" classname="sprint2.spec.ts" time="12.392">
+</testcase>
+<testcase name="visitante no accede al administrador ni a datos del catálogo" classname="sprint2.spec.ts" time="0.844">
+</testcase>
+</testsuite>
+<testsuite name="sprint3.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="mobile" tests="2" failures="0" skipped="0" time="12.121" errors="0">
+<testcase name="variantes estándar, atributos, precio exacto y disponibilidad persisten" classname="sprint3.spec.ts" time="8.481">
+</testcase>
+<testcase name="visitante y cliente no gestionan variantes, precios ni atributos" classname="sprint3.spec.ts" time="3.64">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-current.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="tablet" tests="3" failures="1" skipped="0" time="19.901" errors="0">
+<testcase name="HU-03 perfil y direcciones persisten, cambian principal y confirman eliminación" classname="sprint1-current.spec.ts" time="6.836">
+</testcase>
+<testcase name="HU-20 categorías y marcas: alta, duplicado, edición, actividad y borrado" classname="sprint1-current.spec.ts" time="8.283">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-tablet\test-failed-1.png]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-tablet\error-context.md]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-tablet\trace.zip]]
+]]>
+</system-out>
+<failure message="expect(locator).toBeVisible() failed" type="expect.toBeVisible">
+<![CDATA[  [tablet] › sprint1-current.spec.ts:104:5 › HU-20 categorías y marcas: alta, duplicado, edición, actividad y borrado 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: 'Editar Sprint1 categories tablet 1791304532188', exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: 'Editar Sprint1 categories tablet 1791304532188', exact: true }) with timeout 5000ms
+      - waiting for getByRole('button', { name: 'Editar Sprint1 categories tablet 1791304532188', exact: true })
+
+
+      120 |     await expect(
+      121 |       page.getByRole("button", { name: `Editar ${name}`, exact: true }),
+    > 122 |     ).toBeVisible();
+          |       ^
+      123 |     await page.getByLabel("Nombre", { exact: true }).fill(name);
+      124 |     await page.getByRole("button", { name: "Guardar", exact: true }).click();
+      125 |     await expect(page.getByRole("main").getByRole("alert")).toBeVisible();
+        at C:\Users\Anderson Ojeda\Downloads\Gestion de Proyectos Software\Cypher-Oz\frontend\e2e\sprint1-current.spec.ts:122:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-tablet\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-tablet\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-tablet\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-tablet\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+</testcase>
+<testcase name="EN-01 y HU-30 configuración persistente y canal habilitable" classname="sprint1-current.spec.ts" time="4.782">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="tablet" tests="1" failures="1" skipped="0" time="16.096" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="16.096">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-tablet\test-failed-1.png]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-tablet\test-failed-2.png]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-tablet\error-context.md]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-tablet\trace.zip]]
+]]>
+</system-out>
+<failure message="expect(locator).toContainText(expected) failed" type="expect.toContainText">
+<![CDATA[  [tablet] › sprint1-orders.spec.ts:9:5 › checkout relee dirección y pedido conserva snapshot; reintento no duplica 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('alert')
+    Expected substring: "Solo administradores"
+    Error: strict mode violation: getByRole('alert') resolved to 2 elements:
+        1) <p role="alert">Solo administradores pueden gestionar inventario.</p> aka getByText('Solo administradores pueden')
+        2) <div role="alert" aria-live="assertive" id="__next-route-announcer__"></div> aka locator('[id="__next-route-announcer__"]')
+
+    Call log:
+      - Expect "toContainText" getByRole('alert') with timeout 5000ms
+      - waiting for getByRole('alert')
+        2 × locator resolved to <div role="alert" aria-live="assertive" id="__next-route-announcer__"></div>
+          - unexpected value ""
+
+
+      245 |     }
+      246 |     await page.goto("/admin/inventario");
+    > 247 |     await expect(page.getByRole("alert")).toContainText("Solo administradores");
+          |                                           ^
+      248 |   } finally {
+      249 |     await admin.dispose();
+      250 |   }
+        at C:\Users\Anderson Ojeda\Downloads\Gestion de Proyectos Software\Cypher-Oz\frontend\e2e\sprint1-orders.spec.ts:247:43
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-tablet\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-tablet\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-tablet\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-tablet\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-tablet\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+</testcase>
+</testsuite>
+<testsuite name="sprint1.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="tablet" tests="3" failures="0" skipped="0" time="14.065" errors="0">
+<testcase name="registro, duplicado, credenciales, sesión persistente, permisos y logout" classname="sprint1.spec.ts" time="9.046">
+</testcase>
+<testcase name="WhatsApp configurado, responsive, accesible y sin cubrir CTA" classname="sprint1.spec.ts" time="2.109">
+</testcase>
+<testcase name="administrador autorizado y visitante rechazado" classname="sprint1.spec.ts" time="2.91">
+</testcase>
+</testsuite>
+<testsuite name="sprint2.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="tablet" tests="2" failures="0" skipped="0" time="11.643" errors="0">
+<testcase name="administrar catálogo completo con imágenes en almacenamiento real" classname="sprint2.spec.ts" time="10.731">
+</testcase>
+<testcase name="visitante no accede al administrador ni a datos del catálogo" classname="sprint2.spec.ts" time="0.912">
+</testcase>
+</testsuite>
+<testsuite name="sprint3.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="tablet" tests="2" failures="0" skipped="0" time="13.93" errors="0">
+<testcase name="variantes estándar, atributos, precio exacto y disponibilidad persisten" classname="sprint3.spec.ts" time="10.048">
+</testcase>
+<testcase name="visitante y cliente no gestionan variantes, precios ni atributos" classname="sprint3.spec.ts" time="3.882">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-current.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="desktop" tests="3" failures="1" skipped="0" time="23.826" errors="0">
+<testcase name="HU-03 perfil y direcciones persisten, cambian principal y confirman eliminación" classname="sprint1-current.spec.ts" time="7.955">
+</testcase>
+<testcase name="HU-20 categorías y marcas: alta, duplicado, edición, actividad y borrado" classname="sprint1-current.spec.ts" time="10.392">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-desktop\test-failed-1.png]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-desktop\error-context.md]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-desktop\trace.zip]]
+]]>
+</system-out>
+<failure message="expect(locator).toBeVisible() failed" type="expect.toBeVisible">
+<![CDATA[  [desktop] › sprint1-current.spec.ts:104:5 › HU-20 categorías y marcas: alta, duplicado, edición, actividad y borrado 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: 'Editar Sprint1 categories desktop 1791304614929', exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: 'Editar Sprint1 categories desktop 1791304614929', exact: true }) with timeout 5000ms
+      - waiting for getByRole('button', { name: 'Editar Sprint1 categories desktop 1791304614929', exact: true })
+
+
+      120 |     await expect(
+      121 |       page.getByRole("button", { name: `Editar ${name}`, exact: true }),
+    > 122 |     ).toBeVisible();
+          |       ^
+      123 |     await page.getByLabel("Nombre", { exact: true }).fill(name);
+      124 |     await page.getByRole("button", { name: "Guardar", exact: true }).click();
+      125 |     await expect(page.getByRole("main").getByRole("alert")).toBeVisible();
+        at C:\Users\Anderson Ojeda\Downloads\Gestion de Proyectos Software\Cypher-Oz\frontend\e2e\sprint1-current.spec.ts:122:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-desktop\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-desktop\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\sprint1-current-HU-20-cate-9f40d-edición-actividad-y-borrado-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+</testcase>
+<testcase name="EN-01 y HU-30 configuración persistente y canal habilitable" classname="sprint1-current.spec.ts" time="5.479">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="desktop" tests="1" failures="1" skipped="0" time="19.081" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="19.081">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-desktop\test-failed-1.png]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-desktop\test-failed-2.png]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-desktop\error-context.md]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-desktop\trace.zip]]
+]]>
+</system-out>
+<failure message="expect(locator).toContainText(expected) failed" type="expect.toContainText">
+<![CDATA[  [desktop] › sprint1-orders.spec.ts:9:5 › checkout relee dirección y pedido conserva snapshot; reintento no duplica 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('alert')
+    Expected substring: "Solo administradores"
+    Error: strict mode violation: getByRole('alert') resolved to 2 elements:
+        1) <p role="alert">Solo administradores pueden gestionar inventario.</p> aka getByText('Solo administradores pueden')
+        2) <div role="alert" aria-live="assertive" id="__next-route-announcer__"></div> aka locator('[id="__next-route-announcer__"]')
+
+    Call log:
+      - Expect "toContainText" getByRole('alert') with timeout 5000ms
+      - waiting for getByRole('alert')
+        3 × locator resolved to <div role="alert" aria-live="assertive" id="__next-route-announcer__"></div>
+          - unexpected value ""
+
+
+      245 |     }
+      246 |     await page.goto("/admin/inventario");
+    > 247 |     await expect(page.getByRole("alert")).toContainText("Solo administradores");
+          |                                           ^
+      248 |   } finally {
+      249 |     await admin.dispose();
+      250 |   }
+        at C:\Users\Anderson Ojeda\Downloads\Gestion de Proyectos Software\Cypher-Oz\frontend\e2e\sprint1-orders.spec.ts:247:43
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-desktop\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-desktop\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-desktop\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\sprint1-orders-checkout-re-f501f-apshot-reintento-no-duplica-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+</testcase>
+</testsuite>
+<testsuite name="sprint1.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="desktop" tests="3" failures="0" skipped="0" time="27.905" errors="0">
+<testcase name="registro, duplicado, credenciales, sesión persistente, permisos y logout" classname="sprint1.spec.ts" time="16.253">
+</testcase>
+<testcase name="WhatsApp configurado, responsive, accesible y sin cubrir CTA" classname="sprint1.spec.ts" time="4.492">
+</testcase>
+<testcase name="administrador autorizado y visitante rechazado" classname="sprint1.spec.ts" time="7.16">
+</testcase>
+</testsuite>
+<testsuite name="sprint2.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="desktop" tests="2" failures="0" skipped="0" time="22.199" errors="0">
+<testcase name="administrar catálogo completo con imágenes en almacenamiento real" classname="sprint2.spec.ts" time="20.706">
+</testcase>
+<testcase name="visitante no accede al administrador ni a datos del catálogo" classname="sprint2.spec.ts" time="1.493">
+</testcase>
+</testsuite>
+<testsuite name="sprint3.spec.ts" timestamp="2026-10-06T16:34:04.164Z" hostname="desktop" tests="2" failures="0" skipped="0" time="25.227" errors="0">
+<testcase name="variantes estándar, atributos, precio exacto y disponibilidad persisten" classname="sprint3.spec.ts" time="20.52">
+</testcase>
+<testcase name="visitante y cliente no gestionan variantes, precios ni atributos" classname="sprint3.spec.ts" time="4.707">
+</testcase>
+</testsuite>
+</testsuites>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="47" time="141.433" timestamp="2026-10-06T12:08:33.520248-05:00" hostname="DESKTOP-TAOVHM8"><testcase classname="tests.test_orders" name="test_payment_report_persists_t2_and_suspends_t1" time="4.760" /><testcase classname="tests.test_orders" name="test_t2_change_only_affects_new_reports_and_replay_never_extends" time="2.516" /><testcase classname="tests.test_orders" name="test_invalid_payment_report_rejected[data0]" time="2.566" /><testcase classname="tests.test_orders" name="test_invalid_payment_report_rejected[data1]" time="2.529" /><testcase classname="tests.test_orders" name="test_invalid_payment_report_rejected[data2]" time="2.634" /><testcase classname="tests.test_orders" name="test_invalid_payment_report_rejected[data3]" time="2.410" /><testcase classname="tests.test_orders" name="test_invalid_payment_report_rejected[data4]" time="3.072" /><testcase classname="tests.test_orders" name="test_invalid_payment_report_rejected[data5]" time="2.908" /><testcase classname="tests.test_orders" name="test_invalid_payment_report_rejected[data6]" time="2.854" /><testcase classname="tests.test_orders" name="test_payment_report_ownership_csrf_and_auth" time="4.504"><failure message="django.core.exceptions.ValidationError: {'name': ['Este campo no puede estar en blanco.']}">logged_in = &lt;rest_framework.test.APIClient object at 0x00000226CAAC5750&gt;
+purchase = (&lt;Variant: Variant object (10)&gt;, &lt;Address: Address object (10)&gt;)
+client = &lt;rest_framework.test.APIClient object at 0x00000226CAAC5750&gt;
+
+    def test_payment_report_ownership_csrf_and_auth(logged_in, purchase, client):
+        payment = new_payment(logged_in, purchase)
+        anonymous = APIClient()
+        assert payment_report(anonymous, payment).status_code == 401
+&gt;       foreign = User.objects.create_user("foreign-pay@example.com", PASSWORD)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_orders.py:163: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+apps\users\models.py:12: in create_user
+    user.full_clean()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;User: foreign-pay@example.com&gt;, exclude = {'name'}
+validate_unique = True, validate_constraints = True
+
+    def full_clean(self, exclude=None, validate_unique=True, validate_constraints=True):
+        """
+        Call clean_fields(), clean(), validate_unique(), and
+        validate_constraints() on the model. Raise a ValidationError for any
+        errors that occur.
+        """
+        errors = {}
+        if exclude is None:
+            exclude = set()
+        else:
+            exclude = set(exclude)
+    
+        try:
+            self.clean_fields(exclude=exclude)
+        except ValidationError as e:
+            errors = e.update_error_dict(errors)
+    
+        # Form.clean() is run even if other validation fails, so do the
+        # same with Model.clean() for consistency.
+        try:
+            self.clean()
+        except ValidationError as e:
+            errors = e.update_error_dict(errors)
+    
+        # Run unique checks, but only for fields that passed validation.
+        if validate_unique:
+            for name in errors:
+                if name != NON_FIELD_ERRORS and name not in exclude:
+                    exclude.add(name)
+            try:
+                self.validate_unique(exclude=exclude)
+            except ValidationError as e:
+                errors = e.update_error_dict(errors)
+    
+        # Run constraints checks, but only for fields that passed validation.
+        if validate_constraints:
+            for name in errors:
+                if name != NON_FIELD_ERRORS and name not in exclude:
+                    exclude.add(name)
+            try:
+                self.validate_constraints(exclude=exclude)
+            except ValidationError as e:
+                errors = e.update_error_dict(errors)
+    
+        if errors:
+&gt;           raise ValidationError(errors)
+E           django.core.exceptions.ValidationError: {'name': ['Este campo no puede estar en blanco.']}
+
+.venv\Lib\site-packages\django\db\models\base.py:1679: ValidationError</failure></testcase><testcase classname="tests.test_orders" name="test_payment_report_incompatible_state[CANCELLED-PENDING]" time="2.900" /><testcase classname="tests.test_orders" name="test_payment_report_incompatible_state[SHIPPED-PENDING]" time="2.851" /><testcase classname="tests.test_orders" name="test_payment_report_incompatible_state[PENDING-CONFIRMED]" time="2.665" /><testcase classname="tests.test_orders" name="test_payment_report_incompatible_state[PENDING-REJECTED]" time="2.531" /><testcase classname="tests.test_orders" name="test_payment_report_rejects_at_t1_boundary" time="2.879" /><testcase classname="tests.test_orders" name="test_payment_report_rollback" time="2.700" /><testcase classname="tests.test_orders" name="test_preview_uses_saved_address_and_does_not_reserve" time="2.711" /><testcase classname="tests.test_orders" name="test_shipping_threshold[99999.99-5000.00]" time="2.615" /><testcase classname="tests.test_orders" name="test_shipping_threshold[100000.00-0.00]" time="2.528" /><testcase classname="tests.test_orders" name="test_shipping_threshold[100000.01-0.00]" time="2.431" /><testcase classname="tests.test_orders" name="test_pickup_and_special_zone" time="2.659" /><testcase classname="tests.test_orders" name="test_invalid_quantities_rejected[0]" time="2.400" /><testcase classname="tests.test_orders" name="test_invalid_quantities_rejected[-1]" time="2.584" /><testcase classname="tests.test_orders" name="test_invalid_quantities_rejected[1.2]" time="2.344" /><testcase classname="tests.test_orders" name="test_invalid_quantities_rejected[True]" time="2.479" /><testcase classname="tests.test_orders" name="test_invalid_quantities_rejected[1]" time="2.427" /><testcase classname="tests.test_orders" name="test_invalid_quantities_rejected[10001]" time="2.337" /><testcase classname="tests.test_orders" name="test_ownership_csrf_and_manipulated_amounts" time="3.009" /><testcase classname="tests.test_orders" name="test_inactive_chain_rejected[variant]" time="2.575" /><testcase classname="tests.test_orders" name="test_inactive_chain_rejected[product]" time="2.684" /><testcase classname="tests.test_orders" name="test_inactive_chain_rejected[category]" time="3.585" /><testcase classname="tests.test_orders" name="test_inactive_chain_rejected[brand]" time="3.731" /><testcase classname="tests.test_orders" name="test_order_snapshots_survive_catalog_address_and_settings_changes" time="6.450" /><testcase classname="tests.test_orders" name="test_idempotent_replay_and_conflicting_key" time="7.597" /><testcase classname="tests.test_orders" name="test_change_after_review_requires_new_review[price]" time="4.962" /><testcase classname="tests.test_orders" name="test_change_after_review_requires_new_review[address]" time="2.604" /><testcase classname="tests.test_orders" name="test_change_after_review_requires_new_review[shipping]" time="2.793" /><testcase classname="tests.test_orders" name="test_change_after_review_requires_new_review[stock]" time="2.449" /><testcase classname="tests.test_orders" name="test_tampered_or_expired_quote_rejected" time="2.567" /><testcase classname="tests.test_orders" name="test_order_rollback_covers_all_writes" time="2.411" /><testcase classname="tests.test_orders" name="test_order_list_and_detail_are_owner_scoped" time="3.183" /><testcase classname="tests.test_orders" name="test_promotion_expiry_revalidation_and_snapshot" time="2.500" /><testcase classname="tests.test_orders" name="test_config_changes_apply_to_new_orders_only" time="2.660" /><testcase classname="tests.test_orders" name="test_payment_instructions_and_public_purchase_data" time="2.742" /><testcase classname="tests.test_orders" name="test_concurrent_payment_reports_record_one_transition" time="2.062" /><testcase classname="tests.test_orders" name="test_concurrent_last_unit_and_idempotency[False]" time="2.933" /><testcase classname="tests.test_orders" name="test_concurrent_last_unit_and_idempotency[True]" time="2.373" /></testsuite></testsuites>

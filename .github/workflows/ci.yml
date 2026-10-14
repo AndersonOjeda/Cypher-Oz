@@ -1,0 +1,89 @@
+name: TTI validation
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: tti
+          POSTGRES_PASSWORD: ci-isolated-password
+          POSTGRES_DB: tti
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U tti -d tti"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://tti:ci-isolated-password@127.0.0.1:5432/tti
+      DJANGO_SECRET_KEY: ci-only-isolated-signing-key-not-a-production-secret-0123456789
+      FRONTEND_URL: http://localhost:3000
+      CATALOG_S3_ENDPOINT: http://127.0.0.1:9000
+      CATALOG_S3_REGION: us-east-1
+      CATALOG_S3_BUCKET: tti-catalog-ci
+      CATALOG_S3_ACCESS_KEY: ci-catalog
+      CATALOG_S3_SECRET_KEY: ci-isolated-catalog-password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install backend
+        run: |
+          python -m venv backend/.venv
+          backend/.venv/bin/python -m pip install -r backend/requirements.txt
+      - name: Backend lint, migrations, regression
+        working-directory: backend
+        run: |
+          .venv/bin/ruff check .
+          .venv/bin/ruff format --check .
+          .venv/bin/python manage.py migrate --noinput
+          .venv/bin/python manage.py makemigrations --check --dry-run
+          .venv/bin/python -m pytest -q --junitxml=../reports/backend.xml
+      - name: Start isolated object storage
+        run: |
+          docker build -t tti-minio:7aac2a2 infra/minio
+          docker run -d --name tti-media-ci -p 127.0.0.1:9000:9000 -e MINIO_ROOT_USER=ci-catalog -e MINIO_ROOT_PASSWORD=ci-isolated-catalog-password tti-minio:7aac2a2 server /data
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:9000/minio/health/live; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Frontend checks
+        working-directory: frontend
+        run: |
+          npm run lint
+          npm run typecheck
+          npm test -- --reporter=default --reporter=junit --outputFile=../reports/frontend.xml
+          npm run build
+      - name: Browser regression
+        working-directory: frontend
+        env:
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: ../reports/browser.xml
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e -- --reporter=list,html,junit
+          node scripts/verify-wireframes.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sprint-validation-${{ github.sha }}
+          path: |
+            reports/
+            frontend/playwright-report/
+            docs/evidence/sprint-1-current/*-mobile.png
+            docs/evidence/sprint-1-current/*-tablet.png
+            docs/evidence/sprint-1-current/*-desktop.png
+            docs/evidence/sprint-1-current/wireframes-*.png
+            docs/evidence/sprint-1-current/wireframes-checks.json
+          retention-days: 14

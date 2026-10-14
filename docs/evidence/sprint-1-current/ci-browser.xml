@@ -1,0 +1,98 @@
+<testsuites id="" name="" tests="33" failures="0" skipped="0" errors="0" time="135.809098">
+<testsuite name="sprint1-current.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="mobile" tests="3" failures="0" skipped="0" time="12.336" errors="0">
+<testcase name="HU-03 perfil y direcciones persisten, cambian principal y confirman eliminación" classname="sprint1-current.spec.ts" time="5.122">
+</testcase>
+<testcase name="HU-20 categorías y marcas: alta, duplicado, edición, actividad y borrado" classname="sprint1-current.spec.ts" time="4.029">
+</testcase>
+<testcase name="EN-01 y HU-30 configuración persistente y canal habilitable" classname="sprint1-current.spec.ts" time="3.185">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="mobile" tests="1" failures="0" skipped="0" time="9.256" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="9.256">
+</testcase>
+</testsuite>
+<testsuite name="sprint1.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="mobile" tests="3" failures="0" skipped="0" time="7.755" errors="0">
+<testcase name="registro, duplicado, credenciales, sesión persistente, permisos y logout" classname="sprint1.spec.ts" time="4.865">
+</testcase>
+<testcase name="WhatsApp configurado, responsive, accesible y sin cubrir CTA" classname="sprint1.spec.ts" time="1.411">
+</testcase>
+<testcase name="administrador autorizado y visitante rechazado" classname="sprint1.spec.ts" time="1.479">
+</testcase>
+</testsuite>
+<testsuite name="sprint2.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="mobile" tests="2" failures="0" skipped="0" time="7.037" errors="0">
+<testcase name="administrar catálogo completo con imágenes en almacenamiento real" classname="sprint2.spec.ts" time="6.227">
+</testcase>
+<testcase name="visitante no accede al administrador ni a datos del catálogo" classname="sprint2.spec.ts" time="0.81">
+</testcase>
+</testsuite>
+<testsuite name="sprint3.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="mobile" tests="2" failures="0" skipped="0" time="6.515" errors="0">
+<testcase name="variantes estándar, atributos, precio exacto y disponibilidad persisten" classname="sprint3.spec.ts" time="4.814">
+</testcase>
+<testcase name="visitante y cliente no gestionan variantes, precios ni atributos" classname="sprint3.spec.ts" time="1.701">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-current.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="tablet" tests="3" failures="0" skipped="0" time="10.419" errors="0">
+<testcase name="HU-03 perfil y direcciones persisten, cambian principal y confirman eliminación" classname="sprint1-current.spec.ts" time="4.388">
+</testcase>
+<testcase name="HU-20 categorías y marcas: alta, duplicado, edición, actividad y borrado" classname="sprint1-current.spec.ts" time="3.511">
+</testcase>
+<testcase name="EN-01 y HU-30 configuración persistente y canal habilitable" classname="sprint1-current.spec.ts" time="2.52">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="tablet" tests="1" failures="0" skipped="0" time="8.299" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="8.299">
+</testcase>
+</testsuite>
+<testsuite name="sprint1.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="tablet" tests="3" failures="0" skipped="0" time="7.932" errors="0">
+<testcase name="registro, duplicado, credenciales, sesión persistente, permisos y logout" classname="sprint1.spec.ts" time="5">
+</testcase>
+<testcase name="WhatsApp configurado, responsive, accesible y sin cubrir CTA" classname="sprint1.spec.ts" time="1.406">
+</testcase>
+<testcase name="administrador autorizado y visitante rechazado" classname="sprint1.spec.ts" time="1.526">
+</testcase>
+</testsuite>
+<testsuite name="sprint2.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="tablet" tests="2" failures="0" skipped="0" time="7.175" errors="0">
+<testcase name="administrar catálogo completo con imágenes en almacenamiento real" classname="sprint2.spec.ts" time="6.334">
+</testcase>
+<testcase name="visitante no accede al administrador ni a datos del catálogo" classname="sprint2.spec.ts" time="0.841">
+</testcase>
+</testsuite>
+<testsuite name="sprint3.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="tablet" tests="2" failures="0" skipped="0" time="6.617" errors="0">
+<testcase name="variantes estándar, atributos, precio exacto y disponibilidad persisten" classname="sprint3.spec.ts" time="4.884">
+</testcase>
+<testcase name="visitante y cliente no gestionan variantes, precios ni atributos" classname="sprint3.spec.ts" time="1.733">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-current.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="desktop" tests="3" failures="0" skipped="0" time="10.321" errors="0">
+<testcase name="HU-03 perfil y direcciones persisten, cambian principal y confirman eliminación" classname="sprint1-current.spec.ts" time="4.386">
+</testcase>
+<testcase name="HU-20 categorías y marcas: alta, duplicado, edición, actividad y borrado" classname="sprint1-current.spec.ts" time="3.443">
+</testcase>
+<testcase name="EN-01 y HU-30 configuración persistente y canal habilitable" classname="sprint1-current.spec.ts" time="2.492">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="desktop" tests="1" failures="0" skipped="0" time="8.403" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="8.403">
+</testcase>
+</testsuite>
+<testsuite name="sprint1.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="desktop" tests="3" failures="0" skipped="0" time="8.166" errors="0">
+<testcase name="registro, duplicado, credenciales, sesión persistente, permisos y logout" classname="sprint1.spec.ts" time="4.993">
+</testcase>
+<testcase name="WhatsApp configurado, responsive, accesible y sin cubrir CTA" classname="sprint1.spec.ts" time="1.547">
+</testcase>
+<testcase name="administrador autorizado y visitante rechazado" classname="sprint1.spec.ts" time="1.626">
+</testcase>
+</testsuite>
+<testsuite name="sprint2.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="desktop" tests="2" failures="0" skipped="0" time="7.23" errors="0">
+<testcase name="administrar catálogo completo con imágenes en almacenamiento real" classname="sprint2.spec.ts" time="6.363">
+</testcase>
+<testcase name="visitante no accede al administrador ni a datos del catálogo" classname="sprint2.spec.ts" time="0.867">
+</testcase>
+</testsuite>
+<testsuite name="sprint3.spec.ts" timestamp="2026-10-06T17:50:38.029Z" hostname="desktop" tests="2" failures="0" skipped="0" time="6.762" errors="0">
+<testcase name="variantes estándar, atributos, precio exacto y disponibilidad persisten" classname="sprint3.spec.ts" time="5.027">
+</testcase>
+<testcase name="visitante y cliente no gestionan variantes, precios ni atributos" classname="sprint3.spec.ts" time="1.735">
+</testcase>
+</testsuite>
+</testsuites>

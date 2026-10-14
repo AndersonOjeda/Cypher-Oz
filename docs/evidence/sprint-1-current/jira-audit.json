@@ -1,0 +1,644 @@
+{
+  "observedAt": "2026-10-06T10:47:19-05:00",
+  "sprint": {
+    "id": 71,
+    "state": "active",
+    "points": 27,
+    "endDate": "2026-10-06T05:00:00.000Z"
+  },
+  "mainIssues": [
+    {
+      "key": "CO-28",
+      "summary": "GUÍA | Product Backlog y planificación de 7 sprints — Cypher Oz / TTI",
+      "status": "Por hacer"
+    },
+    {
+      "key": "CO-29",
+      "summary": "ARQ | Definir arquitectura, modelo de datos y API — v3.0",
+      "status": "En curso"
+    },
+    {
+      "key": "CO-30",
+      "summary": "EN-01 | Configuración operativa centralizada",
+      "status": "En curso"
+    },
+    {
+      "key": "CO-31",
+      "summary": "UX | Materializar wireframes y validar interfaces del MVP",
+      "status": "En curso"
+    },
+    {
+      "key": "CO-36",
+      "summary": "HU-01 | Registro de cliente",
+      "status": "En curso"
+    },
+    {
+      "key": "CO-41",
+      "summary": "HU-30 | Contacto rápido por WhatsApp",
+      "status": "En curso"
+    },
+    {
+      "key": "CO-55",
+      "summary": "HU-02 | Inicio y cierre de sesión",
+      "status": "En curso"
+    },
+    {
+      "key": "CO-56",
+      "summary": "HU-03 | Perfil y direcciones",
+      "status": "En curso"
+    },
+    {
+      "key": "CO-63",
+      "summary": "HU-20 | Categorías y marcas",
+      "status": "En curso"
+    },
+    {
+      "key": "CO-73",
+      "summary": "QA | Verificar la base técnica y la instalación reproducible",
+      "status": "En curso"
+    }
+  ],
+  "activities": [
+    {
+      "issue": "CO-88",
+      "parent": "CO-56",
+      "id": "HU-03-T01-A1",
+      "activity": "Definir addresses relacionada con users y sus validaciones.",
+      "checked": true,
+      "evidence": "PROFILE"
+    },
+    {
+      "issue": "CO-88",
+      "parent": "CO-56",
+      "id": "HU-03-T01-A2",
+      "activity": "Implementar GET/PATCH /users/me/ y CRUD /users/me/addresses/.",
+      "checked": true,
+      "evidence": "PROFILE, E2E"
+    },
+    {
+      "issue": "CO-88",
+      "parent": "CO-56",
+      "id": "HU-03-T01-A3",
+      "activity": "Restringir consultas y modificaciones al propietario.",
+      "checked": true,
+      "evidence": "PROFILE"
+    },
+    {
+      "issue": "CO-88",
+      "parent": "CO-56",
+      "id": "HU-03-T01-A4",
+      "activity": "Preservar los snapshots de direcciones que ya pertenezcan a pedidos.",
+      "checked": false,
+      "evidence": "Pendiente: pedidos/snapshots no implementados; ARQ es diseño"
+    },
+    {
+      "issue": "CO-89",
+      "parent": "CO-36",
+      "id": "HU-01-T01-A1",
+      "activity": "Definir usuario, correo único y migración PostgreSQL.",
+      "checked": true,
+      "evidence": "AUTH"
+    },
+    {
+      "issue": "CO-89",
+      "parent": "CO-36",
+      "id": "HU-01-T01-A2",
+      "activity": "Implementar POST /api/v1/auth/register/ con validación de campos y hash de contraseña.",
+      "checked": true,
+      "evidence": "AUTH"
+    },
+    {
+      "issue": "CO-89",
+      "parent": "CO-36",
+      "id": "HU-01-T01-A3",
+      "activity": "Impedir que el registro público asigne el rol ADMIN.",
+      "checked": true,
+      "evidence": "AUTH"
+    },
+    {
+      "issue": "CO-89",
+      "parent": "CO-36",
+      "id": "HU-01-T01-A4",
+      "activity": "Devolver creación, duplicado y validación con respuestas coherentes.",
+      "checked": true,
+      "evidence": "AUTH"
+    },
+    {
+      "issue": "CO-90",
+      "parent": "CO-36",
+      "id": "HU-01-T02-A1",
+      "activity": "Diseñar los campos y mensajes de registro en móvil y escritorio.",
+      "checked": true,
+      "evidence": "AUTH-UI, E2E"
+    },
+    {
+      "issue": "CO-90",
+      "parent": "CO-36",
+      "id": "HU-01-T02-A2",
+      "activity": "Integrar el formulario con la API y conservar datos corregibles ante error.",
+      "checked": true,
+      "evidence": "AUTH-UI, E2E"
+    },
+    {
+      "issue": "CO-90",
+      "parent": "CO-36",
+      "id": "HU-01-T02-A3",
+      "activity": "Mostrar carga, éxito y errores sin exponer detalles internos.",
+      "checked": true,
+      "evidence": "AUTH-UI"
+    },
+    {
+      "issue": "CO-90",
+      "parent": "CO-36",
+      "id": "HU-01-T02-A4",
+      "activity": "Permitir navegar entre registro e inicio de sesión.",
+      "checked": true,
+      "evidence": "AUTH-UI, E2E"
+    },
+    {
+      "issue": "CO-91",
+      "parent": "CO-36",
+      "id": "HU-01-T03-A1",
+      "activity": "Comprobar registro válido y persistencia del usuario.",
+      "checked": true,
+      "evidence": "AUTH"
+    },
+    {
+      "issue": "CO-91",
+      "parent": "CO-36",
+      "id": "HU-01-T03-A2",
+      "activity": "Rechazar correo duplicado, datos inválidos y escalamiento de rol.",
+      "checked": true,
+      "evidence": "AUTH"
+    },
+    {
+      "issue": "CO-91",
+      "parent": "CO-36",
+      "id": "HU-01-T03-A3",
+      "activity": "Verificar formulario y errores en navegador.",
+      "checked": true,
+      "evidence": "AUTH-UI, E2E"
+    },
+    {
+      "issue": "CO-91",
+      "parent": "CO-36",
+      "id": "HU-01-T03-A4",
+      "activity": "Vincular pruebas, PR y evidencia a la historia.",
+      "checked": false,
+      "evidence": "Pendiente: PR publicada y vinculación"
+    },
+    {
+      "issue": "CO-92",
+      "parent": "CO-55",
+      "id": "HU-02-T01-A1",
+      "activity": "Implementar login, refresh y logout según el contrato vigente.",
+      "checked": true,
+      "evidence": "AUTH"
+    },
+    {
+      "issue": "CO-92",
+      "parent": "CO-55",
+      "id": "HU-02-T01-A2",
+      "activity": "Proteger tokens sensibles mediante cookies HttpOnly/Secure y controles CSRF/SameSite.",
+      "checked": true,
+      "evidence": "AUTH"
+    },
+    {
+      "issue": "CO-92",
+      "parent": "CO-55",
+      "id": "HU-02-T01-A3",
+      "activity": "Validar permisos en Django y revocar el acceso según la estrategia de sesión.",
+      "checked": true,
+      "evidence": "AUTH"
+    },
+    {
+      "issue": "CO-92",
+      "parent": "CO-55",
+      "id": "HU-02-T01-A4",
+      "activity": "Gestionar credenciales inválidas y sesiones vencidas.",
+      "checked": true,
+      "evidence": "AUTH"
+    },
+    {
+      "issue": "CO-93",
+      "parent": "CO-55",
+      "id": "HU-02-T02-A1",
+      "activity": "Integrar pantalla de login y acción de logout.",
+      "checked": true,
+      "evidence": "AUTH-UI, E2E"
+    },
+    {
+      "issue": "CO-93",
+      "parent": "CO-55",
+      "id": "HU-02-T02-A2",
+      "activity": "Presentar sesión vigente y navegación según el rol.",
+      "checked": true,
+      "evidence": "AUTH-UI, E2E"
+    },
+    {
+      "issue": "CO-93",
+      "parent": "CO-55",
+      "id": "HU-02-T02-A3",
+      "activity": "Gestionar vencimiento, renovación y errores de autenticación.",
+      "checked": true,
+      "evidence": "AUTH, API-UI"
+    },
+    {
+      "issue": "CO-93",
+      "parent": "CO-55",
+      "id": "HU-02-T02-A4",
+      "activity": "Mantener formularios accesibles y responsive.",
+      "checked": true,
+      "evidence": "AUTH-UI, E2E"
+    },
+    {
+      "issue": "CO-94",
+      "parent": "CO-55",
+      "id": "HU-02-T03-A1",
+      "activity": "Comprobar login válido, credenciales inválidas y persistencia de sesión.",
+      "checked": true,
+      "evidence": "AUTH, E2E"
+    },
+    {
+      "issue": "CO-94",
+      "parent": "CO-55",
+      "id": "HU-02-T03-A2",
+      "activity": "Verificar refresh y acceso protegido después de logout.",
+      "checked": true,
+      "evidence": "AUTH, API-UI"
+    },
+    {
+      "issue": "CO-94",
+      "parent": "CO-55",
+      "id": "HU-02-T03-A3",
+      "activity": "Comprobar denegación de endpoints admin a clientes.",
+      "checked": true,
+      "evidence": "AUTH, E2E"
+    },
+    {
+      "issue": "CO-94",
+      "parent": "CO-55",
+      "id": "HU-02-T03-A4",
+      "activity": "Registrar pruebas API, navegador y evidencia de seguridad.",
+      "checked": true,
+      "evidence": "AUTH, E2E"
+    },
+    {
+      "issue": "CO-95",
+      "parent": "CO-56",
+      "id": "HU-03-T02-A1",
+      "activity": "Diseñar vistas de perfil, listado y formulario de direcciones.",
+      "checked": true,
+      "evidence": "PROFILE-UI, DEMO"
+    },
+    {
+      "issue": "CO-95",
+      "parent": "CO-56",
+      "id": "HU-03-T02-A2",
+      "activity": "Integrar creación, edición y eliminación con confirmación.",
+      "checked": true,
+      "evidence": "PROFILE-UI, E2E"
+    },
+    {
+      "issue": "CO-95",
+      "parent": "CO-56",
+      "id": "HU-03-T02-A3",
+      "activity": "Mostrar errores de campo y estados sin direcciones.",
+      "checked": true,
+      "evidence": "PROFILE-UI"
+    },
+    {
+      "issue": "CO-95",
+      "parent": "CO-56",
+      "id": "HU-03-T02-A4",
+      "activity": "Reflejar cambios guardados al seleccionar dirección en checkout.",
+      "checked": false,
+      "evidence": "Pendiente: no existe selección real de dirección en checkout"
+    },
+    {
+      "issue": "CO-96",
+      "parent": "CO-56",
+      "id": "HU-03-T03-A1",
+      "activity": "Probar actualización y persistencia del perfil.",
+      "checked": true,
+      "evidence": "PROFILE, E2E"
+    },
+    {
+      "issue": "CO-96",
+      "parent": "CO-56",
+      "id": "HU-03-T03-A2",
+      "activity": "Probar alta, edición y eliminación de dirección.",
+      "checked": true,
+      "evidence": "PROFILE, E2E"
+    },
+    {
+      "issue": "CO-96",
+      "parent": "CO-56",
+      "id": "HU-03-T03-A3",
+      "activity": "Denegar acceso o modificación de direcciones ajenas.",
+      "checked": true,
+      "evidence": "PROFILE"
+    },
+    {
+      "issue": "CO-96",
+      "parent": "CO-56",
+      "id": "HU-03-T03-A4",
+      "activity": "Verificar datos inválidos y conservación del snapshot cuando exista el pedido.",
+      "checked": false,
+      "evidence": "Parcial: datos inválidos probados; falta snapshot de pedido"
+    },
+    {
+      "issue": "CO-146",
+      "parent": "CO-63",
+      "id": "HU-20-T01-A1",
+      "activity": "Definir modelos, slugs únicos y relaciones protegidas.",
+      "checked": true,
+      "evidence": "TAX"
+    },
+    {
+      "issue": "CO-146",
+      "parent": "CO-63",
+      "id": "HU-20-T01-A2",
+      "activity": "Implementar endpoints administrativos con validación y permisos ADMIN.",
+      "checked": true,
+      "evidence": "TAX"
+    },
+    {
+      "issue": "CO-146",
+      "parent": "CO-63",
+      "id": "HU-20-T01-A3",
+      "activity": "Aplicar política de actividad y visibilidad del catálogo.",
+      "checked": true,
+      "evidence": "TAX"
+    },
+    {
+      "issue": "CO-146",
+      "parent": "CO-63",
+      "id": "HU-20-T01-A4",
+      "activity": "Registrar cambios relevantes y respuestas de conflicto.",
+      "checked": true,
+      "evidence": "TAX"
+    },
+    {
+      "issue": "CO-147",
+      "parent": "CO-63",
+      "id": "HU-20-T02-A1",
+      "activity": "Crear listados y formularios de alta y edición.",
+      "checked": true,
+      "evidence": "TAX-UI, E2E"
+    },
+    {
+      "issue": "CO-147",
+      "parent": "CO-63",
+      "id": "HU-20-T02-A2",
+      "activity": "Integrar activación y desactivación según política vigente.",
+      "checked": true,
+      "evidence": "TAX-UI, E2E"
+    },
+    {
+      "issue": "CO-147",
+      "parent": "CO-63",
+      "id": "HU-20-T02-A3",
+      "activity": "Mostrar errores conservando la información del formulario.",
+      "checked": true,
+      "evidence": "TAX-UI"
+    },
+    {
+      "issue": "CO-147",
+      "parent": "CO-63",
+      "id": "HU-20-T02-A4",
+      "activity": "Incorporar paginación, carga, vacío y responsive.",
+      "checked": true,
+      "evidence": "TAX-UI, DEMO"
+    },
+    {
+      "issue": "CO-148",
+      "parent": "CO-63",
+      "id": "HU-20-T03-A1",
+      "activity": "Probar creación, edición y valores duplicados.",
+      "checked": true,
+      "evidence": "TAX, E2E"
+    },
+    {
+      "issue": "CO-148",
+      "parent": "CO-63",
+      "id": "HU-20-T03-A2",
+      "activity": "Verificar permisos y protección de relaciones existentes.",
+      "checked": true,
+      "evidence": "TAX"
+    },
+    {
+      "issue": "CO-148",
+      "parent": "CO-63",
+      "id": "HU-20-T03-A3",
+      "activity": "Comprobar política de visibilidad por categoría y marca.",
+      "checked": true,
+      "evidence": "TAX"
+    },
+    {
+      "issue": "CO-148",
+      "parent": "CO-63",
+      "id": "HU-20-T03-A4",
+      "activity": "Registrar pruebas API, PostgreSQL y navegador del alcance previsto.",
+      "checked": true,
+      "evidence": "TAX, E2E"
+    },
+    {
+      "issue": "CO-170",
+      "parent": "CO-41",
+      "id": "HU-30-T01-A1",
+      "activity": "Leer habilitación, número y mensaje desde configuración vigente.",
+      "checked": true,
+      "evidence": "CFG"
+    },
+    {
+      "issue": "CO-170",
+      "parent": "CO-41",
+      "id": "HU-30-T01-A2",
+      "activity": "Validar configuración sin inventar número comercial.",
+      "checked": true,
+      "evidence": "CFG"
+    },
+    {
+      "issue": "CO-170",
+      "parent": "CO-41",
+      "id": "HU-30-T01-A3",
+      "activity": "Exponer únicamente los datos públicos necesarios para abrir el enlace.",
+      "checked": true,
+      "evidence": "CFG"
+    },
+    {
+      "issue": "CO-170",
+      "parent": "CO-41",
+      "id": "HU-30-T01-A4",
+      "activity": "Mantener canal operativo deshabilitado hasta contar con número autorizado.",
+      "checked": true,
+      "evidence": "CFG (default deshabilitado; demo puede modificarse)"
+    },
+    {
+      "issue": "CO-171",
+      "parent": "CO-41",
+      "id": "HU-30-T02-A1",
+      "activity": "Crear botón visible cuando el canal esté habilitado.",
+      "checked": true,
+      "evidence": "WA"
+    },
+    {
+      "issue": "CO-171",
+      "parent": "CO-41",
+      "id": "HU-30-T02-A2",
+      "activity": "Formar enlace y texto codificados correctamente.",
+      "checked": true,
+      "evidence": "WA"
+    },
+    {
+      "issue": "CO-171",
+      "parent": "CO-41",
+      "id": "HU-30-T02-A3",
+      "activity": "Abrir WhatsApp solo tras acción del usuario.",
+      "checked": true,
+      "evidence": "WA"
+    },
+    {
+      "issue": "CO-171",
+      "parent": "CO-41",
+      "id": "HU-30-T02-A4",
+      "activity": "Evitar superponer controles en móvil y ofrecer etiqueta accesible.",
+      "checked": true,
+      "evidence": "WA, E2E"
+    },
+    {
+      "issue": "CO-172",
+      "parent": "CO-41",
+      "id": "HU-30-T03-A1",
+      "activity": "Probar canal habilitado con configuración controlada y canal deshabilitado.",
+      "checked": true,
+      "evidence": "WA, E2E"
+    },
+    {
+      "issue": "CO-172",
+      "parent": "CO-41",
+      "id": "HU-30-T03-A2",
+      "activity": "Verificar destino y mensaje del enlace.",
+      "checked": true,
+      "evidence": "WA, E2E"
+    },
+    {
+      "issue": "CO-172",
+      "parent": "CO-41",
+      "id": "HU-30-T03-A3",
+      "activity": "Revisar accesibilidad y responsive sin superposición.",
+      "checked": true,
+      "evidence": "WA, E2E"
+    },
+    {
+      "issue": "CO-172",
+      "parent": "CO-41",
+      "id": "HU-30-T03-A4",
+      "activity": "Registrar que las pruebas no equivalen a habilitación comercial ni envío automático.",
+      "checked": true,
+      "evidence": "GUION (no envío real ni autorización comercial)"
+    },
+    {
+      "issue": "CO-176",
+      "parent": "CO-30",
+      "id": "EN-01-T01-A1",
+      "activity": "Crear estructura frontend, backend, docs y configuración CI.",
+      "checked": true,
+      "evidence": "INFRA"
+    },
+    {
+      "issue": "CO-176",
+      "parent": "CO-30",
+      "id": "EN-01-T01-A2",
+      "activity": "Conectar Django/DRF con PostgreSQL y migraciones.",
+      "checked": true,
+      "evidence": "INFRA, CFG"
+    },
+    {
+      "issue": "CO-176",
+      "parent": "CO-30",
+      "id": "EN-01-T01-A3",
+      "activity": "Iniciar Next.js y consumir health del backend.",
+      "checked": true,
+      "evidence": "CFG, DEMO"
+    },
+    {
+      "issue": "CO-176",
+      "parent": "CO-30",
+      "id": "EN-01-T01-A4",
+      "activity": "Documentar variables sin secretos y ejecución reproducible.",
+      "checked": true,
+      "evidence": "INFRA"
+    },
+    {
+      "issue": "CO-177",
+      "parent": "CO-30",
+      "id": "EN-01-T02-A1",
+      "activity": "Crear store_settings con claves únicas y validación de tipos.",
+      "checked": true,
+      "evidence": "CFG"
+    },
+    {
+      "issue": "CO-177",
+      "parent": "CO-30",
+      "id": "EN-01-T02-A2",
+      "activity": "Implementar lectura central y administración protegida de parámetros.",
+      "checked": true,
+      "evidence": "CFG"
+    },
+    {
+      "issue": "CO-177",
+      "parent": "CO-30",
+      "id": "EN-01-T02-A3",
+      "activity": "Definir defaults de referencia para T1, T2, tarifa, umbral y TTL sin tratarlos como política inmutable.",
+      "checked": true,
+      "evidence": "CFG, E2E"
+    },
+    {
+      "issue": "CO-177",
+      "parent": "CO-30",
+      "id": "EN-01-T02-A4",
+      "activity": "Documentar que los módulos futuros persisten deadlines y snapshots por operación.",
+      "checked": true,
+      "evidence": "ARQ (contrato futuro, no pedido implementado)"
+    },
+    {
+      "issue": "CO-178",
+      "parent": "CO-30",
+      "id": "EN-01-T03-A1",
+      "activity": "Ejecutar pruebas base con PostgreSQL y health integrado.",
+      "checked": true,
+      "evidence": "CFG"
+    },
+    {
+      "issue": "CO-178",
+      "parent": "CO-30",
+      "id": "EN-01-T03-A2",
+      "activity": "Configurar lint, typecheck y build reproducibles.",
+      "checked": true,
+      "evidence": "INFRA (checks de la ejecución anterior)"
+    },
+    {
+      "issue": "CO-178",
+      "parent": "CO-30",
+      "id": "EN-01-T03-A3",
+      "activity": "Verificar secretos fuera del repositorio y entornos separados.",
+      "checked": true,
+      "evidence": "INFRA (separación de entornos; no auditoría exhaustiva de secretos)"
+    },
+    {
+      "issue": "CO-178",
+      "parent": "CO-30",
+      "id": "EN-01-T03-A4",
+      "activity": "Vincular README, arquitectura, PR y CI registrados como cierre del enabler.",
+      "checked": false,
+      "evidence": "Pendiente: PR y CI remota de estos cambios"
+    }
+  ],
+  "counts": {
+    "total": 72,
+    "checked": 67,
+    "unchecked": 5
+  }
+}

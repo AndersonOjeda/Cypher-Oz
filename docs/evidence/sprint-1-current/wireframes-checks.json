@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-10-06T17:41:04.736Z",
+  "results": [
+    {
+      "width": 390,
+      "views": 28,
+      "keyboard": "passed",
+      "focus": "passed",
+      "states": "passed",
+      "contrast": [
+        {
+          "selector": "body",
+          "ratio": 15.57284930074157
+        },
+        {
+          "selector": ".caption",
+          "ratio": 7.242510935504382
+        },
+        {
+          "selector": ".primary",
+          "ratio": 5.168555560022562
+        },
+        {
+          "selector": "[aria-current=\"page\"]",
+          "ratio": 7.079201741572801
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "views": 28,
+      "keyboard": "passed",
+      "focus": "passed",
+      "states": "passed",
+      "contrast": [
+        {
+          "selector": "body",
+          "ratio": 15.57284930074157
+        },
+        {
+          "selector": ".caption",
+          "ratio": 7.242510935504382
+        },
+        {
+          "selector": ".primary",
+          "ratio": 5.168555560022562
+        },
+        {
+          "selector": "[aria-current=\"page\"]",
+          "ratio": 7.079201741572801
+        }
+      ]
+    }
+  ],
+  "scope": "Basic checks, not a full accessibility certification"
+}
