@@ -25,9 +25,11 @@ test("HU-32 solicita recuperación sin revelar si la cuenta existe", async ({
 
 test("HU-32 rechaza confirmación sin token", async ({ page }) => {
   await page.goto("/restablecer-contrasena");
-  await expect(page.getByRole("alert")).toContainText(
-    "enlace de recuperación está incompleto",
-  );
+  await expect(
+    page.getByText("El enlace de recuperación está incompleto.", {
+      exact: true,
+    }),
+  ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Cambiar contraseña" }),
   ).toHaveCount(0);
