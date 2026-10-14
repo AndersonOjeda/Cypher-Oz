@@ -21,6 +21,7 @@ urlpatterns = [
     path("api/v1/categories/", PublicCategoriesView.as_view()),
     path("api/v1/brands/", PublicBrandsView.as_view()),
     path("api/v1/admin/inventory/", include("apps.inventory.urls")),
+    path("api/v1/admin/", include("apps.promotions.urls")),
     path("api/v1/admin/", include("apps.catalog.urls")),
     path("health/", health),
     path("api/v1/auth/csrf/", CsrfView.as_view()),
