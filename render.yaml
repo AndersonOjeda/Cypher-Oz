@@ -29,7 +29,7 @@ services:
       - key: DJANGO_ALLOWED_HOSTS
         value: .onrender.com,tti-staging-api
       - key: FRONTEND_URL
-        value: https://tti-staging-web.onrender.com
+        value: https://cypher-oz.vercel.app
       - key: STAGING_ADMIN_EMAIL
         sync: false
       - key: STAGING_ADMIN_NAME
