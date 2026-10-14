@@ -73,7 +73,4 @@ services:
       - key: NODE_ENV
         value: production
       - key: DJANGO_URL
-        fromService:
-          name: tti-staging-api
-          type: web
-          property: hostport
+        value: https://tti-staging-api.onrender.com
