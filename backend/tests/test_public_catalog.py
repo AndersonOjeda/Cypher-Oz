@@ -2,6 +2,7 @@ from datetime import timedelta
 from decimal import Decimal
 
 import pytest
+from django.test import override_settings
 from django.utils import timezone
 from rest_framework.test import APIClient
 
@@ -127,6 +128,7 @@ def catalog_setup(db):
     }
 
 
+@override_settings(CATALOG_S3_BUCKET="")
 def test_public_catalog_is_accessible_without_auth(catalog_setup):
     client = APIClient()
     res = client.get("/api/v1/products/")
