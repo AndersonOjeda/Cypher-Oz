@@ -67,6 +67,10 @@ export async function api<T>(
       "El servicio no está disponible. Inténtalo de nuevo más tarde.",
     );
   }
+  if (response.status === 403 && retry && !["GET", "HEAD"].includes(method)) {
+    csrfToken = undefined;
+    return api(path, options, false);
+  }
   if (!response.ok) {
     if (response.status === 403) csrfToken = undefined;
     throw new ApiError(
