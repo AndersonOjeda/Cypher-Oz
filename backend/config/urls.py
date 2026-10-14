@@ -10,6 +10,8 @@ from apps.users.views import (
     LoginView,
     LogoutView,
     MeView,
+    PasswordResetConfirmView,
+    PasswordResetRequestView,
     RefreshView,
     RegisterView,
 )
@@ -26,6 +28,8 @@ urlpatterns = [
     path("api/v1/auth/login/", LoginView.as_view()),
     path("api/v1/auth/refresh/", RefreshView.as_view()),
     path("api/v1/auth/logout/", LogoutView.as_view()),
+    path("api/v1/auth/password-reset/request/", PasswordResetRequestView.as_view()),
+    path("api/v1/auth/password-reset/confirm/", PasswordResetConfirmView.as_view()),
     path("api/v1/users/me/", MeView.as_view()),
     path("api/v1/users/me/addresses/", AddressListView.as_view()),
     path("api/v1/users/me/addresses/<int:pk>/", AddressDetailView.as_view()),

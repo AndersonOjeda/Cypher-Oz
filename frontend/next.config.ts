@@ -12,7 +12,10 @@ const nextConfig: NextConfig = {
         ? ".next-demo"
         : ".next",
   async rewrites() {
-    const backend = process.env.DJANGO_URL ?? "http://127.0.0.1:8000";
+    const configuredBackend = process.env.DJANGO_URL ?? "http://127.0.0.1:8000";
+    const backend = configuredBackend.includes("://")
+      ? configuredBackend
+      : `http://${configuredBackend}`;
     return [
       { source: "/api/v1/:path*/", destination: `${backend}/api/v1/:path*/` },
       { source: "/health/", destination: `${backend}/health/` },

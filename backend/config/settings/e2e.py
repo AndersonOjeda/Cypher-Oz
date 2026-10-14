@@ -7,4 +7,6 @@ CORS_ALLOWED_ORIGINS = [FRONTEND_URL]
 CSRF_TRUSTED_ORIGINS = [FRONTEND_URL]
 CATALOG_S3_BUCKET = "tti-catalog-e2e"
 # The isolated browser suite deliberately exercises many logins from one IP.
-REST_FRAMEWORK = {**REST_FRAMEWORK, "DEFAULT_THROTTLE_RATES": {"auth": "1000/min"}}  # noqa: F405
+REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"].update(  # noqa: F405
+    {"auth": "1000/min", "password_reset": "1000/hour"}
+)

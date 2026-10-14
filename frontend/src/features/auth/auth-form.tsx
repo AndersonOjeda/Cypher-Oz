@@ -179,6 +179,12 @@ export function AuthForm({
         </button>
       </form>
       <p className="form-switch">
+        {!registerMode && (
+          <>
+            <Link href="/recuperar-contrasena">¿Olvidaste tu contraseña?</Link>
+            <br />
+          </>
+        )}
         {registerMode ? "¿Ya tienes una cuenta?" : "¿Primera vez en TTI?"}{" "}
         <Link
           href={`${registerMode ? "/login" : "/registro"}${returnTo ? `?next=${returnTo}` : ""}`}

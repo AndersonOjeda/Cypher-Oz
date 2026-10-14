@@ -258,6 +258,21 @@ test("checkout relee dirección y pedido conserva snapshot; reintento no duplica
         .fill("Reposición de prueba");
       await stockPage.getByRole("button", { name: "Guardar entrada" }).click();
       await expect(stockPage.getByText(/4 unidades/)).toBeVisible();
+      await stockPage
+        .getByRole("button", { name: /Registrar entrada:/ })
+        .click();
+      await stockPage.getByLabel("Operación").selectOption("adjustment");
+      await stockPage.getByLabel("Variación del stock").fill("-1");
+      await stockPage
+        .getByLabel("Motivo", { exact: true })
+        .fill("Conteo físico de prueba");
+      stockPage.once("dialog", (dialog) => dialog.accept());
+      await stockPage.getByRole("button", { name: "Guardar ajuste" }).click();
+      await expect(stockPage.getByText(/3 unidades/)).toBeVisible();
+      await stockPage.getByLabel("Filtrar por tipo").selectOption("ADJUSTMENT");
+      await expect(
+        stockPage.getByText("Conteo físico de prueba"),
+      ).toBeVisible();
       expect(
         await stockPage.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,

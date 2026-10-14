@@ -1,0 +1,79 @@
+databases:
+  - name: tti-staging-db
+    databaseName: tti_staging
+    user: tti_staging
+    plan: free
+    region: virginia
+    postgresMajorVersion: "17"
+    ipAllowList: []
+
+services:
+  - type: web
+    name: tti-staging-api
+    runtime: python
+    plan: free
+    region: virginia
+    branch: main
+    rootDir: backend
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt && python manage.py migrate --noinput
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    healthCheckPath: /health/
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tti-staging-db
+          property: connectionString
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        value: .onrender.com,tti-staging-api
+      - key: FRONTEND_HOST
+        fromService:
+          name: tti-staging-web
+          type: web
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: EMAIL_BACKEND
+        value: django.core.mail.backends.smtp.EmailBackend
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: EMAIL_USE_TLS
+        value: "true"
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+      - key: CATALOG_S3_ENDPOINT
+        sync: false
+      - key: CATALOG_S3_REGION
+        value: us-east-1
+      - key: CATALOG_S3_BUCKET
+        sync: false
+      - key: CATALOG_S3_ACCESS_KEY
+        sync: false
+      - key: CATALOG_S3_SECRET_KEY
+        sync: false
+
+  - type: web
+    name: tti-staging-web
+    runtime: node
+    plan: free
+    region: virginia
+    branch: main
+    rootDir: frontend
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    startCommand: npm start -- -H 0.0.0.0 -p $PORT
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DJANGO_URL
+        fromService:
+          name: tti-staging-api
+          type: web
+          property: hostport
