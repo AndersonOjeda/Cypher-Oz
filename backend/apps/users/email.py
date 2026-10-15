@@ -36,7 +36,7 @@ def send_password_reset_email(recipient, reset_url):
         headers={
             "Authorization": f"Bearer {settings.RESEND_API_KEY}",
             "Content-Type": "application/json",
-            "User-Agent": "CommuSafe/1.0",
+            "User-Agent": "CypherOz/1.0",
         },
         method="POST",
     )
