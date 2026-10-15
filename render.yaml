@@ -51,7 +51,7 @@ services:
       - key: RESEND_API_KEY
         sync: false
       - key: RESEND_FROM_EMAIL
-        value: CommuSafe <onboarding@resend.dev>
+        value: Cypher Oz <onboarding@resend.dev>
       - key: EMAIL_TIMEOUT
         value: "10"
       - key: CATALOG_S3_ENDPOINT

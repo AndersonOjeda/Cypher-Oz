@@ -38,7 +38,7 @@ def test_request_is_generic_and_stores_only_hash(client, user):
 @pytest.mark.django_db
 @override_settings(
     RESEND_API_KEY="re_test",
-    RESEND_FROM_EMAIL="CommuSafe <onboarding@resend.dev>",
+    RESEND_FROM_EMAIL="Cypher Oz <onboarding@resend.dev>",
 )
 @patch("apps.users.email.urlopen")
 def test_request_uses_resend_http_api(urlopen, client, user):
@@ -50,7 +50,7 @@ def test_request_uses_resend_http_api(urlopen, client, user):
     request = urlopen.call_args.args[0]
     assert request.full_url == "https://api.resend.com/emails"
     assert request.headers["Authorization"] == "Bearer re_test"
-    assert request.headers["User-agent"] == "CommuSafe/1.0"
+    assert request.headers["User-agent"] == "CypherOz/1.0"
     assert user.email in request.data.decode("utf-8")
 
 

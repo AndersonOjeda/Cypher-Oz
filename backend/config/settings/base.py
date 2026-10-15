@@ -86,7 +86,7 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").lower() == "true"
 EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "10"))
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 RESEND_FROM_EMAIL = os.getenv(
-    "RESEND_FROM_EMAIL", "CommuSafe <onboarding@resend.dev>"
+    "RESEND_FROM_EMAIL", "Cypher Oz <onboarding@resend.dev>"
 )
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
