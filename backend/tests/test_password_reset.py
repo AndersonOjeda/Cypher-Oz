@@ -50,6 +50,7 @@ def test_request_uses_resend_http_api(urlopen, client, user):
     request = urlopen.call_args.args[0]
     assert request.full_url == "https://api.resend.com/emails"
     assert request.headers["Authorization"] == "Bearer re_test"
+    assert request.headers["User-agent"] == "CommuSafe/1.0"
     assert user.email in request.data.decode("utf-8")
 
 
