@@ -1,4 +1,5 @@
 import json
+from smtplib import SMTPException
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -17,7 +18,10 @@ def send_password_reset_email(recipient, reset_url):
         "El enlace es temporal y solo puede utilizarse una vez."
     )
     if not settings.RESEND_API_KEY:
-        return send_mail(subject, text, settings.DEFAULT_FROM_EMAIL, [recipient])
+        try:
+            return send_mail(subject, text, settings.DEFAULT_FROM_EMAIL, [recipient])
+        except (OSError, SMTPException) as exc:
+            raise EmailDeliveryError from exc
 
     request = Request(
         "https://api.resend.com/emails",

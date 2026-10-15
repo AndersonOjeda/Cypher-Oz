@@ -67,6 +67,17 @@ def test_request_returns_503_and_discards_token_when_resend_fails(
 
 
 @pytest.mark.django_db
+@override_settings(RESEND_API_KEY="")
+@patch("apps.users.email.send_mail", side_effect=OSError("blocked"))
+def test_request_returns_503_when_smtp_is_unavailable(send_mail, client, user):
+    response = client.post(REQUEST, {"email": user.email}, format="json")
+
+    assert response.status_code == 503
+    assert response.data["code"] == "email_service_unavailable"
+    assert not PasswordResetToken.objects.filter(user=user).exists()
+
+
+@pytest.mark.django_db
 @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
 def test_valid_token_changes_password_once_and_revokes_sessions(client, user):
     login = client.post(
