@@ -1,275 +1,277 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="113" failures="0" errors="0" time="24.1188763">
-    <testsuite name="src/components/whatsapp-button.test.tsx" timestamp="2026-10-20T20:05:46.823Z" hostname="DESKTOP-TAOVHM8" tests="7" failures="0" errors="0" skipped="0" time="0.20512">
-        <testcase classname="src/components/whatsapp-button.test.tsx" name="URL encodes configured message" time="0.0022279">
+<testsuites name="vitest tests" tests="114" failures="0" errors="0" time="23.2507739">
+    <testsuite name="src/components/whatsapp-button.test.tsx" timestamp="2026-10-20T21:08:14.187Z" hostname="DESKTOP-TAOVHM8" tests="7" failures="0" errors="0" skipped="0" time="0.1429401">
+        <testcase classname="src/components/whatsapp-button.test.tsx" name="URL encodes configured message" time="0.0018755">
         </testcase>
-        <testcase classname="src/components/whatsapp-button.test.tsx" name="disabled channel is hidden" time="0.0201349">
+        <testcase classname="src/components/whatsapp-button.test.tsx" name="disabled channel is hidden" time="0.0173772">
         </testcase>
-        <testcase classname="src/components/whatsapp-button.test.tsx" name="invalid number is not linked" time="0.0003914">
+        <testcase classname="src/components/whatsapp-button.test.tsx" name="invalid number is not linked" time="0.0003013">
         </testcase>
-        <testcase classname="src/components/whatsapp-button.test.tsx" name="accessible safe new-tab link" time="0.1615275">
+        <testcase classname="src/components/whatsapp-button.test.tsx" name="accessible safe new-tab link" time="0.1082965">
         </testcase>
-        <testcase classname="src/components/whatsapp-button.test.tsx" name="CO-72 HU-31: orderWhatsAppUrl formats message with order number and encodes URI" time="0.0008144">
+        <testcase classname="src/components/whatsapp-button.test.tsx" name="CO-72 HU-31: orderWhatsAppUrl formats message with order number and encodes URI" time="0.000609">
         </testcase>
-        <testcase classname="src/components/whatsapp-button.test.tsx" name="CO-72 HU-31: orderWhatsAppUrl returns null when disabled" time="0.0005409">
+        <testcase classname="src/components/whatsapp-button.test.tsx" name="CO-72 HU-31: orderWhatsAppUrl returns null when disabled" time="0.0002699">
         </testcase>
-        <testcase classname="src/components/whatsapp-button.test.tsx" name="CO-72 HU-31: OrderWhatsAppButton renders link with order context and privacy safe target" time="0.0174541">
-        </testcase>
-    </testsuite>
-    <testsuite name="src/features/auth/account.test.tsx" timestamp="2026-10-20T20:05:46.833Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="1.6043188">
-        <testcase classname="src/features/auth/account.test.tsx" name="session displays server user and logout clears access" time="0.2499052">
-        </testcase>
-        <testcase classname="src/features/auth/account.test.tsx" name="profile and addresses can be edited" time="1.2595619">
-        </testcase>
-        <testcase classname="src/features/auth/account.test.tsx" name="unauthenticated account redirects to login" time="0.0772841">
-        </testcase>
-        <testcase classname="src/features/auth/account.test.tsx" name="network failure shows controlled error" time="0.0158928">
+        <testcase classname="src/components/whatsapp-button.test.tsx" name="CO-72 HU-31: OrderWhatsAppButton renders link with order context and privacy safe target" time="0.012891">
         </testcase>
     </testsuite>
-    <testsuite name="src/features/auth/auth-form.test.tsx" timestamp="2026-10-20T20:05:46.835Z" hostname="DESKTOP-TAOVHM8" tests="8" failures="0" errors="0" skipped="0" time="6.0922652">
-        <testcase classname="src/features/auth/auth-form.test.tsx" name="registration feedback after API success" time="1.0989638">
+    <testsuite name="src/features/auth/account.test.tsx" timestamp="2026-10-20T21:08:14.197Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="1.6322013">
+        <testcase classname="src/features/auth/account.test.tsx" name="session displays server user and logout clears access" time="0.2465598">
         </testcase>
-        <testcase classname="src/features/auth/auth-form.test.tsx" name="invalid email stops request" time="0.1704236">
+        <testcase classname="src/features/auth/account.test.tsx" name="profile and addresses can be edited" time="1.2885566">
         </testcase>
-        <testcase classname="src/features/auth/auth-form.test.tsx" name="duplicate email is displayed" time="0.9561367">
+        <testcase classname="src/features/auth/account.test.tsx" name="unauthenticated account redirects to login" time="0.0790702">
         </testcase>
-        <testcase classname="src/features/auth/auth-form.test.tsx" name="backend password policy errors are displayed at field" time="0.9575376">
-        </testcase>
-        <testcase classname="src/features/auth/auth-form.test.tsx" name="login goes to account" time="0.7412666">
-        </testcase>
-        <testcase classname="src/features/auth/auth-form.test.tsx" name="checkout login preserves the allowed return route" time="0.7107153">
-        </testcase>
-        <testcase classname="src/features/auth/auth-form.test.tsx" name="wrong password keeps form available and shows error" time="0.7140796">
-        </testcase>
-        <testcase classname="src/features/auth/auth-form.test.tsx" name="pending request disables submit" time="0.7413854">
+        <testcase classname="src/features/auth/account.test.tsx" name="network failure shows controlled error" time="0.016518">
         </testcase>
     </testsuite>
-    <testsuite name="src/features/auth/password-reset.test.tsx" timestamp="2026-10-20T20:05:46.837Z" hostname="DESKTOP-TAOVHM8" tests="3" failures="0" errors="0" skipped="0" time="1.8426819">
-        <testcase classname="src/features/auth/password-reset.test.tsx" name="requests recovery and shows the generic response" time="0.5518976">
+    <testsuite name="src/features/auth/auth-form.test.tsx" timestamp="2026-10-20T21:08:14.198Z" hostname="DESKTOP-TAOVHM8" tests="8" failures="0" errors="0" skipped="0" time="5.961295">
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="registration feedback after API success" time="1.058201">
         </testcase>
-        <testcase classname="src/features/auth/password-reset.test.tsx" name="requires matching passwords before confirming" time="0.7156386">
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="invalid email stops request" time="0.2126814">
         </testcase>
-        <testcase classname="src/features/auth/password-reset.test.tsx" name="confirms a valid token and links back to login" time="0.5735816">
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="duplicate email is displayed" time="0.9788924">
         </testcase>
-    </testsuite>
-    <testsuite name="src/features/catalog/category-attributes.test.tsx" timestamp="2026-10-20T20:05:46.839Z" hostname="DESKTOP-TAOVHM8" tests="2" failures="0" errors="0" skipped="0" time="1.3027662">
-        <testcase classname="src/features/catalog/category-attributes.test.tsx" name="creates a category attribute and preserves conflicting values for correction" time="0.9182622">
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="backend password policy errors are displayed at field" time="0.8550683">
         </testcase>
-        <testcase classname="src/features/catalog/category-attributes.test.tsx" name="edits a category attribute without moving its category" time="0.3829696">
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="login goes to account" time="0.6931305">
         </testcase>
-    </testsuite>
-    <testsuite name="src/features/catalog/product-comparator.test.tsx" timestamp="2026-10-20T20:05:46.840Z" hostname="DESKTOP-TAOVHM8" tests="9" failures="0" errors="0" skipped="0" time="0.4166974">
-        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="ignores invalid saved comparison entries" time="0.0043243">
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="checkout login preserves the allowed return route" time="0.7553789">
         </testcase>
-        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; comparison-storage logic (CO-106 / CO-108) &gt; allows adding up to 4 products of the same category" time="0.0039844">
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="wrong password keeps form available and shows error" time="0.7351158">
         </testcase>
-        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; comparison-storage logic (CO-106 / CO-108) &gt; rejects products from different categories" time="0.0008533">
-        </testcase>
-        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; comparison-storage logic (CO-106 / CO-108) &gt; removes product by id" time="0.0011436">
-        </testcase>
-        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; CompareButton component (CO-107) &gt; toggles product in comparison" time="0.2530768">
-        </testcase>
-        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; ComparisonFloatingBar component (CO-107) &gt; renders floating bar with counter and action buttons" time="0.0331217">
-        </testcase>
-        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; ComparisonFloatingBar component (CO-107) &gt; disables compare button if only 1 item selected" time="0.016089">
-        </testcase>
-        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; ProductComparisonView component (CO-106 / CO-107 / CO-108) &gt; renders comparison matrix table with technical attributes and prices" time="0.0845097">
-        </testcase>
-        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; ProductComparisonView component (CO-106 / CO-107 / CO-108) &gt; displays error when fewer than 2 products are provided" time="0.0170004">
+        <testcase classname="src/features/auth/auth-form.test.tsx" name="pending request disables submit" time="0.6712096">
         </testcase>
     </testsuite>
-    <testsuite name="src/features/catalog/product-detail.test.tsx" timestamp="2026-10-20T20:05:46.842Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="0.387761">
-        <testcase classname="src/features/catalog/product-detail.test.tsx" name="ProductDetail Component (HU-06 / HU-08) &gt; renders product detail, warranty, specifications and gallery" time="0.2169182">
+    <testsuite name="src/features/auth/password-reset.test.tsx" timestamp="2026-10-20T21:08:14.201Z" hostname="DESKTOP-TAOVHM8" tests="3" failures="0" errors="0" skipped="0" time="1.7231493">
+        <testcase classname="src/features/auth/password-reset.test.tsx" name="requests recovery and shows the generic response" time="0.5069519">
         </testcase>
-        <testcase classname="src/features/catalog/product-detail.test.tsx" name="ProductDetail Component (HU-06 / HU-08) &gt; updates SKU, price, discount badge and stock when changing variant" time="0.0756515">
+        <testcase classname="src/features/auth/password-reset.test.tsx" name="requires matching passwords before confirming" time="0.7234941">
         </testcase>
-        <testcase classname="src/features/catalog/product-detail.test.tsx" name="ProductDetail Component (HU-06 / HU-08) &gt; adds variant to anonymous cart in localStorage without login" time="0.0754657">
-        </testcase>
-        <testcase classname="src/features/catalog/product-detail.test.tsx" name="ProductDetail Component (HU-06 / HU-08) &gt; shows error state when product is not found" time="0.0179806">
+        <testcase classname="src/features/auth/password-reset.test.tsx" name="confirms a valid token and links back to login" time="0.4913246">
         </testcase>
     </testsuite>
-    <testsuite name="src/features/catalog/promotion-manager.test.tsx" timestamp="2026-10-20T20:05:46.843Z" hostname="DESKTOP-TAOVHM8" tests="1" failures="0" errors="0" skipped="0" time="1.7095666">
-        <testcase classname="src/features/catalog/promotion-manager.test.tsx" name="renders empty promotions list and validates promotion creation" time="1.7069768">
+    <testsuite name="src/features/catalog/category-attributes.test.tsx" timestamp="2026-10-20T21:08:14.202Z" hostname="DESKTOP-TAOVHM8" tests="2" failures="0" errors="0" skipped="0" time="1.1625568">
+        <testcase classname="src/features/catalog/category-attributes.test.tsx" name="creates a category attribute and preserves conflicting values for correction" time="0.8716963">
+        </testcase>
+        <testcase classname="src/features/catalog/category-attributes.test.tsx" name="edits a category attribute without moving its category" time="0.2896713">
         </testcase>
     </testsuite>
-    <testsuite name="src/features/catalog/public-catalog.test.tsx" timestamp="2026-10-20T20:05:46.844Z" hostname="DESKTOP-TAOVHM8" tests="5" failures="0" errors="0" skipped="0" time="0.4793054">
-        <testcase classname="src/features/catalog/public-catalog.test.tsx" name="PublicCatalog Component (HU-04 / HU-05) &gt; renders catalog products with images, prices, promo badges, and stock availability" time="0.263181">
+    <testsuite name="src/features/catalog/product-comparator.test.tsx" timestamp="2026-10-20T21:08:14.203Z" hostname="DESKTOP-TAOVHM8" tests="10" failures="0" errors="0" skipped="0" time="0.3978536">
+        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="ignores invalid saved comparison entries" time="0.0026275">
         </testcase>
-        <testcase classname="src/features/catalog/public-catalog.test.tsx" name="PublicCatalog Component (HU-04 / HU-05) &gt; allows searching and updates query parameters" time="0.0546075">
+        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="hides the previous comparison when a new query fails" time="0.1943735">
         </testcase>
-        <testcase classname="src/features/catalog/public-catalog.test.tsx" name="PublicCatalog Component (HU-04 / HU-05) &gt; filters by category and brand" time="0.0355353">
+        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; comparison-storage logic (CO-106 / CO-108) &gt; allows adding up to 4 products of the same category" time="0.0022342">
         </testcase>
-        <testcase classname="src/features/catalog/public-catalog.test.tsx" name="PublicCatalog Component (HU-04 / HU-05) &gt; shows empty state when no products match filters" time="0.0585489">
+        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; comparison-storage logic (CO-106 / CO-108) &gt; rejects products from different categories" time="0.000571">
         </testcase>
-        <testcase classname="src/features/catalog/public-catalog.test.tsx" name="PublicCatalog Component (HU-04 / HU-05) &gt; resets unsaved filter drafts when navigating back to a different URL" time="0.0656271">
+        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; comparison-storage logic (CO-106 / CO-108) &gt; removes product by id" time="0.0007831">
         </testcase>
-    </testsuite>
-    <testsuite name="src/features/catalog/taxonomy-manager.test.tsx" timestamp="2026-10-20T20:05:46.846Z" hostname="DESKTOP-TAOVHM8" tests="2" failures="0" errors="0" skipped="0" time="0.6789587">
-        <testcase classname="src/features/catalog/taxonomy-manager.test.tsx" name="creates category with derived slug and preserves server validation errors" time="0.6137664">
+        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; CompareButton component (CO-107) &gt; toggles product in comparison" time="0.1246533">
         </testcase>
-        <testcase classname="src/features/catalog/taxonomy-manager.test.tsx" name="failure can be retried and empty list is not confused with loading" time="0.0638281">
+        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; ComparisonFloatingBar component (CO-107) &gt; renders floating bar with counter and action buttons" time="0.0164829">
         </testcase>
-    </testsuite>
-    <testsuite name="src/features/catalog/utf8-spanish.test.tsx" timestamp="2026-10-20T20:05:46.848Z" hostname="DESKTOP-TAOVHM8" tests="2" failures="0" errors="0" skipped="0" time="0.0091682">
-        <testcase classname="src/features/catalog/utf8-spanish.test.tsx" name="QA - UTF-8 and Spanish Orthography Verification (CO-74) &gt; ensures all public pages and components are valid UTF-8 without byte order marks or mojibake" time="0.006248">
+        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; ComparisonFloatingBar component (CO-107) &gt; disables compare button if only 1 item selected" time="0.010539">
         </testcase>
-        <testcase classname="src/features/catalog/utf8-spanish.test.tsx" name="QA - UTF-8 and Spanish Orthography Verification (CO-74) &gt; verifies accurate Spanish characters (á, é, í, ó, ú, ñ, ¡, ¿) in catalog and detail texts" time="0.0012831">
+        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; ProductComparisonView component (CO-106 / CO-107 / CO-108) &gt; renders comparison matrix table with technical attributes and prices" time="0.0307225">
+        </testcase>
+        <testcase classname="src/features/catalog/product-comparator.test.tsx" name="HU-07 (CO-35): Comparación de Productos &gt; ProductComparisonView component (CO-106 / CO-107 / CO-108) &gt; displays error when fewer than 2 products are provided" time="0.0126713">
         </testcase>
     </testsuite>
-    <testsuite name="src/features/catalog/variant-manager.test.tsx" timestamp="2026-10-20T20:05:46.848Z" hostname="DESKTOP-TAOVHM8" tests="7" failures="0" errors="0" skipped="0" time="3.2428837">
-        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="creates a standard variant with a decimal string and only filled category attributes" time="0.7839369">
+    <testsuite name="src/features/catalog/product-detail.test.tsx" timestamp="2026-10-20T21:08:14.207Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="0.3570275">
+        <testcase classname="src/features/catalog/product-detail.test.tsx" name="ProductDetail Component (HU-06 / HU-08) &gt; renders product detail, warranty, specifications and gallery" time="0.1875786">
         </testcase>
-        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="duplicate SKU error preserves editable values and allows correction" time="0.8586977">
+        <testcase classname="src/features/catalog/product-detail.test.tsx" name="ProductDetail Component (HU-06 / HU-08) &gt; updates SKU, price, discount badge and stock when changing variant" time="0.07612">
         </testcase>
-        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="edits price including zero as a decimal string and changes active status separately" time="0.3622369">
+        <testcase classname="src/features/catalog/product-detail.test.tsx" name="ProductDetail Component (HU-06 / HU-08) &gt; adds variant to anonymous cart in localStorage without login" time="0.0623619">
         </testcase>
-        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="blocks save until category attributes load and retries their failure" time="0.0917647">
-        </testcase>
-        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="switching the selected product clears the previous SKU and category values" time="0.3273589">
-        </testcase>
-        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="keeps the save action disabled while the mutation is pending" time="0.3694473">
-        </testcase>
-        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="shows nested attribute validation from the API without losing the entered value" time="0.4478858">
+        <testcase classname="src/features/catalog/product-detail.test.tsx" name="ProductDetail Component (HU-06 / HU-08) &gt; shows error state when product is not found" time="0.0294853">
         </testcase>
     </testsuite>
-    <testsuite name="src/features/orders/cart-storage.test.ts" timestamp="2026-10-20T20:05:46.850Z" hostname="DESKTOP-TAOVHM8" tests="7" failures="0" errors="0" skipped="0" time="0.0117877">
-        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; stores items in localStorage with TTL metadata" time="0.004613">
-        </testcase>
-        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; adds items and increments quantity when the same variant is added" time="0.001304">
-        </testcase>
-        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; updates quantity and removes line when quantity is 0" time="0.0011546">
-        </testcase>
-        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; cleans up expired carts and returns empty list" time="0.0004811">
-        </testcase>
-        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; recovers gracefully from corrupted data in localStorage" time="0.0004956">
-        </testcase>
-        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; sanitizes invalid cart line structures" time="0.0005011">
-        </testcase>
-        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; dispatches cart-updated event on save and clear" time="0.001262">
+    <testsuite name="src/features/catalog/promotion-manager.test.tsx" timestamp="2026-10-20T21:08:14.209Z" hostname="DESKTOP-TAOVHM8" tests="1" failures="0" errors="0" skipped="0" time="1.6894514">
+        <testcase classname="src/features/catalog/promotion-manager.test.tsx" name="renders empty promotions list and validates promotion creation" time="1.6881693">
         </testcase>
     </testsuite>
-    <testsuite name="src/features/orders/cart-validator.test.tsx" timestamp="2026-10-20T20:05:46.853Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="0.3548156">
-        <testcase classname="src/features/orders/cart-validator.test.tsx" name="CartValidator (CO-57 HU-09) &gt; validates cart and displays confirmation when all items are available and current" time="0.1219505">
+    <testsuite name="src/features/catalog/public-catalog.test.tsx" timestamp="2026-10-20T21:08:14.210Z" hostname="DESKTOP-TAOVHM8" tests="5" failures="0" errors="0" skipped="0" time="0.4015204">
+        <testcase classname="src/features/catalog/public-catalog.test.tsx" name="PublicCatalog Component (HU-04 / HU-05) &gt; renders catalog products with images, prices, promo badges, and stock availability" time="0.2230815">
         </testcase>
-        <testcase classname="src/features/orders/cart-validator.test.tsx" name="CartValidator (CO-57 HU-09) &gt; displays warnings and details when items have changes or are out of stock" time="0.0343775">
+        <testcase classname="src/features/catalog/public-catalog.test.tsx" name="PublicCatalog Component (HU-04 / HU-05) &gt; allows searching and updates query parameters" time="0.0511971">
         </testcase>
-        <testcase classname="src/features/orders/cart-validator.test.tsx" name="CartValidator (CO-57 HU-09) &gt; sends the observed price and requires explicit acceptance of a changed price" time="0.1748351">
+        <testcase classname="src/features/catalog/public-catalog.test.tsx" name="PublicCatalog Component (HU-04 / HU-05) &gt; filters by category and brand" time="0.0244138">
         </testcase>
-        <testcase classname="src/features/orders/cart-validator.test.tsx" name="CartValidator (CO-57 HU-09) &gt; does not show confirmation after a failed validation" time="0.0214758">
+        <testcase classname="src/features/catalog/public-catalog.test.tsx" name="PublicCatalog Component (HU-04 / HU-05) &gt; shows empty state when no products match filters" time="0.0483794">
         </testcase>
-    </testsuite>
-    <testsuite name="src/features/orders/delivery-selector.test.tsx" timestamp="2026-10-20T20:05:46.855Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="0.362523">
-        <testcase classname="src/features/orders/delivery-selector.test.tsx" name="DeliverySelector (CO-70 HU-28) &gt; renders 3 delivery options: PICKUP, URBAN, SPECIAL" time="0.1358819">
-        </testcase>
-        <testcase classname="src/features/orders/delivery-selector.test.tsx" name="DeliverySelector (CO-70 HU-28) &gt; calculates free shipping when subtotal &gt;= 100000 COP" time="0.028761">
-        </testcase>
-        <testcase classname="src/features/orders/delivery-selector.test.tsx" name="DeliverySelector (CO-70 HU-28) &gt; blocks order confirmation and warns when SPECIAL zone is selected" time="0.0258155">
-        </testcase>
-        <testcase classname="src/features/orders/delivery-selector.test.tsx" name="DeliverySelector (CO-70 HU-28) &gt; updates the selected mode immediately while its quote loads" time="0.1702703">
+        <testcase classname="src/features/catalog/public-catalog.test.tsx" name="PublicCatalog Component (HU-04 / HU-05) &gt; resets unsaved filter drafts when navigating back to a different URL" time="0.0525149">
         </testcase>
     </testsuite>
-    <testsuite name="src/features/orders/inventory.test.tsx" timestamp="2026-10-20T20:05:46.857Z" hostname="DESKTOP-TAOVHM8" tests="2" failures="0" errors="0" skipped="0" time="1.0843074">
-        <testcase classname="src/features/orders/inventory.test.tsx" name="registers a justified adjustment after confirmation" time="0.7934401">
+    <testsuite name="src/features/catalog/taxonomy-manager.test.tsx" timestamp="2026-10-20T21:08:14.213Z" hostname="DESKTOP-TAOVHM8" tests="2" failures="0" errors="0" skipped="0" time="0.6704308">
+        <testcase classname="src/features/catalog/taxonomy-manager.test.tsx" name="creates category with derived slug and preserves server validation errors" time="0.5891287">
         </testcase>
-        <testcase classname="src/features/orders/inventory.test.tsx" name="applies movement type and date filters" time="0.2894494">
-        </testcase>
-    </testsuite>
-    <testsuite name="src/features/orders/payment-instructions.test.tsx" timestamp="2026-10-20T20:05:46.857Z" hostname="DESKTOP-TAOVHM8" tests="6" failures="0" errors="0" skipped="0" time="0.7402519">
-        <testcase classname="src/features/orders/payment-instructions.test.tsx" name="does not invite payment for an expired or cancelled order: { order_status: &apos;CANCELLED&apos;, …(1) }" time="0.1631891">
-        </testcase>
-        <testcase classname="src/features/orders/payment-instructions.test.tsx" name="does not invite payment for an expired or cancelled order: { order_status: &apos;PENDING&apos;, …(1) }" time="0.018232">
-        </testcase>
-        <testcase classname="src/features/orders/payment-instructions.test.tsx" name="clipboard denial explains how to copy manually without reporting a payment" time="0.1386326">
-        </testcase>
-        <testcase classname="src/features/orders/payment-instructions.test.tsx" name="reports reference without presenting funds as confirmed" time="0.194012">
-        </testcase>
-        <testcase classname="src/features/orders/payment-instructions.test.tsx" name="an expired report window cannot be submitted" time="0.0099865">
-        </testcase>
-        <testcase classname="src/features/orders/payment-instructions.test.tsx" name="a failed request preserves the reference and permits retry" time="0.2142807">
+        <testcase classname="src/features/catalog/taxonomy-manager.test.tsx" name="failure can be retried and empty list is not confused with loading" time="0.080063">
         </testcase>
     </testsuite>
-    <testsuite name="src/features/orders/sprint4-features.test.tsx" timestamp="2026-10-20T20:05:46.860Z" hostname="DESKTOP-TAOVHM8" tests="9" failures="0" errors="0" skipped="0" time="0.4455645">
-        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-37 HU-10: Identificación al momento de comprar &gt; preserves anonymous cart in localStorage so user can authenticate late without losing items" time="0.0039706">
+    <testsuite name="src/features/catalog/utf8-spanish.test.tsx" timestamp="2026-10-20T21:08:14.214Z" hostname="DESKTOP-TAOVHM8" tests="2" failures="0" errors="0" skipped="0" time="0.0097633">
+        <testcase classname="src/features/catalog/utf8-spanish.test.tsx" name="QA - UTF-8 and Spanish Orthography Verification (CO-74) &gt; ensures all public pages and components are valid UTF-8 without byte order marks or mojibake" time="0.0069237">
         </testcase>
-        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-57 HU-09: Revalidación autoritativa del carrito &gt; reports stock changes and flags out of stock items" time="0.0990739">
-        </testcase>
-        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-57 HU-09: Revalidación autoritativa del carrito &gt; confirms ok status when all items are available at current prices" time="0.0252237">
-        </testcase>
-        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-70 HU-28: Condiciones y costo de entrega &gt; offers store pickup as completely free" time="0.0507998">
-        </testcase>
-        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-70 HU-28: Condiciones y costo de entrega &gt; applies $5.000 flat rate for urban delivery when subtotal &lt; $100.000" time="0.0307588">
-        </testcase>
-        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-70 HU-28: Condiciones y costo de entrega &gt; applies free delivery for urban delivery when subtotal &gt;= $100.000 threshold" time="0.031145">
-        </testcase>
-        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-70 HU-28: Condiciones y costo de entrega &gt; blocks confirmation for SPECIAL zones until rate is confirmed" time="0.0297824">
-        </testcase>
-        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-62 HU-19: Consulta administrativa de clientes &gt; renders list of registered clients and their order totals" time="0.0414429">
-        </testcase>
-        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-62 HU-19: Consulta administrativa de clientes &gt; filters customers by search text" time="0.1311687">
+        <testcase classname="src/features/catalog/utf8-spanish.test.tsx" name="QA - UTF-8 and Spanish Orthography Verification (CO-74) &gt; verifies accurate Spanish characters (á, é, í, ó, ú, ñ, ¡, ¿) in catalog and detail texts" time="0.0010627">
         </testcase>
     </testsuite>
-    <testsuite name="src/features/orders/sprint5-features.test.tsx" timestamp="2026-10-20T20:05:46.862Z" hostname="DESKTOP-TAOVHM8" tests="6" failures="0" errors="0" skipped="0" time="0.7414993">
-        <testcase classname="src/features/orders/sprint5-features.test.tsx" name="Sprint 5 &amp; 6: cancellation policy in HU-18 &gt; does not expose cancellation for PREPARING" time="0.0895385">
+    <testsuite name="src/features/catalog/variant-manager.test.tsx" timestamp="2026-10-20T21:08:14.215Z" hostname="DESKTOP-TAOVHM8" tests="7" failures="0" errors="0" skipped="0" time="3.2827343">
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="creates a standard variant with a decimal string and only filled category attributes" time="0.7700751">
         </testcase>
-        <testcase classname="src/features/orders/sprint5-features.test.tsx" name="Sprint 5 &amp; 6: cancellation policy in HU-18 &gt; does not expose cancellation for CANCELLED" time="0.0121491">
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="duplicate SKU error preserves editable values and allows correction" time="0.8460688">
         </testcase>
-        <testcase classname="src/features/orders/sprint5-features.test.tsx" name="Sprint 5 &amp; 6: cancellation policy in HU-18 &gt; does not expose cancellation for SHIPPED" time="0.0116716">
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="edits price including zero as a decimal string and changes active status separately" time="0.3753501">
         </testcase>
-        <testcase classname="src/features/orders/sprint5-features.test.tsx" name="Sprint 5 &amp; 6: cancellation policy in HU-18 &gt; exposes cancellation for PENDING in HU-18" time="0.1281834">
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="blocks save until category attributes load and retries their failure" time="0.1084248">
         </testcase>
-        <testcase classname="src/features/orders/sprint5-features.test.tsx" name="Sprint 5 — CO-59 &amp; CO-60: Instrucciones y Reporte de Pago &gt; muestra las instrucciones de pago configuradas y permite copiarlas" time="0.1121114">
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="switching the selected product clears the previous SKU and category values" time="0.3613607">
         </testcase>
-        <testcase classname="src/features/orders/sprint5-features.test.tsx" name="Sprint 5 — CO-59 &amp; CO-60: Instrucciones y Reporte de Pago &gt; envía el reporte de pago y muestra el estado REPORTED con advertencia de revisión" time="0.3858524">
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="keeps the save action disabled while the mutation is pending" time="0.3696607">
         </testcase>
-    </testsuite>
-    <testsuite name="src/features/orders/sprint6-features.test.tsx" timestamp="2026-10-20T20:05:46.864Z" hostname="DESKTOP-TAOVHM8" tests="6" failures="0" errors="0" skipped="0" time="1.3619077">
-        <testcase classname="src/features/orders/sprint6-features.test.tsx" name="administrative payments page through results and flag overdue T2" time="0.2845362">
-        </testcase>
-        <testcase classname="src/features/orders/sprint6-features.test.tsx" name="Sprint 6 Frontend Features &gt; AdminPaymentList renders payments table with reference and confirm button" time="0.0458994">
-        </testcase>
-        <testcase classname="src/features/orders/sprint6-features.test.tsx" name="Sprint 6 Frontend Features &gt; AdminPaymentList handles confirm payment action" time="0.0458911">
-        </testcase>
-        <testcase classname="src/features/orders/sprint6-features.test.tsx" name="Sprint 6 Frontend Features &gt; AdminPaymentList opens reject modal and sends reason" time="0.5239746">
-        </testcase>
-        <testcase classname="src/features/orders/sprint6-features.test.tsx" name="Sprint 6 Frontend Features &gt; AdminOrderList displays orders and advances status to PREPARING" time="0.0666199">
-        </testcase>
-        <testcase classname="src/features/orders/sprint6-features.test.tsx" name="Sprint 6 Frontend Features &gt; OrderDetail shows tracking stepper and allows customer cancellation" time="0.3933951">
+        <testcase classname="src/features/catalog/variant-manager.test.tsx" name="shows nested attribute validation from the API without losing the entered value" time="0.4503203">
         </testcase>
     </testsuite>
-    <testsuite name="src/features/orders/sprint7-features.test.tsx" timestamp="2026-10-20T20:05:46.867Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="0.5692848">
-        <testcase classname="src/features/orders/sprint7-features.test.tsx" name="Sprint 7 Frontend Acceptance Tests &gt; CO-71 (HU-29): Gestión administrativa de entrega &gt; renders delivery filter and delivery badges in admin orders table" time="0.1133741">
+    <testsuite name="src/features/orders/cart-storage.test.ts" timestamp="2026-10-20T21:08:14.216Z" hostname="DESKTOP-TAOVHM8" tests="7" failures="0" errors="0" skipped="0" time="0.0097613">
+        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; stores items in localStorage with TTL metadata" time="0.0041774">
         </testcase>
-        <testcase classname="src/features/orders/sprint7-features.test.tsx" name="Sprint 7 Frontend Acceptance Tests &gt; CO-71 (HU-29): Gestión administrativa de entrega &gt; filters admin orders by delivery_mode query parameter" time="0.2526008">
+        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; adds items and increments quantity when the same variant is added" time="0.0010142">
         </testcase>
-        <testcase classname="src/features/orders/sprint7-features.test.tsx" name="Sprint 7 Frontend Acceptance Tests &gt; CO-71 (HU-29): Gestión administrativa de entrega &gt; opens order modal and displays authorized delivery details" time="0.1527395">
+        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; updates quantity and removes line when quantity is 0" time="0.0009277">
         </testcase>
-        <testcase classname="src/features/orders/sprint7-features.test.tsx" name="Sprint 7 Frontend Acceptance Tests &gt; CO-72 (HU-31): WhatsApp contextual desde pedido propio &gt; renders contextual WhatsApp support link in OrderDetail with order number" time="0.0487709">
+        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; cleans up expired carts and returns empty list" time="0.0003976">
         </testcase>
-    </testsuite>
-    <testsuite name="src/features/users/customer-list.test.tsx" timestamp="2026-10-20T20:05:46.869Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="0.4473409">
-        <testcase classname="src/features/users/customer-list.test.tsx" name="CustomerList (CO-62 HU-19) &gt; renders customer table with names, emails, dates and order counts" time="0.229905">
+        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; recovers gracefully from corrupted data in localStorage" time="0.0003152">
         </testcase>
-        <testcase classname="src/features/users/customer-list.test.tsx" name="CustomerList (CO-62 HU-19) &gt; filters customer results by search query" time="0.1126831">
+        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; sanitizes invalid cart line structures" time="0.0003712">
         </testcase>
-        <testcase classname="src/features/users/customer-list.test.tsx" name="CustomerList (CO-62 HU-19) &gt; requests the next page and preserves the submitted search" time="0.0525097">
-        </testcase>
-        <testcase classname="src/features/users/customer-list.test.tsx" name="CustomerList (CO-62 HU-19) &gt; shows empty results and blocks non-admin access with a clear error" time="0.0496212">
+        <testcase classname="src/features/orders/cart-storage.test.ts" name="Anonymous Cart Storage (HU-08 / RF-13 / RF-14) &gt; dispatches cart-updated event on save and clear" time="0.001111">
         </testcase>
     </testsuite>
-    <testsuite name="src/services/api.test.ts" timestamp="2026-10-20T20:05:46.870Z" hostname="DESKTOP-TAOVHM8" tests="7" failures="0" errors="0" skipped="0" time="0.0281004">
-        <testcase classname="src/services/api.test.ts" name="unsafe request gets CSRF and includes cookies" time="0.01037">
+    <testsuite name="src/features/orders/cart-validator.test.tsx" timestamp="2026-10-20T21:08:14.218Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="0.2891961">
+        <testcase classname="src/features/orders/cart-validator.test.tsx" name="CartValidator (CO-57 HU-09) &gt; validates cart and displays confirmation when all items are available and current" time="0.0860514">
         </testcase>
-        <testcase classname="src/services/api.test.ts" name="retries an unsafe request once with a fresh CSRF token" time="0.0036312">
+        <testcase classname="src/features/orders/cart-validator.test.tsx" name="CartValidator (CO-57 HU-09) &gt; displays warnings and details when items have changes or are out of stock" time="0.0204178">
         </testcase>
-        <testcase classname="src/services/api.test.ts" name="does not loop when a refreshed CSRF token is rejected" time="0.0034073">
+        <testcase classname="src/features/orders/cart-validator.test.tsx" name="CartValidator (CO-57 HU-09) &gt; sends the observed price and requires explicit acceptance of a changed price" time="0.1535394">
         </testcase>
-        <testcase classname="src/services/api.test.ts" name="expired access refreshes then retries protected request" time="0.0021996">
+        <testcase classname="src/features/orders/cart-validator.test.tsx" name="CartValidator (CO-57 HU-09) &gt; does not show confirmation after a failed validation" time="0.0276775">
         </testcase>
-        <testcase classname="src/services/api.test.ts" name="invalid refresh terminates without retry loop" time="0.0013706">
+    </testsuite>
+    <testsuite name="src/features/orders/delivery-selector.test.tsx" timestamp="2026-10-20T21:08:14.220Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="0.3326036">
+        <testcase classname="src/features/orders/delivery-selector.test.tsx" name="DeliverySelector (CO-70 HU-28) &gt; renders 3 delivery options: PICKUP, URBAN, SPECIAL" time="0.1255992">
         </testcase>
-        <testcase classname="src/services/api.test.ts" name="HTML upstream failure is shown as a readable error" time="0.0019652">
+        <testcase classname="src/features/orders/delivery-selector.test.tsx" name="DeliverySelector (CO-70 HU-28) &gt; calculates free shipping when subtotal &gt;= 100000 COP" time="0.0296669">
         </testcase>
-        <testcase classname="src/services/api.test.ts" name="multipart upload preserves browser boundary and sends CSRF after refresh" time="0.0031781">
+        <testcase classname="src/features/orders/delivery-selector.test.tsx" name="DeliverySelector (CO-70 HU-28) &gt; blocks order confirmation and warns when SPECIAL zone is selected" time="0.0251918">
+        </testcase>
+        <testcase classname="src/features/orders/delivery-selector.test.tsx" name="DeliverySelector (CO-70 HU-28) &gt; updates the selected mode immediately while its quote loads" time="0.1503826">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/orders/inventory.test.tsx" timestamp="2026-10-20T21:08:14.221Z" hostname="DESKTOP-TAOVHM8" tests="2" failures="0" errors="0" skipped="0" time="1.0238114">
+        <testcase classname="src/features/orders/inventory.test.tsx" name="registers a justified adjustment after confirmation" time="0.7021264">
+        </testcase>
+        <testcase classname="src/features/orders/inventory.test.tsx" name="applies movement type and date filters" time="0.3205209">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/orders/payment-instructions.test.tsx" timestamp="2026-10-20T21:08:14.222Z" hostname="DESKTOP-TAOVHM8" tests="6" failures="0" errors="0" skipped="0" time="0.7431409">
+        <testcase classname="src/features/orders/payment-instructions.test.tsx" name="does not invite payment for an expired or cancelled order: { order_status: &apos;CANCELLED&apos;, …(1) }" time="0.1481337">
+        </testcase>
+        <testcase classname="src/features/orders/payment-instructions.test.tsx" name="does not invite payment for an expired or cancelled order: { order_status: &apos;PENDING&apos;, …(1) }" time="0.0164975">
+        </testcase>
+        <testcase classname="src/features/orders/payment-instructions.test.tsx" name="clipboard denial explains how to copy manually without reporting a payment" time="0.1388014">
+        </testcase>
+        <testcase classname="src/features/orders/payment-instructions.test.tsx" name="reports reference without presenting funds as confirmed" time="0.2211973">
+        </testcase>
+        <testcase classname="src/features/orders/payment-instructions.test.tsx" name="an expired report window cannot be submitted" time="0.0088754">
+        </testcase>
+        <testcase classname="src/features/orders/payment-instructions.test.tsx" name="a failed request preserves the reference and permits retry" time="0.2081492">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/orders/sprint4-features.test.tsx" timestamp="2026-10-20T21:08:14.224Z" hostname="DESKTOP-TAOVHM8" tests="9" failures="0" errors="0" skipped="0" time="0.4173561">
+        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-37 HU-10: Identificación al momento de comprar &gt; preserves anonymous cart in localStorage so user can authenticate late without losing items" time="0.0033283">
+        </testcase>
+        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-57 HU-09: Revalidación autoritativa del carrito &gt; reports stock changes and flags out of stock items" time="0.0879254">
+        </testcase>
+        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-57 HU-09: Revalidación autoritativa del carrito &gt; confirms ok status when all items are available at current prices" time="0.0132582">
+        </testcase>
+        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-70 HU-28: Condiciones y costo de entrega &gt; offers store pickup as completely free" time="0.0430951">
+        </testcase>
+        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-70 HU-28: Condiciones y costo de entrega &gt; applies $5.000 flat rate for urban delivery when subtotal &lt; $100.000" time="0.0416439">
+        </testcase>
+        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-70 HU-28: Condiciones y costo de entrega &gt; applies free delivery for urban delivery when subtotal &gt;= $100.000 threshold" time="0.0224739">
+        </testcase>
+        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-70 HU-28: Condiciones y costo de entrega &gt; blocks confirmation for SPECIAL zones until rate is confirmed" time="0.0235432">
+        </testcase>
+        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-62 HU-19: Consulta administrativa de clientes &gt; renders list of registered clients and their order totals" time="0.0434647">
+        </testcase>
+        <testcase classname="src/features/orders/sprint4-features.test.tsx" name="Sprint 4 Integrated Acceptance Tests &gt; CO-62 HU-19: Consulta administrativa de clientes &gt; filters customers by search text" time="0.1365429">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/orders/sprint5-features.test.tsx" timestamp="2026-10-20T21:08:14.227Z" hostname="DESKTOP-TAOVHM8" tests="6" failures="0" errors="0" skipped="0" time="0.6853996">
+        <testcase classname="src/features/orders/sprint5-features.test.tsx" name="Sprint 5 &amp; 6: cancellation policy in HU-18 &gt; does not expose cancellation for PREPARING" time="0.0782685">
+        </testcase>
+        <testcase classname="src/features/orders/sprint5-features.test.tsx" name="Sprint 5 &amp; 6: cancellation policy in HU-18 &gt; does not expose cancellation for CANCELLED" time="0.0120691">
+        </testcase>
+        <testcase classname="src/features/orders/sprint5-features.test.tsx" name="Sprint 5 &amp; 6: cancellation policy in HU-18 &gt; does not expose cancellation for SHIPPED" time="0.0116538">
+        </testcase>
+        <testcase classname="src/features/orders/sprint5-features.test.tsx" name="Sprint 5 &amp; 6: cancellation policy in HU-18 &gt; exposes cancellation for PENDING in HU-18" time="0.1125917">
+        </testcase>
+        <testcase classname="src/features/orders/sprint5-features.test.tsx" name="Sprint 5 — CO-59 &amp; CO-60: Instrucciones y Reporte de Pago &gt; muestra las instrucciones de pago configuradas y permite copiarlas" time="0.0941716">
+        </testcase>
+        <testcase classname="src/features/orders/sprint5-features.test.tsx" name="Sprint 5 — CO-59 &amp; CO-60: Instrucciones y Reporte de Pago &gt; envía el reporte de pago y muestra el estado REPORTED con advertencia de revisión" time="0.3745359">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/orders/sprint6-features.test.tsx" timestamp="2026-10-20T21:08:14.228Z" hostname="DESKTOP-TAOVHM8" tests="6" failures="0" errors="0" skipped="0" time="1.3881823">
+        <testcase classname="src/features/orders/sprint6-features.test.tsx" name="administrative payments page through results and flag overdue T2" time="0.2248751">
+        </testcase>
+        <testcase classname="src/features/orders/sprint6-features.test.tsx" name="Sprint 6 Frontend Features &gt; AdminPaymentList renders payments table with reference and confirm button" time="0.0356899">
+        </testcase>
+        <testcase classname="src/features/orders/sprint6-features.test.tsx" name="Sprint 6 Frontend Features &gt; AdminPaymentList handles confirm payment action" time="0.0736844">
+        </testcase>
+        <testcase classname="src/features/orders/sprint6-features.test.tsx" name="Sprint 6 Frontend Features &gt; AdminPaymentList opens reject modal and sends reason" time="0.5255233">
+        </testcase>
+        <testcase classname="src/features/orders/sprint6-features.test.tsx" name="Sprint 6 Frontend Features &gt; AdminOrderList displays orders and advances status to PREPARING" time="0.0854959">
+        </testcase>
+        <testcase classname="src/features/orders/sprint6-features.test.tsx" name="Sprint 6 Frontend Features &gt; OrderDetail shows tracking stepper and allows customer cancellation" time="0.4414847">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/orders/sprint7-features.test.tsx" timestamp="2026-10-20T21:08:14.230Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="0.5209016">
+        <testcase classname="src/features/orders/sprint7-features.test.tsx" name="Sprint 7 Frontend Acceptance Tests &gt; CO-71 (HU-29): Gestión administrativa de entrega &gt; renders delivery filter and delivery badges in admin orders table" time="0.098968">
+        </testcase>
+        <testcase classname="src/features/orders/sprint7-features.test.tsx" name="Sprint 7 Frontend Acceptance Tests &gt; CO-71 (HU-29): Gestión administrativa de entrega &gt; filters admin orders by delivery_mode query parameter" time="0.2412408">
+        </testcase>
+        <testcase classname="src/features/orders/sprint7-features.test.tsx" name="Sprint 7 Frontend Acceptance Tests &gt; CO-71 (HU-29): Gestión administrativa de entrega &gt; opens order modal and displays authorized delivery details" time="0.1271204">
+        </testcase>
+        <testcase classname="src/features/orders/sprint7-features.test.tsx" name="Sprint 7 Frontend Acceptance Tests &gt; CO-72 (HU-31): WhatsApp contextual desde pedido propio &gt; renders contextual WhatsApp support link in OrderDetail with order number" time="0.0519955">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/users/customer-list.test.tsx" timestamp="2026-10-20T21:08:14.231Z" hostname="DESKTOP-TAOVHM8" tests="4" failures="0" errors="0" skipped="0" time="0.3831127">
+        <testcase classname="src/features/users/customer-list.test.tsx" name="CustomerList (CO-62 HU-19) &gt; renders customer table with names, emails, dates and order counts" time="0.2007273">
+        </testcase>
+        <testcase classname="src/features/users/customer-list.test.tsx" name="CustomerList (CO-62 HU-19) &gt; filters customer results by search query" time="0.0945111">
+        </testcase>
+        <testcase classname="src/features/users/customer-list.test.tsx" name="CustomerList (CO-62 HU-19) &gt; requests the next page and preserves the submitted search" time="0.0516405">
+        </testcase>
+        <testcase classname="src/features/users/customer-list.test.tsx" name="CustomerList (CO-62 HU-19) &gt; shows empty results and blocks non-admin access with a clear error" time="0.0343201">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/services/api.test.ts" timestamp="2026-10-20T21:08:14.233Z" hostname="DESKTOP-TAOVHM8" tests="7" failures="0" errors="0" skipped="0" time="0.0263845">
+        <testcase classname="src/services/api.test.ts" name="unsafe request gets CSRF and includes cookies" time="0.0101904">
+        </testcase>
+        <testcase classname="src/services/api.test.ts" name="retries an unsafe request once with a fresh CSRF token" time="0.002807">
+        </testcase>
+        <testcase classname="src/services/api.test.ts" name="does not loop when a refreshed CSRF token is rejected" time="0.0042237">
+        </testcase>
+        <testcase classname="src/services/api.test.ts" name="expired access refreshes then retries protected request" time="0.0014464">
+        </testcase>
+        <testcase classname="src/services/api.test.ts" name="invalid refresh terminates without retry loop" time="0.0012962">
+        </testcase>
+        <testcase classname="src/services/api.test.ts" name="HTML upstream failure is shown as a readable error" time="0.0019238">
+        </testcase>
+        <testcase classname="src/services/api.test.ts" name="multipart upload preserves browser boundary and sends CSRF after refresh" time="0.0027589">
         </testcase>
     </testsuite>
 </testsuites>

@@ -1,5 +1,36 @@
 # Operación y recuperación
 
+## Uso del cliente
+
+1. Registrarse o iniciar sesión y mantener las direcciones en «Mi cuenta».
+2. Consultar catálogo y detalle. «Comparar» permite elegir de dos a cuatro productos
+   de la misma categoría; la tabla muestra precio, garantía, atributos y disponibilidad.
+3. En «Comprar», elegir productos, cantidades y entrega. Revisar cambios de precio
+   o stock y el total antes de confirmar. Una zona sin tarifa cotizada no permite seguir.
+4. Abrir las instrucciones del pedido y reportar la referencia de una transferencia
+   efectivamente realizada. Reportado significa revisión pendiente, no fondos confirmados.
+5. Si se rechaza, leer el motivo y corregir la referencia dentro de las 24 horas
+   indicadas. Un reporte repetido no prolonga el plazo de revisión.
+6. Consultar «Mis pedidos» para ver estados e historial. WhatsApp incluye el número
+   del pedido, pero abrirlo no reporta ni confirma un pago.
+7. Cancelar solo cuando aparezca la acción y confirmar el efecto. Si el pago está
+   confirmado, contactar con la tienda para conciliación manual del eventual reembolso.
+
+## Uso del administrador
+
+1. En `/admin/pagos`, filtrar/buscar y navegar las páginas de resultados.
+2. Contrastar la referencia con fondos efectivamente recibidos en la cuenta de la
+   tienda antes de confirmar. Un mensaje de WhatsApp no acredita recepción de dinero.
+3. Para rechazar, indicar un motivo claro; queda visible al cliente con su plazo de
+   corrección. Atender prioritariamente los avisos «Plazo T2 vencido».
+4. En `/admin/pedidos`, filtrar por estado o modalidad y consultar el detalle de
+   entrega. Usar la dirección histórica del pedido; una edición posterior del perfil
+   no la sustituye. «Copiar rótulo» permite coordinar un envío.
+5. Con pago confirmado, avanzar Preparar → Despachar → Entregar. Refrescar ante un
+   conflicto de otro operador. Los saltos o retrocesos no aprobados se rechazan.
+6. Cancelar únicamente compras sin pago confirmado y sin despacho. La conciliación
+   de pagos confirmados se gestiona manualmente; esta aplicación no emite reembolsos.
+
 ## Entornos comprobados
 
 | Componente | Servicio |
@@ -30,6 +61,11 @@ un fallo, detener el scheduler, conservar evidencia y validar compatibilidad del
 backend anterior; no restaurar sobre una base comercial sin conciliación.
 
 ## Scheduler de pagos
+
+La aplicación `1c48353` quedó publicada en Render y Vercel y pasó el smoke HTTP.
+Esto no activa el scheduler. Un cron nuevo de Render tiene un cargo mínimo de
+US$1/mes, más uso según duración: [facturación oficial](https://render.com/docs/cronjobs).
+No se creó ese recurso de pago sin autorización específica.
 
 Ejecutar desde `backend/`, con la misma base, código y configuración del backend:
 

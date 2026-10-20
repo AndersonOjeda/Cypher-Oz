@@ -236,6 +236,7 @@ export function AdminPaymentList() {
                     {p.reported_at
                       ? new Date(p.reported_at).toLocaleString("es-CO", { timeZone: "America/Bogota" })
                       : "—"}
+                    {p.review_deadline_at && <p>Revisar antes de: {new Date(p.review_deadline_at).toLocaleString("es-CO", {timeZone: "America/Bogota"})}</p>}
                   </td>
                   <td className="p-3 text-center">
                     {p.status === "REPORTED" ? (

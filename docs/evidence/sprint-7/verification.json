@@ -1,6 +1,6 @@
 {
   "date": "2026-10-20",
-  "implementation": "71ffb2921e30d848e1396a8e8135a4244cc59128",
+  "implementation": "1c48353e3e26e91b039f0584fa1c6c8c1cbfe119",
   "antigravity_base": "eef7aa5e82578d99233a48901c9d78db6bac0b67",
   "pull_request": "https://github.com/AndersonOjeda/Cypher-Oz/pull/22",
   "local": {
@@ -15,7 +15,7 @@
       "includes_later_added_cases": 2
     },
     "frontend": {
-      "passed": 113,
+      "passed": 114,
       "failed": 0
     },
     "browser": {
@@ -43,23 +43,40 @@
       "orders": 40,
       "payments": 40,
       "cancelled_confirmed_pairs": 0
+    },
+    "cloud_tool_regressions": {
+      "passed": 6,
+      "failed": 0
     }
   },
   "ci": {
-    "run": 39489770805,
-    "status": "in_progress"
+    "run": 39491556318,
+    "status": "success",
+    "backend": 337,
+    "frontend": 114,
+    "browser": 48,
+    "wireframes": 28,
+    "artifact": 12296627499,
+    "artifact_sha256": "1533a078d457df50b45fb16dfe27b8c5b80902062db5f32c39c0704cb7da52b8"
   },
   "remote_observed": {
-    "render_api_commit": "1b1c17149d746a75a54ae53119e82c739d274865",
+    "render_api_commit": "1c48353e3e26e91b039f0584fa1c6c8c1cbfe119",
     "vercel_preview_commit": "eef7aa5e82578d99233a48901c9d78db6bac0b67",
     "storage_bucket": "cypher-oz-catalog",
     "storage_public": false,
     "resend_connected_account_domains": 0,
     "health_http": 200,
-    "catalog_http": 200
+    "catalog_http": 200,
+    "render_deploy": "dep-dbbtddom7kps73d6f21g",
+    "render_status": "live",
+    "vercel_production_commit": "1c48353e3e26e91b039f0584fa1c6c8c1cbfe119",
+    "smoke": {
+      "passed": 8,
+      "direct_remote_database": "SKIP",
+      "overall": "INCOMPLETE"
+    }
   },
   "pending": [
-    "Integrated delivery CI and publication",
     "Remote scheduler activation and alerts",
     "Remote database and object recovery test",
     "Effective transactional email sender verification",
@@ -69,5 +86,14 @@
     "CO-45",
     "CO-46",
     "CO-47"
-  ]
+  ],
+  "tooling_commit": "d065a6a",
+  "latest_followup_checks": {
+    "cloud_smoke_regressions": 6,
+    "frontend_unit": 114,
+    "lint": true,
+    "typecheck": true,
+    "build": true,
+    "changes": "Read-only cloud verifier and visible administrative T2 deadline"
+  }
 }

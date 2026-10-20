@@ -14,6 +14,7 @@ it("administrative payments page through results and flag overdue T2", async () 
   render(<AdminPaymentList />);
   await screen.findByText("First customer");
   expect(screen.getByText(/Plazo T2 vencido/)).toBeInTheDocument();
+  expect(screen.getByText(/Revisar antes de:/)).toBeInTheDocument();
   await user.click(screen.getByRole("button", {name: "Siguiente"}));
   await screen.findByText("Second customer");
   expect(screen.queryByText("First customer")).not.toBeInTheDocument();
