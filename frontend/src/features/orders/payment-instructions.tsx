@@ -79,7 +79,17 @@ export function PaymentInstructions({ number }: { number: string }) {
           <p>
             Total: <strong>{cop(result.data.total)}</strong>
           </p>
-          {result.data.configured ? (
+          {result.data.order_status === "CANCELLED" ? (
+            <p role="status">
+              Este pedido está cancelado. No realices transferencias para este
+              pedido. Contacta con la tienda si ya transferiste dinero.
+            </p>
+          ) : payment?.status === "PENDING" && !payment.report_window_active ? (
+            <p role="status">
+              El plazo de este pedido venció. No realices transferencias sin
+              consultar antes con la tienda.
+            </p>
+          ) : result.data.configured ? (
             <div style={{ marginBottom: "1rem" }}>
               <p className="payment-instructions">{result.data.instructions}</p>
               <button

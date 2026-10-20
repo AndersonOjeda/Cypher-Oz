@@ -20,6 +20,9 @@ pedido → pago. Reevalúa estado y plazo después de adquirir los bloqueos.
 El pago conserva PENDING: el vencimiento no confirma ni rechaza fondos externos.
 T1 permanece guardado y el motivo de vencimiento queda en el ledger; no se atribuye
 la cancelación al cliente. Se exige un actor ADMIN activo existente para la auditoría.
+La pantalla de pago oculta instrucciones/copia y advierte que no se transfiera
+cuando el pedido está cancelado o T1 ya venció sin reporte. El backend sigue siendo
+autoritativo al rechazar cualquier reporte fuera de plazo.
 
 ## Ejecución
 

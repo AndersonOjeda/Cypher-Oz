@@ -26,6 +26,35 @@ const instructions = {
 };
 beforeEach(() => vi.resetAllMocks());
 
+test.each([
+  { order_status: "CANCELLED", report_window_active: true },
+  { order_status: "PENDING", report_window_active: false },
+])(
+  "does not invite payment for an expired or cancelled order: %o",
+  async (state) => {
+    vi.mocked(api).mockResolvedValueOnce({
+      ...instructions,
+      configured: true,
+      instructions: "Synthetic account details",
+      order_status: state.order_status,
+      payment: { ...payment, report_window_active: state.report_window_active },
+    });
+    render(<PaymentInstructions number="order-1" />);
+    expect(
+      await screen.findByText(/no realices transferencias/i),
+    ).toBeVisible();
+    expect(
+      screen.queryByText("Synthetic account details"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Copiar instrucciones" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Reportar pago" }),
+    ).not.toBeInTheDocument();
+  },
+);
+
 test("clipboard denial explains how to copy manually without reporting a payment", async () => {
   Object.defineProperty(navigator, "clipboard", {
     configurable: true,

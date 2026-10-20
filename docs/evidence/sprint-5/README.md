@@ -9,6 +9,9 @@ la espera de locks de PostgreSQL; no se simula la decisión del proceso de venci
 del fixture; la repetición añadió dos regresiones y aprobó sus 20 casos.
 La regresión completa de esta continuación se publica en los checks de PR #21 y
 su artefacto CI para el SHA integrado; los resultados siguientes son históricos.
+La pantalla de pago también se protege frente a pedidos cancelados/T1 vencido:
+oculta instrucciones y copia, impide reportar y advierte que no se transfiera.
+La suite frontend de esta continuación pasa 91/91 pruebas, con lint y tipos aprobados.
 
 Ejecución local del 20/10/2026. Fuentes revisadas: `fc9dfa4`, `3ae0a3c` y la
 integración con main. Correcciones en rama `review/sprint-5-verification`.
