@@ -7,12 +7,11 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.core.mail import send_mail
 from django.db import transaction
 from django.middleware.csrf import get_token, rotate_token
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import APIException, AuthenticationFailed
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
@@ -21,6 +20,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .authentication import enforce_csrf
+from .email import EmailDeliveryError, send_password_reset_email
 from .models import AuthSession, PasswordResetToken, User
 from .serializers import (
     AddressSerializer,
@@ -39,6 +39,12 @@ class AuthThrottle(AnonRateThrottle):
 
 class PasswordResetThrottle(AnonRateThrottle):
     scope = "password_reset"
+
+
+class EmailServiceUnavailable(APIException):
+    status_code = 503
+    default_detail = "No pudimos enviar el correo. Inténtalo de nuevo en unos minutos."
+    default_code = "email_service_unavailable"
 
 
 def private_response(data=None, status=200):
@@ -190,19 +196,17 @@ class PasswordResetRequestView(PublicAuthView):
         ).first()
         if user:
             token = secrets.token_urlsafe(48)
-            PasswordResetToken.objects.create(
+            reset = PasswordResetToken.objects.create(
                 user=user,
                 token_hash=reset_token_hash(token),
                 expires_at=timezone.now() + settings.PASSWORD_RESET_TOKEN_LIFETIME,
             )
             url = f"{settings.FRONTEND_URL}/restablecer-contrasena?token={token}"
-            send_mail(
-                "Restablece tu contraseña de TTI",
-                f"Abre este enlace para establecer una nueva contraseña: {url}\n\n"
-                "El enlace es temporal y solo puede utilizarse una vez.",
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],
-            )
+            try:
+                send_password_reset_email(user.email, url)
+            except EmailDeliveryError:
+                reset.delete()
+                raise EmailServiceUnavailable
         return private_response(
             {"message": "Si el correo está registrado, recibirás instrucciones para continuar."}
         )

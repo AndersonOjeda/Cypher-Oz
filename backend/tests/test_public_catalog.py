@@ -3,6 +3,7 @@ from decimal import Decimal
 
 import pytest
 from django.db import connection
+from django.test import override_settings
 from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
 from rest_framework.test import APIClient
@@ -137,6 +138,7 @@ def catalog_setup(db):
     }
 
 
+@override_settings(CATALOG_S3_BUCKET="")
 def test_public_catalog_is_accessible_without_auth(catalog_setup):
     client = APIClient()
     res = client.get("/api/v1/products/")
@@ -150,6 +152,8 @@ def test_public_catalog_is_accessible_without_auth(catalog_setup):
     assert "teclado-mecanico-k55" in slugs
     assert "audifonos-ocultos" not in slugs
     assert "producto-cat-inactiva" not in slugs
+    product = next(item for item in data["results"] if item["slug"] == "mouse-gamer-g502")
+    assert product["image_url"] == "http://storage.local/products/1/main.webp"
 
 
 def test_public_catalog_includes_promotion_pricing(catalog_setup):
@@ -211,6 +215,12 @@ def test_public_catalog_filter_by_price_and_availability(catalog_setup):
     assert res_avail.status_code == 200
     assert res_avail.data["count"] == 1
     assert res_avail.data["results"][0]["slug"] == "mouse-gamer-g502"
+
+    unavailable = client.get("/api/v1/products/?available=false")
+    assert unavailable.status_code == 200
+    assert unavailable.data["count"] == 1
+    assert unavailable.data["results"][0]["slug"] == "teclado-mecanico-k55"
+    assert client.get("/api/v1/products/?min_price=200000&max_price=100000").status_code == 400
 
 
 def test_public_catalog_ordering(catalog_setup):

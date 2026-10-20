@@ -6,6 +6,6 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  return <ProductDetail slug={slug} />;
+  return <ProductDetail key={slug} slug={slug} />;
 }
 
