@@ -1,5 +1,10 @@
 # Sprint 4 — Cierre y verificación técnica
 
+> Estado comprobado el 20/10/2026: PR #20 integrado en main y CI aprobada:
+> 265 backend, 82 frontend, 42 E2E y 28 wireframes. Jira: 16 incidencias Listo,
+> 76/76 casillas verificadas. Las cifras y notas de publicación de fases anteriores
+> se conservan como histórico. Véase el [dictamen vigente](sprints-4-5-verification.md).
+
 Fecha: 19 de octubre de 2026, America/Bogota.
 Rama: `feature/CO-65-sprint-4`. Base auditada: `96708c77b8952947738a02356a14b9baa26f762a`.
 

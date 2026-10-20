@@ -1,5 +1,11 @@
 # Auditoría independiente del Sprint 4
 
+> Actualización del 20/10/2026: los hallazgos siguientes documentan fases históricas.
+> Sprint 4 ya está integrado mediante PR #20, con CI de main aprobada (265 backend,
+> 82 frontend, 42 E2E y 28 wireframes). El [dictamen conjunto vigente](sprints-4-5-verification.md)
+> contrasta código, evidencia, entrega y Jira. Las notas históricas de falta de publicación
+> no describen el estado actual.
+
 Fecha: 19 de octubre de 2026, America/Bogota.
 Repositorio evaluado: `feature/CO-65-sprint-4`, commit
 `96708c77b8952947738a02356a14b9baa26f762a`.

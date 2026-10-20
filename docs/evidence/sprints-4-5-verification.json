@@ -1,0 +1,319 @@
+{
+  "date": "2026-10-20",
+  "timezone": "America/Bogota",
+  "board": 2,
+  "main": "603b8353edd406142c4b5f3ba83a041c25eacfb0",
+  "review": "46310932a2eb458ad88d14de74e517543c6f2508",
+  "testedMerge": "c1ae86af76f1501c3b3c45ccdd23246cdaf45921",
+  "testedTree": "cc33f8b2271b771c0d946cc5e85a8632b255643e",
+  "ciRun": 39450822723,
+  "ciArtifact": 12277624186,
+  "results": {
+    "backend": 301,
+    "frontend": 91,
+    "browser": 45,
+    "wireframes": 28
+  },
+  "sprints": [
+    {
+      "sprint": 4,
+      "issues": 16,
+      "done": 16,
+      "checked": 76,
+      "total": 76,
+      "allAssigned": true,
+      "allLinked": true
+    },
+    {
+      "sprint": 5,
+      "issues": 12,
+      "done": 12,
+      "checked": 56,
+      "total": 56,
+      "allAssigned": true,
+      "allLinked": true
+    }
+  ],
+  "issues": [
+    {
+      "sprint": 4,
+      "key": "CO-37",
+      "status": "Listo",
+      "parent": "CO-49",
+      "assigned": true,
+      "checked": 7,
+      "total": 7,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-57",
+      "status": "Listo",
+      "parent": "CO-25",
+      "assigned": true,
+      "checked": 8,
+      "total": 8,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 5,
+      "key": "CO-59",
+      "status": "Listo",
+      "parent": "CO-50",
+      "assigned": true,
+      "checked": 6,
+      "total": 6,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 5,
+      "key": "CO-60",
+      "status": "Listo",
+      "parent": "CO-50",
+      "assigned": true,
+      "checked": 7,
+      "total": 7,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-62",
+      "status": "Listo",
+      "parent": "CO-27",
+      "assigned": true,
+      "checked": 6,
+      "total": 6,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 5,
+      "key": "CO-67",
+      "status": "Listo",
+      "parent": "CO-51",
+      "assigned": true,
+      "checked": 7,
+      "total": 7,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-70",
+      "status": "Listo",
+      "parent": "CO-53",
+      "assigned": true,
+      "checked": 7,
+      "total": 7,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-112",
+      "status": "Listo",
+      "parent": "CO-57",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-113",
+      "status": "Listo",
+      "parent": "CO-57",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-114",
+      "status": "Listo",
+      "parent": "CO-57",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-115",
+      "status": "Listo",
+      "parent": "CO-37",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-116",
+      "status": "Listo",
+      "parent": "CO-37",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-117",
+      "status": "Listo",
+      "parent": "CO-37",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 5,
+      "key": "CO-124",
+      "status": "Listo",
+      "parent": "CO-59",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 5,
+      "key": "CO-125",
+      "status": "Listo",
+      "parent": "CO-59",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 5,
+      "key": "CO-126",
+      "status": "Listo",
+      "parent": "CO-59",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 5,
+      "key": "CO-127",
+      "status": "Listo",
+      "parent": "CO-60",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 5,
+      "key": "CO-128",
+      "status": "Listo",
+      "parent": "CO-60",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 5,
+      "key": "CO-129",
+      "status": "Listo",
+      "parent": "CO-60",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-143",
+      "status": "Listo",
+      "parent": "CO-62",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-144",
+      "status": "Listo",
+      "parent": "CO-62",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-145",
+      "status": "Listo",
+      "parent": "CO-62",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 5,
+      "key": "CO-155",
+      "status": "Listo",
+      "parent": "CO-67",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 5,
+      "key": "CO-156",
+      "status": "Listo",
+      "parent": "CO-67",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 5,
+      "key": "CO-157",
+      "status": "Listo",
+      "parent": "CO-67",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-164",
+      "status": "Listo",
+      "parent": "CO-70",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-165",
+      "status": "Listo",
+      "parent": "CO-70",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    },
+    {
+      "sprint": 4,
+      "key": "CO-166",
+      "status": "Listo",
+      "parent": "CO-70",
+      "assigned": true,
+      "checked": 4,
+      "total": 4,
+      "evidenceLinked": true
+    }
+  ]
+}
