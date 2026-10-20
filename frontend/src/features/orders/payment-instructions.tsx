@@ -84,7 +84,7 @@ export function PaymentInstructions({ number }: { number: string }) {
               Este pedido está cancelado. No realices transferencias para este
               pedido. Contacta con la tienda si ya transferiste dinero.
             </p>
-          ) : payment?.status === "PENDING" && !payment.report_window_active ? (
+          ) : (payment?.status === "PENDING" || payment?.status === "REJECTED") && !payment.report_window_active ? (
             <p role="status">
               El plazo de este pedido venció. No realices transferencias sin
               consultar antes con la tienda.
@@ -134,6 +134,13 @@ export function PaymentInstructions({ number }: { number: string }) {
             })}{" "}
             (Bogotá)
           </p>
+          {payment?.status === "REJECTED" && (
+            <section role="status" aria-label="Pago rechazado">
+              <h2>Pago rechazado</h2>
+              <p>{payment.history?.filter((item) => item.status === "REJECTED").at(-1)?.reason}</p>
+              {payment.correction_deadline_at && <p>Corrige la referencia antes de {new Date(payment.correction_deadline_at).toLocaleString("es-CO", { timeZone: "America/Bogota" })} (Bogota).</p>}
+            </section>
+          )}
           {payment?.status === "REPORTED" ? (
             <section aria-label="Pago reportado">
               <h2>Pago reportado</h2>
@@ -155,7 +162,7 @@ export function PaymentInstructions({ number }: { number: string }) {
                 </p>
               )}
             </section>
-          ) : payment?.status === "PENDING" &&
+          ) : (payment?.status === "PENDING" || payment?.status === "REJECTED") &&
             result.data.order_status === "PENDING" ? (
             payment.report_window_active ? (
               <form className="payment-report" onSubmit={report}>

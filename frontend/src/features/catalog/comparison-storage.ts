@@ -17,7 +17,7 @@ export function getComparisonItems(): ComparisonItem[] {
     const raw = sessionStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? parsed.filter((item): item is ComparisonItem => !!item && Number.isSafeInteger(item.id) && item.id > 0 && typeof item.name === "string" && typeof item.slug === "string" && Number.isSafeInteger(item.category_id)).slice(0, 4) : [];
   } catch {
     return [];
   }
@@ -80,3 +80,4 @@ export function isInComparison(id: number): boolean {
   const current = getComparisonItems();
   return current.some((x) => x.id === id);
 }
+

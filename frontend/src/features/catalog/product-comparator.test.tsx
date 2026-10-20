@@ -1,6 +1,12 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+it("ignores invalid saved comparison entries", () => {
+  sessionStorage.setItem("tti.comparison.items", JSON.stringify([null, {id: "bad"}, {id: 1, name: "Monitor", slug: "monitor", category_id: 1}]));
+  expect(getComparisonItems()).toEqual([{id: 1, name: "Monitor", slug: "monitor", category_id: 1}]);
+  sessionStorage.removeItem("tti.comparison.items");
+});
 import {
   addToComparison,
   clearComparison,
@@ -208,3 +214,4 @@ describe("HU-07 (CO-35): Comparación de Productos", () => {
     });
   });
 });
+

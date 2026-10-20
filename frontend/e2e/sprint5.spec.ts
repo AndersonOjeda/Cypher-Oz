@@ -195,17 +195,11 @@ test("Sprint 5: instructions, persistent deadline, report and unique SALE", asyn
     });
     await page.goto(`/pedidos/${order.number}`);
     await expect(page.getByText(order.number, { exact: true })).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: /cancelar pedido/i }),
-    ).toHaveCount(0);
-    expect(
-      (
-        await page.request.post(`/api/v1/orders/${order.number}/cancel/`, {
-          headers,
-          data: {},
-        })
-      ).status(),
-    ).toBe(404);
+    await expect(page.getByRole("button", { name: /cancelar/i })).toBeVisible();
+    const cancelled = await page.request.post(`/api/v1/orders/${order.number}/cancel/`, { headers, data: {} });
+    expect(cancelled.status()).toBe(200);
+    expect((await cancelled.json()).status).toBe("CANCELLED");
+    expect((await page.request.post(`/api/v1/orders/${order.number}/cancel/`, { headers, data: {} })).status()).toBe(409);
     const movements = await (
       await admin.get(
         `/api/v1/admin/inventory/movements/?variant=${variant.id}`,
@@ -222,7 +216,8 @@ test("Sprint 5: instructions, persistent deadline, report and unique SALE", asyn
           sum + movement.quantity,
         0,
       ),
-    ).toBe(8);
+    ).toBe(10);
+    expect(movements.results.filter((movement: { type: string }) => movement.type === "CANCELLATION")).toHaveLength(1);
     expect(errors).toEqual([]);
   } finally {
     if (original)

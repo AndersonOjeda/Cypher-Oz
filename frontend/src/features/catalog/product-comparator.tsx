@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useSyncExternalStore, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -13,6 +13,15 @@ import {
   type ComparisonItem,
 } from "./comparison-storage";
 import { cop } from "@/features/orders/types";
+
+function subscribeComparison(onChange: () => void) {
+  window.addEventListener("comparison-updated", onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    window.removeEventListener("comparison-updated", onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
 
 export interface ComparisonProduct {
   id: number;
@@ -48,32 +57,19 @@ export function CompareButton({
   item: ComparisonItem;
   className?: string;
 }) {
-  const [selected, setSelected] = useState(false);
+  const selected = useSyncExternalStore(subscribeComparison, () => isInComparison(item.id), () => false);
   const [feedback, setFeedback] = useState<string | null>(null);
-
-  const check = useCallback(() => {
-    setSelected(isInComparison(item.id));
-  }, [item.id]);
-
-  useEffect(() => {
-    check();
-    window.addEventListener("comparison-updated", check);
-    return () => window.removeEventListener("comparison-updated", check);
-  }, [check]);
 
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (selected) {
       removeFromComparison(item.id);
-      setSelected(false);
     } else {
       const res = addToComparison(item);
       if (!res.success) {
         setFeedback(res.error || "No se pudo agregar");
         setTimeout(() => setFeedback(null), 3500);
-      } else {
-        setSelected(true);
       }
     }
   };
@@ -112,17 +108,8 @@ export function CompareButton({
  */
 export function ComparisonFloatingBar() {
   const router = useRouter();
-  const [items, setItems] = useState<ComparisonItem[]>([]);
-
-  const refresh = useCallback(() => {
-    setItems(getComparisonItems());
-  }, []);
-
-  useEffect(() => {
-    refresh();
-    window.addEventListener("comparison-updated", refresh);
-    return () => window.removeEventListener("comparison-updated", refresh);
-  }, [refresh]);
+  const snapshot = useSyncExternalStore(subscribeComparison, () => JSON.stringify(getComparisonItems()), () => "[]");
+  const items: ComparisonItem[] = useMemo(() => JSON.parse(snapshot), [snapshot]);
 
   if (items.length === 0) return null;
 
@@ -210,7 +197,7 @@ export function ProductComparisonView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchComparison = useCallback(async () => {
+  const fetchComparison = useCallback(async (signal: AbortSignal) => {
     setLoading(true);
     setError(null);
 
@@ -232,21 +219,23 @@ export function ProductComparisonView() {
     }
 
     try {
-      const res = await fetch(`/api/v1/products/compare/?${query}`);
+      const res = await fetch(`/api/v1/products/compare/?${query}`, { signal });
       const json = await res.json();
       if (!res.ok) {
         throw new Error(json.detail || "Error al comparar productos.");
       }
-      setData(json);
+      if (!signal.aborted) setData(json);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error inesperado");
+      if (!signal.aborted) setError(err instanceof Error ? err.message : "Error inesperado");
     } finally {
-      setLoading(false);
+      if (!signal.aborted) setLoading(false);
     }
   }, [idsParam, slugsParam]);
 
   useEffect(() => {
-    fetchComparison();
+    const controller = new AbortController();
+    void Promise.resolve().then(() => { if (!controller.signal.aborted) void fetchComparison(controller.signal); });
+    return () => controller.abort();
   }, [fetchComparison]);
 
   const handleRemoveProduct = (productId: number) => {

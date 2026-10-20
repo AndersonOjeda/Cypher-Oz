@@ -242,11 +242,16 @@ def report_payment(user, number, reference):
         if payment.reference == reference:
             return payment
         raise CheckoutConflict("El pago ya tiene una referencia reportada. Contacta con la tienda.")
-    if order.status != "PENDING" or payment.status != "PENDING":
+    if order.status != "PENDING" or payment.status not in ["PENDING", "REJECTED"]:
         raise CheckoutConflict("El estado actual no permite reportar este pago.")
     setting = StoreSetting.objects.select_for_update().get(key="reported_payment_timeout_hours")
     now = timezone.now()
-    if now >= payment.report_deadline_at:
+    deadline_to_report = (
+        payment.correction_deadline_at
+        if payment.status == "REJECTED"
+        else payment.report_deadline_at
+    )
+    if deadline_to_report is None or now >= deadline_to_report:
         raise CheckoutConflict("El plazo para reportar el pago venció. Contacta con la tienda.")
     hours = setting.value
     if type(hours) is not int or hours <= 0:
@@ -261,8 +266,19 @@ def report_payment(user, number, reference):
     payment.reference = reference
     payment.reported_at = now
     payment.review_deadline_at = deadline
+    payment.review_alerted_at = None
+    payment.correction_deadline_at = None
     # Keep T1 for audit; it only applies while the payment is PENDING.
-    payment.save(update_fields=["status", "reference", "reported_at", "review_deadline_at"])
+    payment.save(
+        update_fields=[
+            "status",
+            "reference",
+            "reported_at",
+            "review_deadline_at",
+            "review_alerted_at",
+            "correction_deadline_at",
+        ]
+    )
     PaymentStatusHistory.objects.create(payment=payment, status="REPORTED", actor=user)
     return payment
 
@@ -345,10 +361,9 @@ class PaymentNotConfirmedConflict(APIException):
 def confirm_payment(actor, payment_id):
     if getattr(actor, "role", "") != User.Role.ADMIN:
         raise PermissionDenied("Se requieren permisos de administrador.")
-    payment = get_object_or_404(
-        Payment.objects.select_for_update().select_related("order"), pk=payment_id
-    )
-    order = Order.objects.select_for_update().get(pk=payment.order_id)
+    order_id = get_object_or_404(Payment, pk=payment_id).order_id
+    order = Order.objects.select_for_update().get(pk=order_id)
+    payment = Payment.objects.select_for_update().get(pk=payment_id)
     if order.status == "CANCELLED":
         raise CheckoutConflict("No se puede confirmar el pago de un pedido cancelado.")
     if payment.status != "REPORTED":
@@ -367,10 +382,9 @@ def reject_payment(actor, payment_id, reason):
         raise PermissionDenied("Se requieren permisos de administrador.")
     if not isinstance(reason, str) or not reason.strip():
         raise ValidationError({"reason": "Indica un motivo para rechazar el pago."})
-    payment = get_object_or_404(
-        Payment.objects.select_for_update().select_related("order"), pk=payment_id
-    )
-    order = Order.objects.select_for_update().get(pk=payment.order_id)
+    order_id = get_object_or_404(Payment, pk=payment_id).order_id
+    order = Order.objects.select_for_update().get(pk=order_id)
+    payment = Payment.objects.select_for_update().get(pk=payment_id)
     if order.status == "CANCELLED":
         raise CheckoutConflict("No se puede rechazar el pago de un pedido cancelado.")
     if payment.status != "REPORTED":
@@ -378,8 +392,11 @@ def reject_payment(actor, payment_id, reason):
             "Solo se pueden rechazar pagos que se encuentren en estado REPORTADO."
         )
     payment.status = "REJECTED"
-    payment.save(update_fields=["status"])
-    PaymentStatusHistory.objects.create(payment=payment, status="REJECTED", actor=actor)
+    payment.correction_deadline_at = timezone.now() + timedelta(hours=24)
+    payment.save(update_fields=["status", "correction_deadline_at"])
+    PaymentStatusHistory.objects.create(
+        payment=payment, status="REJECTED", actor=actor, reason=reason.strip()
+    )
     return payment
 
 
@@ -424,13 +441,15 @@ def cancel_order_by_user_or_admin(actor, number, reason="Cancelación solicitada
     if order.status == "CANCELLED":
         raise CheckoutConflict("El pedido ya está cancelado.")
 
+    if payment.status == "CONFIRMED":
+        raise CheckoutConflict(
+            "El pago confirmado requiere conciliacion y gestion manual "
+            "de reembolso antes de cancelar."
+        )
+
     if not is_admin:
         if order.status != "PENDING":
             raise CheckoutConflict("Solo puedes cancelar pedidos en estado Pendiente.")
-        if payment.status == "CONFIRMED":
-            raise CheckoutConflict(
-                "El pago ya fue confirmado. Para cancelar contacta a la tienda."
-            )
     else:
         if order.status in ["SHIPPED", "DELIVERED"]:
             raise CheckoutConflict(f"No se puede cancelar un pedido en estado {order.status}.")

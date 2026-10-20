@@ -7,6 +7,7 @@ from apps.users.models import User
 
 
 class Command(BaseCommand):
+    processor = staticmethod(process_unpaid_expirations)
     help = "Expire unpaid PENDING orders at persisted T1; never resolve REPORTED/T2 payments."
 
     def add_arguments(self, parser):
@@ -21,9 +22,7 @@ class Command(BaseCommand):
         if actor is None:
             raise CommandError("Indica un administrador activo existente como actor de auditoría.")
         try:
-            result = process_unpaid_expirations(
-                actor, limit=options["limit"], dry_run=options["dry_run"]
-            )
+            result = self.processor(actor, limit=options["limit"], dry_run=options["dry_run"])
         except ValueError as exc:
             raise CommandError(str(exc)) from exc
         self.stdout.write(json.dumps(result))

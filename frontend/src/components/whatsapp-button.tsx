@@ -66,10 +66,7 @@ export function OrderWhatsAppButton({
   const [settings, setSettings] = useState<WhatsAppSettings | undefined>(propSettings);
 
   useEffect(() => {
-    if (propSettings) {
-      setSettings(propSettings);
-      return;
-    }
+    if (propSettings) return;
     let active = true;
     fetch("/api/v1/settings/public/")
       .then((res) => (res.ok ? res.json() : null))
@@ -84,8 +81,9 @@ export function OrderWhatsAppButton({
     };
   }, [propSettings]);
 
-  if (!settings) return null;
-  const url = orderWhatsAppUrl(settings, orderNumber);
+  const effectiveSettings = propSettings ?? settings;
+  if (!effectiveSettings) return null;
+  const url = orderWhatsAppUrl(effectiveSettings, orderNumber);
   if (!url) return null;
 
   return (

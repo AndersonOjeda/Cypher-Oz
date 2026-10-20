@@ -95,6 +95,8 @@ class Payment(models.Model):
     review_deadline_at = models.DateTimeField(null=True)
     reference = models.CharField(max_length=120, blank=True, default="")
     reported_at = models.DateTimeField(null=True)
+    correction_deadline_at = models.DateTimeField(null=True, blank=True)
+    review_alerted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "payments"
@@ -130,6 +132,7 @@ class PaymentStatusHistory(models.Model):
     status = models.CharField(max_length=20)
     actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
+    reason = models.CharField(max_length=300, blank=True, default="")
 
     class Meta:
         db_table = "payment_status_history"

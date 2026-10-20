@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
+import { Modal } from "@/components/modal";
+import { Pager } from "@/features/catalog/shared";
+import { api } from "@/services/api";
 import { cop, type AdminOrder } from "./types";
 
 interface PageResponse<T> {
@@ -11,11 +14,14 @@ interface PageResponse<T> {
   results: T[];
 }
 
-export function AdminOrderList() {
+export function AdminOrderList({ initialOrderNumber }: { initialOrderNumber?: string } = {}) {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [deliveryFilter, setDeliveryFilter] = useState<string>("");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState<PageResponse<unknown>>({count: 0, next: null, previous: null, results: []});
+  const requestVersion = useRef(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
@@ -27,27 +33,35 @@ export function AdminOrderList() {
   const [cancelReason, setCancelReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (!initialOrderNumber) return;
+    const controller = new AbortController();
+    api<AdminOrder>(`/admin/orders/${encodeURIComponent(initialOrderNumber)}/`, {signal: controller.signal})
+      .then((order) => { if (!controller.signal.aborted) setSelectedOrder(order); })
+      .catch((err) => { if (!controller.signal.aborted) setError(err instanceof Error ? err.message : "Pedido no disponible"); });
+    return () => controller.abort();
+  }, [initialOrderNumber]);
+
   const fetchOrders = useCallback(async () => {
+    const version = ++requestVersion.current;
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
+      const params = new URLSearchParams({page: String(page)});
       if (statusFilter) params.set("status", statusFilter);
       if (deliveryFilter) params.set("delivery_mode", deliveryFilter);
       if (search) params.set("q", search);
 
-      const res = await fetch(`/api/v1/admin/orders/?${params.toString()}`, {
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("No se pudo cargar la lista de pedidos.");
-      const data: PageResponse<AdminOrder> = await res.json();
+      const data = await api<PageResponse<AdminOrder>>(`/admin/orders/?${params.toString()}`);
+      if (version !== requestVersion.current) return;
+      setPagination(data);
       setOrders(data.results);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error inesperado");
+      if (version === requestVersion.current) setError(err instanceof Error ? err.message : "Error inesperado");
     } finally {
-      setLoading(false);
+      if (version === requestVersion.current) setLoading(false);
     }
-  }, [statusFilter, deliveryFilter, search]);
+  }, [statusFilter, deliveryFilter, search, page]);
 
   useEffect(() => {
     let active = true;
@@ -63,16 +77,10 @@ export function AdminOrderList() {
     setIsSubmitting(true);
     setError(null);
     try {
-      const res = await fetch(`/api/v1/admin/orders/${orderNumber}/transition/`, {
+      await api(`/admin/orders/${orderNumber}/transition/`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ target_status: targetStatus }),
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.detail || `Error al cambiar estado a ${targetStatus}.`);
-      }
       setActionMessage(`✅ Pedido actualizado a estado ${targetStatus}.`);
       setTimeout(() => setActionMessage(null), 4000);
       fetchOrders();
@@ -89,16 +97,10 @@ export function AdminOrderList() {
     setIsSubmitting(true);
     setError(null);
     try {
-      const res = await fetch(`/api/v1/orders/${cancellingOrder.number}/cancel/`, {
+      await api(`/orders/${cancellingOrder.number}/cancel/`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: cancelReason || "Cancelación administrativa" }),
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.detail || "Error al cancelar el pedido.");
-      }
       setActionMessage("⚠️ Pedido cancelado e inventario restituido con éxito.");
       setTimeout(() => setActionMessage(null), 4000);
       setCancellingOrder(null);
@@ -196,7 +198,7 @@ export function AdminOrderList() {
           <select
             id="order-status-filter"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => { setPage(1); setStatusFilter(e.target.value); }}
             className="border rounded px-3 py-1.5 text-sm bg-white"
           >
             <option value="">Todos los estados</option>
@@ -213,7 +215,7 @@ export function AdminOrderList() {
           <select
             id="order-delivery-filter"
             value={deliveryFilter}
-            onChange={(e) => setDeliveryFilter(e.target.value)}
+            onChange={(e) => { setPage(1); setDeliveryFilter(e.target.value); }}
             className="border rounded px-3 py-1.5 text-sm bg-white"
           >
             <option value="">Todas</option>
@@ -228,7 +230,7 @@ export function AdminOrderList() {
             type="search"
             placeholder="Buscar por cliente, correo o número de pedido..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setPage(1); setSearch(e.target.value); }}
             className="w-full border rounded px-3 py-1.5 text-sm bg-white"
             aria-label="Buscar pedido"
           />
@@ -341,7 +343,7 @@ export function AdminOrderList() {
                           </button>
                         )}
                         {/* Cancel action */}
-                        {(o.status === "PENDING" || o.status === "PREPARING") && (
+                        {(o.status === "PENDING" || o.status === "PREPARING") && o.payment.status !== "CONFIRMED" && (
                           <button
                             onClick={() => {
                               setCancellingOrder(o);
@@ -370,9 +372,11 @@ export function AdminOrderList() {
         </div>
       )}
 
+      <Pager page={page} data={pagination} onChange={setPage} />
+
       {/* Order Detail Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <Modal label="Detalle del pedido" onClose={() => setSelectedOrder(null)}>
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start border-b pb-3">
               <div>
@@ -524,12 +528,12 @@ export function AdminOrderList() {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
 
       {/* Cancel Order Modal */}
       {cancellingOrder && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <Modal label="Confirmar accion" onClose={() => setCancellingOrder(null)}>
           <div className="bg-white rounded-lg p-6 max-w-md w-full space-y-4 shadow-xl">
             <h2 className="text-lg font-bold text-gray-900">Cancelar Pedido</h2>
             <p className="text-sm text-gray-600">
@@ -569,7 +573,7 @@ export function AdminOrderList() {
               </div>
             </form>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

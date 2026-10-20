@@ -2,16 +2,11 @@
 
 Monorepo de TTI: Next.js + TypeScript + Tailwind, Django/DRF y PostgreSQL.
 Fuente de verdad: `TTI_Documento_Maestro_Ingenieria_Software_v3.0_COMPLETO.docx`.
-Planificación vigente: siete sprints en Jira. Sprint 1 (id 71): CO-30
-(configuración), CO-36 (registro), CO-55 (sesión), CO-56 (perfil/direcciones),
-CO-63 (categorías/marcas), CO-41 (WhatsApp), CO-58 (checkout) y CO-39 (pedidos).
-Las dos últimas se adelantaron por autorización del usuario el 06/10/2026:
-48 SP, 24 subtareas, 96 actividades. [Estado y evidencia actual](docs/sprint-1-expanded.md).
-
-[PR de la entrega vigente](https://github.com/AndersonOjeda/Cypher-Oz/pull/4).
-La PR permanece sin merge; consultar sus comprobaciones para el estado de CI.
-**Sprint 1 cerrado en Jira:** [acta, CI y evidencia permanente](docs/sprint-1-closeout.md).
-El cierre técnico autorizado no equivale a aprobación académica del profesor.
+Planificación: siete sprints en Jira. La entrega de Antigravity y sus correcciones
+se verifican en el [informe vigente de Sprint 7](docs/sprint-7-report.md), junto con
+los pendientes reales del entorno remoto. [Sprint 6](docs/sprint-6-report.md) y
+[cierre integrado de Sprint 4/5](docs/sprints-4-5-verification.md) conservan su alcance.
+[Operación, scheduler y recuperación](docs/operations.md).
 
 **Exposición del Sprint 1:** [guion, acceso demo y evidencias](docs/sprint-1-current.md).
 [Arquitectura vigente](docs/architecture-current.md) y [28 wireframes](docs/wireframes.html).

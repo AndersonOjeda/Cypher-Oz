@@ -94,7 +94,7 @@ class PaymentStatusHistorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PaymentStatusHistory
-        fields = ["id", "status", "actor_email", "created_at"]
+        fields = ["id", "status", "actor_email", "created_at", "reason"]
 
 
 class OrderStatusHistorySerializer(serializers.ModelSerializer):
@@ -110,7 +110,14 @@ class PaymentSerializer(serializers.ModelSerializer):
     history = PaymentStatusHistorySerializer(many=True, read_only=True)
 
     def get_report_window_active(self, obj):
-        return obj.status == "PENDING" and timezone.now() < obj.report_deadline_at
+        deadline = (
+            obj.correction_deadline_at if obj.status == "REJECTED" else obj.report_deadline_at
+        )
+        return (
+            obj.status in ["PENDING", "REJECTED"]
+            and deadline is not None
+            and timezone.now() < deadline
+        )
 
     class Meta:
         model = Payment
@@ -121,6 +128,8 @@ class PaymentSerializer(serializers.ModelSerializer):
             "reported_at",
             "report_deadline_at",
             "review_deadline_at",
+            "correction_deadline_at",
+            "review_alerted_at",
             "report_window_active",
             "history",
         ]
@@ -170,6 +179,15 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class AdminPaymentSerializer(serializers.ModelSerializer):
+    review_overdue = serializers.SerializerMethodField()
+
+    def get_review_overdue(self, obj):
+        return (
+            obj.status == "REPORTED"
+            and obj.review_deadline_at is not None
+            and timezone.now() >= obj.review_deadline_at
+        )
+
     order_number = serializers.UUIDField(source="order.number", read_only=True)
     customer_name = serializers.CharField(source="order.user.name", read_only=True)
     customer_email = serializers.CharField(source="order.user.email", read_only=True)
@@ -181,7 +199,14 @@ class AdminPaymentSerializer(serializers.ModelSerializer):
     report_window_active = serializers.SerializerMethodField()
 
     def get_report_window_active(self, obj):
-        return obj.status == "PENDING" and timezone.now() < obj.report_deadline_at
+        deadline = (
+            obj.correction_deadline_at if obj.status == "REJECTED" else obj.report_deadline_at
+        )
+        return (
+            obj.status in ["PENDING", "REJECTED"]
+            and deadline is not None
+            and timezone.now() < deadline
+        )
 
     class Meta:
         model = Payment
@@ -197,7 +222,10 @@ class AdminPaymentSerializer(serializers.ModelSerializer):
             "reported_at",
             "report_deadline_at",
             "review_deadline_at",
+            "correction_deadline_at",
+            "review_alerted_at",
             "report_window_active",
+            "review_overdue",
             "history",
         ]
 

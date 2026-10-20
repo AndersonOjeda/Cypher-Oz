@@ -15,7 +15,7 @@ import { addToCart } from "@/features/orders/cart-storage";
 import { cop } from "@/features/orders/types";
 import { useResource } from "./shared";
 import type { PublicProductDetail, PublicVariant } from "./types";
-import { CompareButton, ComparisonFloatingBar } from "./product-comparator";
+import { CompareButton } from "./product-comparator";
 
 export function ProductDetail({ slug }: { slug: string }) {
   const [revision, setRevision] = useState(0);

@@ -35,6 +35,7 @@ export type StatusHistoryItem = {
   id: number;
   status: string;
   actor_email: string;
+  reason?: string;
   created_at: string;
 };
 export type Payment = {
@@ -45,6 +46,8 @@ export type Payment = {
   reported_at: string | null;
   reference: string;
   report_window_active: boolean;
+  correction_deadline_at?: string | null;
+  review_overdue?: boolean;
   history?: StatusHistoryItem[];
 };
 export type Order = {
@@ -73,6 +76,8 @@ export type AdminPayment = {
   report_deadline_at: string;
   review_deadline_at: string | null;
   report_window_active: boolean;
+  correction_deadline_at?: string | null;
+  review_overdue?: boolean;
   history: StatusHistoryItem[];
 };
 export type AdminOrder = {

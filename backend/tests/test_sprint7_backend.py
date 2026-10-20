@@ -202,6 +202,7 @@ def sprint7_setup(db):
 # HU-29 (CO-71) TESTS: Gestión Administrativa de Entrega
 # =========================================================================
 
+
 def test_admin_order_list_filters_by_delivery_mode(sprint7_setup):
     setup = sprint7_setup
     setup["make_order"](setup["client"], mode="URBAN")
@@ -268,6 +269,7 @@ def test_admin_order_delivery_details_exposure_and_permissions(sprint7_setup):
 # =========================================================================
 # HU-07 (CO-35) TESTS: Comparación de Productos
 # =========================================================================
+
 
 def test_compare_products_limits_validation(sprint7_setup):
     setup = sprint7_setup
@@ -374,6 +376,8 @@ def test_compare_by_slugs(sprint7_setup):
     assert len(res.data["products"]) == 2
     assert res.data["products"][0]["slug"] == "lg-ultragear-27"
     assert res.data["products"][1]["slug"] == "samsung-odyssey-g5"
+
+
 def test_cannot_confirm_or_reject_payment_on_cancelled_order(sprint7_setup):
     setup = sprint7_setup
     order = setup["make_order"](setup["client"], mode="URBAN", status="CANCELLED")

@@ -5,6 +5,20 @@ import { AdminPaymentList } from "./admin-payment-list";
 import { AdminOrderList } from "./admin-order-list";
 import { OrderDetail } from "./orders";
 
+it("administrative payments page through results and flag overdue T2", async () => {
+  const user = userEvent.setup();
+  vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+    const second = String(input).includes("page=2");
+    return new Response(JSON.stringify({count: 2, next: second ? null : "/api/v1/admin/payments/?page=2", previous: second ? "/api/v1/admin/payments/?page=1" : null, results: [{...mockAdminPayments[0], customer_name: second ? "Second customer" : "First customer", review_overdue: true}]}));
+  }));
+  render(<AdminPaymentList />);
+  await screen.findByText("First customer");
+  expect(screen.getByText(/Plazo T2 vencido/)).toBeInTheDocument();
+  await user.click(screen.getByRole("button", {name: "Siguiente"}));
+  await screen.findByText("Second customer");
+  expect(screen.queryByText("First customer")).not.toBeInTheDocument();
+});
+
 const mockAdminPayments = [
   {
     id: 101,

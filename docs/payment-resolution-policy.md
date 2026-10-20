@@ -1,5 +1,34 @@
 # Política de resolución y vencimiento de pagos (HU-15 / CO-130)
 
+## Decisión vigente y ejecución verificada
+
+El usuario confirmó el 20/10/2026 un plazo de **24 horas desde cada rechazo**.
+El rechazo guarda motivo, actor, fecha y `correction_deadline_at`. El cliente puede
+corregir su referencia antes de ese límite aunque T1 original ya haya vencido.
+La igualdad con el deadline se considera vencimiento. Una corrección válida inicia
+un nuevo T2 según la configuración vigente; repetir la misma referencia REPORTED
+no extiende el plazo. Los rechazos históricos sin deadline requieren revisión manual.
+
+El comando `process_payment_deadlines --actor-email <ADMIN activo> --limit 100`
+procesa T1, el plazo de corrección rechazado y T2. Admite `--dry-run`. Al vencer
+T2 crea una alerta auditada una sola vez y la bandeja muestra revisión urgente;
+**no cancela pagos reportados ni confirma fondos automáticamente**. Al vencer
+T1 o la corrección rechazada, cancela pedido y revierte inventario en una sola
+transacción. Los fallos revierten el pedido afectado y el comando termina con error.
+
+Confirmación, rechazo, reporte, cancelación y vencimientos bloquean en orden
+pedido → pago → inventario. Ningún actor puede cancelar automáticamente un pedido
+CONFIRMED: requiere conciliación y gestión manual del eventual reembolso. El pago
+confirmado deja el pedido PENDING hasta que ADMIN lo avanza a PREPARING; esta
+combinación es deliberada, no una confirmación o preparación automática.
+
+T1/T2 usan valores de configuración persistidos (la semilla es 12/24 horas);
+las cifras de 24/48 de la tabla original inferior no son defaults autoritativos.
+Las 24 horas de corrección corresponden a la decisión explícita anterior.
+La existencia del comando no demuestra que haya un scheduler remoto activado.
+
+---
+
 Fecha: 20 de octubre de 2026.  
 Ámbito: Proyecto Cypher-Oz (TTI) — Sprint 6.  
 Historias relacionadas: HU-15 (CO-44), HU-16 (CO-40), HU-17 (CO-43), HU-18 (CO-61).

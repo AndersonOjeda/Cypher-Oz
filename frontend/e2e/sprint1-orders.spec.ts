@@ -156,11 +156,11 @@ test("checkout relee dirección y pedido conserva snapshot; reintento no duplica
     const order = await response.json();
     await expect(page).toHaveURL(new RegExp(`/pedidos/${order.number}$`));
     await expect(
-      page.getByText("Pedido: Pendiente", { exact: true }),
-    ).toBeVisible();
+      page.getByText("Estado Pedido:", { exact: true }).locator(".."),
+    ).toContainText("Pendiente");
     await expect(
-      page.getByText("Pago: Pendiente", { exact: true }),
-    ).toBeVisible();
+      page.getByText("Estado Pago:", { exact: true }).locator(".."),
+    ).toContainText("Pendiente");
     const replay = await page.request.post("/api/v1/orders/", {
       headers: {
         "X-CSRFToken": await csrf(page.request),
@@ -196,7 +196,7 @@ test("checkout relee dirección y pedido conserva snapshot; reintento no duplica
       path: `../docs/evidence/sprint-1-current/order-${info.project.name}.png`,
       fullPage: true,
     });
-    await page.getByRole("link", { name: "Instrucciones de pago" }).click();
+    await page.getByRole("link", { name: /Instrucciones.*Pago/i }).click();
     await expect(
       page.getByRole("heading", { name: "Instrucciones de pago" }),
     ).toBeVisible();

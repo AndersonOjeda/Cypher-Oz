@@ -443,13 +443,12 @@ def test_admin_can_cancel_preparing_order_and_cannot_cancel_shipped(sprint6_setu
     client = APIClient()
     client.force_authenticate(user=setup["admin"])
 
-    # Admin cancels PREPARING -> succeeds
+    # Confirmed funds require manual reconciliation; role alone does not refund.
     res_prep = client.post(
         f"/api/v1/orders/{order_prep.number}/cancel/",
         {"reason": "Admin cancela por falta de insumos"},
     )
-    assert res_prep.status_code == 200
-    assert res_prep.data["status"] == "CANCELLED"
+    assert res_prep.status_code == 409
 
     # Admin cancels SHIPPED -> fails with 409
     res_ship = client.post(

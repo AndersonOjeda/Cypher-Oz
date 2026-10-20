@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { Modal } from "@/components/modal";
 import { useState } from "react";
 import { Pager, useResource } from "@/features/catalog/shared";
 import type { Page } from "@/features/catalog/types";
 import { OrderWhatsAppButton } from "@/components/whatsapp-button";
+import { api } from "@/services/api";
 import { cop, type Order } from "./types";
 
 const status: Record<string, string> = {
@@ -44,16 +46,10 @@ export function OrderDetail({ number }: { number: string }) {
     setCancelSubmitting(true);
     setCancelError(null);
     try {
-      const res = await fetch(`/api/v1/orders/${order.number}/cancel/`, {
+      await api(`/orders/${order.number}/cancel/`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: cancelReason || "Cancelado por el cliente" }),
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.detail || "Error al cancelar el pedido.");
-      }
       setCancelSuccess("Pedido cancelado exitosamente.");
       setShowCancelModal(false);
       setRevision((n) => n + 1);
@@ -134,7 +130,7 @@ export function OrderDetail({ number }: { number: string }) {
                     : "bg-gray-50 text-gray-400"
                 }`}
               >
-                2. Pago {order.payment.status === "REPORTED" ? "Reportado" : order.payment.status === "REJECTED" ? "Rechazado" : "Verificado"}
+                2. Pago {order.payment.status === "REPORTED" ? "Reportado" : order.payment.status === "REJECTED" ? "Rechazado" : order.payment.status === "CONFIRMED" ? "Verificado" : "Pendiente"}
               </div>
               <div
                 className={`p-2.5 rounded border ${
@@ -258,7 +254,7 @@ export function OrderDetail({ number }: { number: string }) {
                 </div>
               </dl>
 
-              {order.payment.status === "PENDING" && order.status !== "CANCELLED" && (
+              {(order.payment.status === "PENDING" || order.payment.status === "REJECTED") && order.status !== "CANCELLED" && (
                 <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-900 space-y-2">
                   <p>
                     <strong>Plazo para reportar pago:</strong>{" "}
@@ -299,7 +295,7 @@ export function OrderDetail({ number }: { number: string }) {
 
       {/* Customer Cancellation Modal */}
       {showCancelModal && order && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <Modal label="Confirmar accion" onClose={() => setShowCancelModal(false)}>
           <div className="bg-white rounded-lg p-6 max-w-md w-full space-y-4 shadow-xl">
             <h2 className="text-lg font-bold text-gray-900">¿Deseas cancelar este pedido?</h2>
             <p className="text-sm text-gray-600">
@@ -339,7 +335,7 @@ export function OrderDetail({ number }: { number: string }) {
               </div>
             </form>
           </div>
-        </div>
+        </Modal>
       )}
     </section>
   );

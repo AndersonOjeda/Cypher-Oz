@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
+import { Modal } from "@/components/modal";
+import { Pager } from "@/features/catalog/shared";
+import { api } from "@/services/api";
 import { cop, type AdminPayment } from "./types";
 
 interface PageResponse<T> {
@@ -15,6 +18,9 @@ export function AdminPaymentList() {
   const [payments, setPayments] = useState<AdminPayment[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("REPORTED");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState<PageResponse<unknown>>({count: 0, next: null, previous: null, results: []});
+  const requestVersion = useRef(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
@@ -25,27 +31,24 @@ export function AdminPaymentList() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchPayments = useCallback(async () => {
+    const version = ++requestVersion.current;
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
+      const params = new URLSearchParams({page: String(page)});
       if (statusFilter) params.set("status", statusFilter);
       if (search) params.set("q", search);
 
-      const res = await fetch(`/api/v1/admin/payments/?${params.toString()}`, {
-        credentials: "include",
-      });
-      if (!res.ok) {
-        throw new Error("No se pudo cargar la lista de pagos.");
-      }
-      const data: PageResponse<AdminPayment> = await res.json();
+      const data = await api<PageResponse<AdminPayment>>(`/admin/payments/?${params.toString()}`);
+      if (version !== requestVersion.current) return;
+      setPagination(data);
       setPayments(data.results);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error inesperado");
+      if (version === requestVersion.current) setError(err instanceof Error ? err.message : "Error inesperado");
     } finally {
-      setLoading(false);
+      if (version === requestVersion.current) setLoading(false);
     }
-  }, [statusFilter, search]);
+  }, [statusFilter, search, page]);
 
   useEffect(() => {
     let active = true;
@@ -62,15 +65,9 @@ export function AdminPaymentList() {
     setIsSubmitting(true);
     setError(null);
     try {
-      const res = await fetch(`/api/v1/admin/payments/${id}/confirm/`, {
+      await api(`/admin/payments/${id}/confirm/`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
       });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || "Error al confirmar el pago.");
-      }
       setActionMessage("✅ Pago confirmado exitosamente.");
       setTimeout(() => setActionMessage(null), 4000);
       fetchPayments();
@@ -91,16 +88,10 @@ export function AdminPaymentList() {
     setIsSubmitting(true);
     setError(null);
     try {
-      const res = await fetch(`/api/v1/admin/payments/${rejectingPayment.id}/reject/`, {
+      await api(`/admin/payments/${rejectingPayment.id}/reject/`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: rejectReason }),
       });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || "Error al rechazar el pago.");
-      }
       setActionMessage("⚠️ Pago rechazado y registrado.");
       setTimeout(() => setActionMessage(null), 4000);
       setRejectingPayment(null);
@@ -168,7 +159,7 @@ export function AdminPaymentList() {
           <select
             id="status-filter"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => { setPage(1); setStatusFilter(e.target.value); }}
             className="border rounded px-3 py-1.5 text-sm bg-white"
           >
             <option value="REPORTED">Reportados (Por verificar)</option>
@@ -184,7 +175,7 @@ export function AdminPaymentList() {
             type="search"
             placeholder="Buscar por cliente, correo o referencia..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setPage(1); setSearch(e.target.value); }}
             className="w-full border rounded px-3 py-1.5 text-sm bg-white"
             aria-label="Buscar pago"
           />
@@ -239,6 +230,7 @@ export function AdminPaymentList() {
                   </td>
                   <td className="p-3">
                     {statusBadge(p.status)}
+                    {p.review_overdue && <p role="status" className="text-red-700 font-semibold">Plazo T2 vencido: revision urgente</p>}
                   </td>
                   <td className="p-3 text-xs text-gray-600">
                     {p.reported_at
@@ -277,9 +269,11 @@ export function AdminPaymentList() {
         </div>
       )}
 
+      <Pager page={page} data={pagination} onChange={setPage} />
+
       {/* Rejection Modal */}
       {rejectingPayment && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <Modal label="Confirmar accion" onClose={() => setRejectingPayment(null)}>
           <div className="bg-white rounded-lg p-6 max-w-md w-full space-y-4 shadow-xl">
             <h2 className="text-lg font-bold text-gray-900">Rechazar Pago</h2>
             <p className="text-sm text-gray-600">
@@ -320,7 +314,7 @@ export function AdminPaymentList() {
               </div>
             </form>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

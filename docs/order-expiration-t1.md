@@ -53,6 +53,13 @@ No se requieren Celery, Redis ni un servicio distribuido.
 
 ## Límites de alcance
 
+Actualización de Sprint 6/7: se conserva este comando T1 por compatibilidad.
+Para cubrir también correcciones rechazadas y alertas T2, usar
+`python manage.py process_payment_deadlines --actor-email <ADMIN activo> --limit 100`.
+La [política vigente](payment-resolution-policy.md) define las 24 horas de corrección,
+el vencimiento inclusivo y la alerta T2 sin cancelación de fondos reportados.
+La programación remota sigue requiriendo verificación de ejecución y monitorización.
+
 REPORTED, REJECTED y CONFIRMED quedan fuera de T1, aunque su deadline antiguo haya
 vencido. El runner tampoco cancela PREPARING, SHIPPED, DELIVERED o CANCELLED.
 Resolver T2, el plazo de corrección tras rechazo y la revisión administrativa siguen

@@ -321,6 +321,7 @@ class PublicProductDetailView(APIView):
         response["Cache-Control"] = "no-store"
         return response
 
+
 class ProductCompareView(APIView):
     """CO-35 HU-07: Public product comparison matrix for 2-4 compatible products."""
 
@@ -331,8 +332,24 @@ class ProductCompareView(APIView):
         ids_param = request.query_params.get("ids", "").strip()
         slugs_param = request.query_params.get("slugs", "").strip()
 
+        if ids_param and slugs_param:
+            return Response({"detail": "Use ids o slugs, no ambos."}, status=400)
+
         if ids_param:
+            if any(not item.strip() for item in ids_param.split(",")):
+                return Response({"detail": "Hay identificadores vacios."}, status=400)
             raw_items = [item.strip() for item in ids_param.split(",") if item.strip()]
+            if any(
+                not item.isascii()
+                or not item.isdecimal()
+                or len(item) > 19
+                or not 0 < int(item) <= 9223372036854775807
+                for item in raw_items
+            ):
+                return Response(
+                    {"detail": "Los identificadores deben ser enteros positivos validos."},
+                    status=400,
+                )
             seen = set()
             requested_ids = []
             for item in raw_items:
@@ -349,10 +366,16 @@ class ProductCompareView(APIView):
                     {"detail": "Solo puedes comparar hasta 4 productos a la vez."},
                     status=400,
                 )
+            if len(requested_ids) != len(raw_items):
+                return Response({"detail": "No repitas productos en la comparacion."}, status=400)
             filter_kwargs = {"pk__in": requested_ids}
             ordered_keys = requested_ids
-            def key_getter(p): return p.pk
+
+            def key_getter(p):
+                return p.pk
         elif slugs_param:
+            if any(not item.strip() for item in slugs_param.split(",")):
+                return Response({"detail": "Hay identificadores vacios."}, status=400)
             raw_items = [item.strip() for item in slugs_param.split(",") if item.strip()]
             seen = set()
             requested_slugs = []
@@ -370,9 +393,13 @@ class ProductCompareView(APIView):
                     {"detail": "Solo puedes comparar hasta 4 productos a la vez."},
                     status=400,
                 )
+            if len(requested_slugs) != len(raw_items):
+                return Response({"detail": "No repitas productos en la comparacion."}, status=400)
             filter_kwargs = {"slug__in": requested_slugs}
             ordered_keys = requested_slugs
-            def key_getter(p): return p.slug
+
+            def key_getter(p):
+                return p.slug
         else:
             return Response(
                 {"detail": "Debes seleccionar al menos 2 productos para comparar."},
@@ -479,43 +506,44 @@ class ProductCompareView(APIView):
                     "value": ", ".join(vals) if vals else "N/A",
                 }
 
-            serialized_products.append({
-                "id": p.pk,
-                "name": p.name,
-                "slug": p.slug,
-                "category": {
-                    "id": p.category_id,
-                    "name": p.category.name,
-                    "slug": p.category.slug,
-                },
-                "brand": {
-                    "id": p.brand_id,
-                    "name": p.brand.name,
-                    "slug": p.brand.slug,
-                },
-                "image_url": public_image_url(main_image) if main_image else None,
-                "description": p.description,
-                "warranty": p.warranty,
-                "min_price": format_money(min_price),
-                "max_price": format_money(max_price),
-                "promotional_min_price": format_money(promotional_min),
-                "has_promotion": has_promotion,
-                "total_stock": total_stock,
-                "is_available": total_stock > 0 and len(active_variants) > 0,
-                "attributes": attributes,
-            })
+            serialized_products.append(
+                {
+                    "id": p.pk,
+                    "name": p.name,
+                    "slug": p.slug,
+                    "category": {
+                        "id": p.category_id,
+                        "name": p.category.name,
+                        "slug": p.category.slug,
+                    },
+                    "brand": {
+                        "id": p.brand_id,
+                        "name": p.brand.name,
+                        "slug": p.brand.slug,
+                    },
+                    "image_url": public_image_url(main_image) if main_image else None,
+                    "description": p.description,
+                    "warranty": p.warranty,
+                    "min_price": format_money(min_price),
+                    "max_price": format_money(max_price),
+                    "promotional_min_price": format_money(promotional_min),
+                    "has_promotion": has_promotion,
+                    "total_stock": total_stock,
+                    "is_available": total_stock > 0 and len(active_variants) > 0,
+                    "attributes": attributes,
+                }
+            )
 
-        response = Response({
-            "category": {
-                "id": category.id,
-                "name": category.name,
-                "slug": category.slug,
-            },
-            "attributes": [
-                {"code": attr.code, "name": attr.name}
-                for attr in category_attrs
-            ],
-            "products": serialized_products,
-        })
+        response = Response(
+            {
+                "category": {
+                    "id": category.id,
+                    "name": category.name,
+                    "slug": category.slug,
+                },
+                "attributes": [{"code": attr.code, "name": attr.name} for attr in category_attrs],
+                "products": serialized_products,
+            }
+        )
         response["Cache-Control"] = "no-store"
         return response
