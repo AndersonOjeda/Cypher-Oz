@@ -56,9 +56,9 @@ const mockOrderPending: Order = {
   },
 };
 
-describe("Sprint 5: cancellation policy belongs to HU-18", () => {
+describe("Sprint 5 & 6: cancellation policy in HU-18", () => {
   beforeEach(() => vi.resetAllMocks());
-  it.each(["PENDING", "PREPARING", "CANCELLED", "SHIPPED"])(
+  it.each(["PREPARING", "CANCELLED", "SHIPPED"])(
     "does not expose cancellation for %s",
     async (status) => {
       vi.mocked(api).mockResolvedValueOnce({ ...mockOrderPending, status });
@@ -69,6 +69,15 @@ describe("Sprint 5: cancellation policy belongs to HU-18", () => {
       ).not.toBeInTheDocument();
     },
   );
+
+  it("exposes cancellation for PENDING in HU-18", async () => {
+    vi.mocked(api).mockResolvedValueOnce({ ...mockOrderPending, status: "PENDING" });
+    render(<OrderDetail number="ord-sprint5-001" />);
+    await screen.findByText(mockOrderPending.number);
+    expect(
+      screen.queryByRole("button", { name: /cancelar pedido/i }),
+    ).toBeInTheDocument();
+  });
 });
 
 describe("Sprint 5 — CO-59 & CO-60: Instrucciones y Reporte de Pago", () => {

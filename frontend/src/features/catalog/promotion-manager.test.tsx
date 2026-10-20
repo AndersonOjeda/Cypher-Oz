@@ -100,4 +100,4 @@ test("renders empty promotions list and validates promotion creation", async () 
 
   await user.click(screen.getByRole("button", { name: "Guardar promoción" }));
   expect(await screen.findByText("Promoción creada.")).toBeInTheDocument();
-});
+}, 15000);

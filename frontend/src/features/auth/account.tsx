@@ -582,6 +582,12 @@ export function Account() {
               <Link className="button subtle" href="/admin/clientes">
                 Clientes
               </Link>
+              <Link className="button subtle" href="/admin/pagos">
+                Verificación de pagos
+              </Link>
+              <Link className="button subtle" href="/admin/pedidos">
+                Gestión de pedidos
+              </Link>
             </>
           )}
           <Link className="button subtle" href="/pedidos">

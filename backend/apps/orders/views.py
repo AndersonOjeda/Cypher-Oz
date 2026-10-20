@@ -1,5 +1,6 @@
+from django.db.models import Q
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -8,18 +9,32 @@ from apps.catalog.views import CatalogPagination
 from apps.configuration.models import StoreSetting
 from apps.inventory.models import InventoryBalance
 from apps.promotions.services import get_active_promotions_for_variants
+from apps.users.permissions import IsAdmin
 from apps.users.views import private_response
 
-from .models import Order
+from .models import Order, Payment
 from .serializers import (
+    AdminOrderSerializer,
+    AdminPaymentSerializer,
     CartValidationSerializer,
     CheckoutSerializer,
     CreateOrderSerializer,
+    OrderCancelSerializer,
     OrderSerializer,
+    OrderTransitionSerializer,
+    PaymentRejectSerializer,
     PaymentReportSerializer,
     PaymentSerializer,
 )
-from .services import create_order, preview, report_payment
+from .services import (
+    cancel_order_by_user_or_admin,
+    confirm_payment,
+    create_order,
+    preview,
+    reject_payment,
+    report_payment,
+    transition_order,
+)
 
 
 class PurchaseVariantsView(APIView):
@@ -76,7 +91,7 @@ def orders_for(user):
     return (
         Order.objects.filter(user=user)
         .select_related("delivery", "payment")
-        .prefetch_related("items")
+        .prefetch_related("items", "history__actor", "payment__history__actor")
     )
 
 
@@ -208,3 +223,126 @@ class CartValidateView(APIView):
 
         has_changes = any(r["status"] != "ok" for r in results)
         return Response({"items": results, "has_changes": has_changes})
+
+
+# ---------------------------------------------------------------------------
+# SPRINT 6: HU-15, HU-17, HU-18 Admin and Cancellation Views
+# ---------------------------------------------------------------------------
+
+
+class AdminPaymentListView(APIView):
+    """CO-44 HU-15-T02: Admin view of reported and all payments."""
+
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        qs = (
+            Payment.objects.select_related("order__user", "order")
+            .prefetch_related("history__actor")
+            .order_by("-reported_at", "-id")
+        )
+        status_param = request.query_params.get("status")
+        if status_param:
+            qs = qs.filter(status=status_param.upper())
+        search = request.query_params.get("q", "").strip()
+        if search:
+            qs = qs.filter(
+                Q(order__user__name__icontains=search)
+                | Q(order__user__email__icontains=search)
+                | Q(reference__icontains=search)
+            )
+        pager = CatalogPagination()
+        page = pager.paginate_queryset(qs, request)
+        response = pager.get_paginated_response(AdminPaymentSerializer(page, many=True).data)
+        response["Cache-Control"] = "no-store"
+        return response
+
+
+class AdminPaymentConfirmView(APIView):
+    """CO-44 HU-15-T02: Confirm payment after manual funds verification."""
+
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def post(self, request, pk):
+        payment = confirm_payment(request.user, pk)
+        return private_response(AdminPaymentSerializer(payment).data)
+
+
+class AdminPaymentRejectView(APIView):
+    """CO-44 HU-15-T02: Reject payment with mandatory reason."""
+
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def post(self, request, pk):
+        serializer = PaymentRejectSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        payment = reject_payment(request.user, pk, serializer.validated_data["reason"])
+        return private_response(AdminPaymentSerializer(payment).data)
+
+
+class AdminOrderListView(APIView):
+    """CO-43 HU-17-T01: Admin order list and search."""
+
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        qs = (
+            Order.objects.select_related("user", "delivery", "payment")
+            .prefetch_related("items", "history__actor", "payment__history__actor")
+            .order_by("-created_at", "-id")
+        )
+        status_param = request.query_params.get("status")
+        if status_param:
+            qs = qs.filter(status=status_param.upper())
+        search = request.query_params.get("q", "").strip()
+        if search:
+            qs = qs.filter(
+                Q(user__name__icontains=search)
+                | Q(user__email__icontains=search)
+                | Q(number__icontains=search)
+            )
+        pager = CatalogPagination()
+        page = pager.paginate_queryset(qs, request)
+        response = pager.get_paginated_response(AdminOrderSerializer(page, many=True).data)
+        response["Cache-Control"] = "no-store"
+        return response
+
+
+class AdminOrderDetailView(APIView):
+    """CO-43 HU-17-T01: Admin detailed view of any order."""
+
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request, number):
+        order = get_object_or_404(
+            Order.objects.select_related("user", "delivery", "payment").prefetch_related(
+                "items", "history__actor", "payment__history__actor"
+            ),
+            number=number,
+        )
+        return private_response(AdminOrderSerializer(order).data)
+
+
+class AdminOrderTransitionView(APIView):
+    """CO-43 HU-17-T01: Advance order status with strict payment verification."""
+
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def post(self, request, number):
+        serializer = OrderTransitionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        order = transition_order(request.user, number, serializer.validated_data["target_status"])
+        return private_response(AdminOrderSerializer(order).data)
+
+
+class OrderCancelView(APIView):
+    """CO-61 HU-18-T01: Atomic cancellation and inventory restoration for user or admin."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, number):
+        serializer = OrderCancelSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        reason = serializer.validated_data.get("reason") or "Cancelación de pedido"
+        order = cancel_order_by_user_or_admin(request.user, number, reason)
+        return private_response(OrderSerializer(order).data)

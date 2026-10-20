@@ -6,7 +6,7 @@ from decimal import Decimal
 from django.core import signing
 from django.db import transaction
 from django.utils import timezone
-from rest_framework.exceptions import APIException, ValidationError
+from rest_framework.exceptions import APIException, PermissionDenied, ValidationError
 from rest_framework.generics import get_object_or_404
 
 from apps.catalog.models import Brand, Category, Product, Variant
@@ -332,4 +332,104 @@ def restore_cancelled_order_inventory(user, number, reason):
             actor=user,
             reversal_of=source,
         )
+    return order
+
+
+class PaymentNotConfirmedConflict(APIException):
+    status_code = 409
+    default_code = "PAYMENT_NOT_CONFIRMED"
+    default_detail = "El pago debe estar CONFIRMADO para avanzar el pedido."
+
+
+@transaction.atomic
+def confirm_payment(actor, payment_id):
+    if getattr(actor, "role", "") != User.Role.ADMIN:
+        raise PermissionDenied("Se requieren permisos de administrador.")
+    payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id)
+    if payment.status != "REPORTED":
+        raise CheckoutConflict(
+            "Solo se pueden confirmar pagos que se encuentren en estado REPORTADO."
+        )
+    payment.status = "CONFIRMED"
+    payment.save(update_fields=["status"])
+    PaymentStatusHistory.objects.create(payment=payment, status="CONFIRMED", actor=actor)
+    return payment
+
+
+@transaction.atomic
+def reject_payment(actor, payment_id, reason):
+    if getattr(actor, "role", "") != User.Role.ADMIN:
+        raise PermissionDenied("Se requieren permisos de administrador.")
+    if not isinstance(reason, str) or not reason.strip():
+        raise ValidationError({"reason": "Indica un motivo para rechazar el pago."})
+    payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id)
+    if payment.status != "REPORTED":
+        raise CheckoutConflict(
+            "Solo se pueden rechazar pagos que se encuentren en estado REPORTADO."
+        )
+    payment.status = "REJECTED"
+    payment.save(update_fields=["status"])
+    PaymentStatusHistory.objects.create(payment=payment, status="REJECTED", actor=actor)
+    return payment
+
+
+ALLOWED_ORDER_TRANSITIONS = {
+    "PENDING": ["PREPARING"],
+    "PREPARING": ["SHIPPED"],
+    "SHIPPED": ["DELIVERED"],
+}
+
+
+@transaction.atomic
+def transition_order(actor, number, target_status):
+    if getattr(actor, "role", "") != User.Role.ADMIN:
+        raise PermissionDenied("Se requieren permisos de administrador.")
+    order = get_object_or_404(Order.objects.select_for_update(), number=number)
+    payment = Payment.objects.select_for_update().get(order=order)
+
+    valid_targets = ALLOWED_ORDER_TRANSITIONS.get(order.status, [])
+    if target_status not in valid_targets:
+        raise CheckoutConflict(
+            f"No se permite transicionar un pedido de estado {order.status} a {target_status}."
+        )
+
+    if target_status in ["PREPARING", "SHIPPED", "DELIVERED"] and payment.status != "CONFIRMED":
+        raise PaymentNotConfirmedConflict()
+
+    order.status = target_status
+    order.save(update_fields=["status"])
+    OrderStatusHistory.objects.create(order=order, status=target_status, actor=actor)
+    return order
+
+
+@transaction.atomic
+def cancel_order_by_user_or_admin(actor, number, reason="Cancelación solicitada"):
+    order = get_object_or_404(Order.objects.select_for_update(), number=number)
+    payment = Payment.objects.select_for_update().get(order=order)
+    is_admin = getattr(actor, "role", "") == User.Role.ADMIN
+
+    if not is_admin and order.user_id != actor.pk:
+        raise PermissionDenied("No tienes permisos para cancelar este pedido.")
+
+    if order.status == "CANCELLED":
+        raise CheckoutConflict("El pedido ya está cancelado.")
+
+    if not is_admin:
+        if order.status != "PENDING":
+            raise CheckoutConflict("Solo puedes cancelar pedidos en estado Pendiente.")
+        if payment.status == "CONFIRMED":
+            raise CheckoutConflict(
+                "El pago ya fue confirmado. Para cancelar contacta a la tienda."
+            )
+    else:
+        if order.status in ["SHIPPED", "DELIVERED"]:
+            raise CheckoutConflict(f"No se puede cancelar un pedido en estado {order.status}.")
+
+    clean_reason = (
+        reason.strip() if isinstance(reason, str) and reason.strip() else "Cancelación solicitada"
+    )
+    order.status = "CANCELLED"
+    order.save(update_fields=["status"])
+    OrderStatusHistory.objects.create(order=order, status="CANCELLED", actor=actor)
+    restore_cancelled_order_inventory(actor, order.number, clean_reason)
     return order

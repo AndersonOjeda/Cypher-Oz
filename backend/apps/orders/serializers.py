@@ -1,7 +1,14 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-from .models import Order, OrderDelivery, OrderItem, Payment
+from .models import (
+    Order,
+    OrderDelivery,
+    OrderItem,
+    OrderStatusHistory,
+    Payment,
+    PaymentStatusHistory,
+)
 
 
 class StrictSerializer(serializers.Serializer):
@@ -82,8 +89,25 @@ class DeliverySerializer(serializers.ModelSerializer):
         fields = ["mode", "address", "cost"]
 
 
+class PaymentStatusHistorySerializer(serializers.ModelSerializer):
+    actor_email = serializers.CharField(source="actor.email", read_only=True)
+
+    class Meta:
+        model = PaymentStatusHistory
+        fields = ["id", "status", "actor_email", "created_at"]
+
+
+class OrderStatusHistorySerializer(serializers.ModelSerializer):
+    actor_email = serializers.CharField(source="actor.email", read_only=True)
+
+    class Meta:
+        model = OrderStatusHistory
+        fields = ["id", "status", "actor_email", "created_at"]
+
+
 class PaymentSerializer(serializers.ModelSerializer):
     report_window_active = serializers.SerializerMethodField()
+    history = PaymentStatusHistorySerializer(many=True, read_only=True)
 
     def get_report_window_active(self, obj):
         return obj.status == "PENDING" and timezone.now() < obj.report_deadline_at
@@ -91,12 +115,14 @@ class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = [
+            "id",
             "status",
             "reference",
             "reported_at",
             "report_deadline_at",
             "review_deadline_at",
             "report_window_active",
+            "history",
         ]
 
 
@@ -111,10 +137,15 @@ class PaymentReportSerializer(StrictSerializer):
         return value
 
 
+class PaymentRejectSerializer(StrictSerializer):
+    reason = serializers.CharField(min_length=3, max_length=300)
+
+
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
     delivery = DeliverySerializer(read_only=True)
     payment = PaymentSerializer(read_only=True)
+    history = OrderStatusHistorySerializer(many=True, read_only=True)
     currency = serializers.SerializerMethodField()
 
     def get_currency(self, obj):
@@ -134,4 +165,80 @@ class OrderSerializer(serializers.ModelSerializer):
             "items",
             "delivery",
             "payment",
+            "history",
         ]
+
+
+class AdminPaymentSerializer(serializers.ModelSerializer):
+    order_number = serializers.UUIDField(source="order.number", read_only=True)
+    customer_name = serializers.CharField(source="order.user.name", read_only=True)
+    customer_email = serializers.CharField(source="order.user.email", read_only=True)
+    order_total = serializers.DecimalField(
+        source="order.total", max_digits=18, decimal_places=2, read_only=True
+    )
+    order_status = serializers.CharField(source="order.status", read_only=True)
+    history = PaymentStatusHistorySerializer(many=True, read_only=True)
+    report_window_active = serializers.SerializerMethodField()
+
+    def get_report_window_active(self, obj):
+        return obj.status == "PENDING" and timezone.now() < obj.report_deadline_at
+
+    class Meta:
+        model = Payment
+        fields = [
+            "id",
+            "order_number",
+            "customer_name",
+            "customer_email",
+            "order_total",
+            "order_status",
+            "status",
+            "reference",
+            "reported_at",
+            "report_deadline_at",
+            "review_deadline_at",
+            "report_window_active",
+            "history",
+        ]
+
+
+class AdminOrderSerializer(serializers.ModelSerializer):
+    customer_name = serializers.CharField(source="user.name", read_only=True)
+    customer_email = serializers.CharField(source="user.email", read_only=True)
+    items = OrderItemSerializer(many=True, read_only=True)
+    delivery = DeliverySerializer(read_only=True)
+    payment = PaymentSerializer(read_only=True)
+    history = OrderStatusHistorySerializer(many=True, read_only=True)
+    currency = serializers.SerializerMethodField()
+
+    def get_currency(self, obj):
+        return "COP"
+
+    class Meta:
+        model = Order
+        fields = [
+            "number",
+            "customer_name",
+            "customer_email",
+            "status",
+            "subtotal",
+            "discount",
+            "shipping",
+            "total",
+            "currency",
+            "created_at",
+            "items",
+            "delivery",
+            "payment",
+            "history",
+        ]
+
+
+class OrderTransitionSerializer(StrictSerializer):
+    target_status = serializers.ChoiceField(choices=["PREPARING", "SHIPPED", "DELIVERED"])
+
+
+class OrderCancelSerializer(StrictSerializer):
+    reason = serializers.CharField(
+        max_length=300, required=False, allow_blank=True, default="Cancelación de pedido"
+    )
