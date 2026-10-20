@@ -1,0 +1,210 @@
+{
+  "date": "2026-10-20",
+  "issues": [
+    {
+      "key": "CO-10",
+      "status": "Listo",
+      "checked": 9,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-35",
+      "status": "Listo",
+      "checked": 7,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-40",
+      "status": "Listo",
+      "checked": 5,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-43",
+      "status": "Listo",
+      "checked": 6,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-44",
+      "status": "Listo",
+      "checked": 7,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-45",
+      "status": "En curso",
+      "checked": 3,
+      "unchecked": 1
+    },
+    {
+      "key": "CO-46",
+      "status": "En curso",
+      "checked": 1,
+      "unchecked": 8
+    },
+    {
+      "key": "CO-47",
+      "status": "En curso",
+      "checked": 5,
+      "unchecked": 4
+    },
+    {
+      "key": "CO-61",
+      "status": "Listo",
+      "checked": 6,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-71",
+      "status": "Listo",
+      "checked": 6,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-72",
+      "status": "Listo",
+      "checked": 6,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-106",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-107",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-108",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-130",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-131",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-132",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-133",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-134",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-135",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-136",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-137",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-138",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-139",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-140",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-141",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-142",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-167",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-168",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-169",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-173",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-174",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    },
+    {
+      "key": "CO-175",
+      "status": "Listo",
+      "checked": 4,
+      "unchecked": 0
+    }
+  ],
+  "checked": 149,
+  "unchecked": 13,
+  "in_progress": [
+    "CO-45",
+    "CO-46",
+    "CO-47"
+  ]
+}
