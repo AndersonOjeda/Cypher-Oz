@@ -47,7 +47,7 @@ No se duplican puntos del checkout adelantado al Sprint 1.
 - **Evidencia:** nueva prueba integrada `frontend/e2e/sprint4.spec.ts`, sin
   simular respuestas API del flujo. CI conserva las capturas de Sprint 4.
 
-## Resultados finales
+## Resultados locales anteriores a integrar main
 
 | Comprobación | Resultado |
 |---|---|
@@ -92,8 +92,19 @@ Se adjuntan el informe y el paquete de evidencia a Jira, con referencias desde
 las historias y subtareas. La conciliación conserva estimaciones, responsables,
 estado Listo, cierre del sprint e historial de planificación.
 
-Las correcciones permanecen en el árbol de trabajo; no se afirma que esté limpio,
-publicado, fusionado o desplegado. No se verificó una CI remota aprobada para esta
-versión. Las pruebas funcionales no certifican 1.000 usuarios concurrentes; las
+Las correcciones se publicaron en
+[PR #20](https://github.com/AndersonOjeda/Cypher-Oz/pull/20), tras integrar
+`main` (`1b1c171`) conservando las correcciones de correo, autenticación y
+almacenamiento. La integración se realiza en una copia de trabajo aislada para
+preservar la rama de Sprint 5 abierta en la carpeta compartida.
+
+Después de integrar main pasan 21 regresiones de catálogo/correo/administrador,
+ESLint, TypeScript y **82/82 pruebas frontend**. La validación completa del
+resultado integrado está en las comprobaciones del PR y en
+[GitHub Actions](https://github.com/AndersonOjeda/Cypher-Oz/actions).
+Este informe conserva los resultados locales anteriores como evidencia histórica;
+el resultado de entrega se contrasta con el SHA y la ejecución remota del PR.
+
+Las pruebas funcionales no certifican 1.000 usuarios concurrentes; las
 mediciones y sus límites constan en
 [el informe de rendimiento](performance-50-products-1000-users.md).

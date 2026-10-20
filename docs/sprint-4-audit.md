@@ -218,5 +218,8 @@ conserva y se envía, y que `[null]` devuelve 400.
 El [informe corregido](sprint-4-report.md) sustituye las cifras y afirmaciones
 incorrectas del reporte original. Se concilian criterios y actividades en Jira
 con evidencia adjunta, conservando el cierre administrativo y el historial.
-No se afirma publicación de la rama, merge, despliegue ni CI remota aprobada.
+La entrega posterior se publicó en
+[PR #20](https://github.com/AndersonOjeda/Cypher-Oz/pull/20), integrando el main
+vigente y conservando las correcciones previas de autenticación y correo.
+Las comprobaciones del PR registran el resultado remoto sobre la versión integrada.
 La capacidad de 1.000 usuarios concurrentes sigue sujeta al informe de rendimiento.
