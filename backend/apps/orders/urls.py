@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    CartValidateView,
     CheckoutPreviewView,
     OrderDetailView,
     OrdersView,
@@ -11,6 +12,7 @@ from .views import (
 
 urlpatterns = [
     path("purchase/variants/", PurchaseVariantsView.as_view()),
+    path("checkout/validate/", CartValidateView.as_view()),
     path("checkout/preview/", CheckoutPreviewView.as_view()),
     path("orders/", OrdersView.as_view()),
     path("orders/<uuid:number>/", OrderDetailView.as_view()),

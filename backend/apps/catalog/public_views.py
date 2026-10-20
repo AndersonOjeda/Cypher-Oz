@@ -1,6 +1,6 @@
 from decimal import Decimal, InvalidOperation
 
-from django.db.models import Q
+from django.db.models import Exists, OuterRef, Prefetch, Q, Subquery
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny
@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from apps.promotions.services import get_active_promotions_for_variants
 
-from .models import Product
+from .models import Product, Variant, VariantAttributeValue
 from .storage import StorageUnavailable, image_url
 from .views import CatalogPagination
 
@@ -21,7 +21,7 @@ def format_money(val):
 
 
 def public_image_url(image):
-    """Prefer a short-lived URL while keeping the catalog usable during storage outages."""
+    """Keep the catalog usable when object storage cannot sign an image URL."""
     try:
         return image_url(image.storage_key)
     except StorageUnavailable:
@@ -107,13 +107,25 @@ class PublicProductsView(APIView):
     authentication_classes = []
 
     def get(self, request):
+        # EXISTS keeps one row per product without joining/deduplicating every
+        # variant. All price/stock filters below must match the same variant.
+        sellable = Variant.objects.filter(
+            product_id=OuterRef("pk"),
+            is_active=True,
+            price__gte=0,
+        )
         queryset = (
-            Product.objects.available()
+            Product.objects.visible()
             .select_related("category", "brand")
             .prefetch_related(
                 "images",
-                "variants__inventory_balance",
-                "variants__attribute_values__attribute",
+                Prefetch(
+                    "variants",
+                    queryset=Variant.objects.filter(
+                        is_active=True,
+                        price__gte=0,
+                    ).select_related("inventory_balance"),
+                ),
             )
         )
 
@@ -144,14 +156,13 @@ class PublicProductsView(APIView):
                 queryset = queryset.filter(brand__slug=brand_param)
 
         # Price range filters
-        price_filters = {"variants__is_active": True}
         min_price_param = request.query_params.get("min_price")
         if min_price_param is not None and min_price_param != "":
             try:
                 min_val = Decimal(min_price_param)
                 if not min_val.is_finite() or min_val < 0:
                     raise serializers.ValidationError({"min_price": "Debe ser mayor o igual a 0."})
-                price_filters["variants__price__gte"] = min_val
+                sellable = sellable.filter(price__gte=min_val)
             except InvalidOperation as exc:
                 raise serializers.ValidationError(
                     {"min_price": "Usa un valor numérico válido."}
@@ -163,7 +174,7 @@ class PublicProductsView(APIView):
                 max_val = Decimal(max_price_param)
                 if not max_val.is_finite() or max_val < 0:
                     raise serializers.ValidationError({"max_price": "Debe ser mayor o igual a 0."})
-                price_filters["variants__price__lte"] = max_val
+                sellable = sellable.filter(price__lte=max_val)
             except InvalidOperation as exc:
                 raise serializers.ValidationError(
                     {"max_price": "Usa un valor numérico válido."}
@@ -174,26 +185,23 @@ class PublicProductsView(APIView):
                 {"max_price": "Debe ser mayor o igual al precio mínimo."}
             )
 
-        if len(price_filters) > 1:
-            queryset = queryset.filter(**price_filters)
-
         # Availability filter (total_stock > 0)
         available_param = request.query_params.get("available")
         if available_param is not None and available_param != "":
             if available_param not in {"true", "false"}:
                 raise serializers.ValidationError({"available": "Usa true o false."})
             if available_param == "true":
-                queryset = queryset.filter(
-                    variants__is_active=True,
-                    variants__inventory_balance__available_quantity__gt=0,
-                )
+                sellable = sellable.filter(inventory_balance__available_quantity__gt=0)
             else:
-                queryset = queryset.exclude(
-                    variants__is_active=True,
-                    variants__inventory_balance__available_quantity__gt=0,
+                in_stock = Variant.objects.filter(
+                    product_id=OuterRef("pk"),
+                    is_active=True,
+                    price__gte=0,
+                    inventory_balance__available_quantity__gt=0,
                 )
+                queryset = queryset.filter(~Exists(in_stock))
 
-        queryset = queryset.distinct()
+        queryset = queryset.filter(Exists(sellable))
 
         # Ordering
         ordering = request.query_params.get("ordering", "-updated_at")
@@ -201,10 +209,21 @@ class PublicProductsView(APIView):
             queryset = queryset.order_by("name", "pk")
         elif ordering == "-name":
             queryset = queryset.order_by("-name", "-pk")
-        elif ordering == "price":
-            queryset = queryset.order_by("variants__price", "pk").distinct()
-        elif ordering == "-price":
-            queryset = queryset.order_by("-variants__price", "-pk").distinct()
+        elif ordering in {"price", "-price"}:
+            # Order by the displayed starting price, ignoring hidden variants.
+            prices = (
+                Variant.objects.filter(
+                    product_id=OuterRef("pk"),
+                    is_active=True,
+                    price__gte=0,
+                )
+                .order_by("price")
+                .values("price")[:1]
+            )
+            queryset = queryset.alias(starting_price=Subquery(prices)).order_by(
+                "starting_price" if ordering == "price" else "-starting_price",
+                "pk",
+            )
         else:
             queryset = queryset.order_by("-updated_at", "-id")
 
@@ -235,8 +254,20 @@ class PublicProductDetailView(APIView):
             .select_related("category", "brand")
             .prefetch_related(
                 "images",
-                "variants__inventory_balance",
-                "variants__attribute_values__attribute",
+                Prefetch(
+                    "variants",
+                    queryset=Variant.objects.filter(
+                        is_active=True,
+                        price__gte=0,
+                    )
+                    .select_related("inventory_balance")
+                    .prefetch_related(
+                        Prefetch(
+                            "attribute_values",
+                            queryset=VariantAttributeValue.objects.select_related("attribute"),
+                        ),
+                    ),
+                ),
             )
             .first()
         )

@@ -13,7 +13,8 @@ vi.mock("@/services/api", async (importOriginal) => {
           id: 1,
           name: "Laptop ThinkPad E14",
           slug: "laptop-thinkpad",
-          description: "Potente portátil para productividad con procesador AMD Ryzen 7.",
+          description:
+            "Potente portátil para productividad con procesador AMD Ryzen 7.",
           warranty: "12 meses con soporte técnico local en Pasto.",
           category: { id: 1, name: "Computadores", slug: "computadores" },
           brand: { id: 10, name: "Lenovo", slug: "lenovo" },
@@ -63,7 +64,9 @@ vi.mock("@/services/api", async (importOriginal) => {
           is_available: true,
         });
       }
-      return Promise.reject(new Error("Producto no encontrado o no disponible."));
+      return Promise.reject(
+        new Error("Producto no encontrado o no disponible."),
+      );
     }),
   };
 });
@@ -114,8 +117,12 @@ describe("ProductDetail Component (HU-06 / HU-08)", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/LNV-TP-32/)).toBeInTheDocument();
-      expect(screen.getByText(/Variante actualmente agotada/i)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Producto agotado" })).toBeDisabled();
+      expect(
+        screen.getByText(/Variante actualmente agotada/i),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Producto agotado" }),
+      ).toBeDisabled();
     });
   });
 
@@ -123,7 +130,9 @@ describe("ProductDetail Component (HU-06 / HU-08)", () => {
     render(<ProductDetail slug="laptop-thinkpad" />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Añadir al carrito/i })).toBeEnabled();
+      expect(
+        screen.getByRole("button", { name: /Añadir al carrito/i }),
+      ).toBeEnabled();
     });
 
     const addBtn = screen.getByRole("button", { name: /Añadir al carrito/i });
@@ -146,6 +155,7 @@ describe("ProductDetail Component (HU-06 / HU-08)", () => {
       variant_id: 201,
       quantity: 1,
       label: "Laptop ThinkPad E14 · 16GB RAM / 512GB SSD",
+      unit_price: "3150000.00",
     });
   });
 
@@ -158,6 +168,8 @@ describe("ProductDetail Component (HU-06 / HU-08)", () => {
       ).toBeInTheDocument();
     });
 
-    expect(screen.getByRole("button", { name: /Reintentar/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Reintentar/i }),
+    ).toBeInTheDocument();
   });
 });

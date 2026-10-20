@@ -294,3 +294,43 @@ class AddressDetailView(APIView):
         User.objects.select_for_update().get(pk=request.user.pk)
         self.get_object(request, pk).delete()
         return private_response(status=204)
+
+
+class AdminCustomerListView(APIView):
+    """CO-62 HU-19-T01: Admin-only customer listing with order counts and search."""
+
+    def get_permissions(self):
+        from rest_framework.permissions import IsAuthenticated
+
+        from .permissions import IsAdmin
+
+        return [IsAuthenticated(), IsAdmin()]
+
+    def get(self, request):
+        from django.db.models import Count, Q
+
+        from apps.catalog.views import CatalogPagination
+
+        search = request.query_params.get("q", "").strip()[:180]
+        qs = (
+            User.objects.filter(role=User.Role.CLIENT, is_active=True)
+            .annotate(order_count=Count("order"))
+            .order_by("-created_at", "-pk")
+        )
+        if search:
+            qs = qs.filter(Q(name__icontains=search) | Q(email__icontains=search))
+        pager = CatalogPagination()
+        customers = pager.paginate_queryset(qs, request)
+        data = [
+            {
+                "id": u.id,
+                "name": u.name,
+                "email": u.email,
+                "created_at": u.created_at.isoformat(),
+                "order_count": u.order_count,
+            }
+            for u in customers
+        ]
+        response = pager.get_paginated_response(data)
+        response["Cache-Control"] = "no-store"
+        return response

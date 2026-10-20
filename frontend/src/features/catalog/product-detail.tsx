@@ -18,15 +18,30 @@ import type { PublicProductDetail, PublicVariant } from "./types";
 
 export function ProductDetail({ slug }: { slug: string }) {
   const [revision, setRevision] = useState(0);
-  const { data: product, error, loading } = useResource<PublicProductDetail>(
+  const {
+    data: product,
+    error,
+    loading,
+  } = useResource<PublicProductDetail>(
     `/products/${encodeURIComponent(slug)}/`,
     revision,
   );
 
-  const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null);
+  const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
+    null,
+  );
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [addedNotice, setAddedNotice] = useState(false);
+
+  const [selectionKey, setSelectionKey] = useState(`${slug}:${revision}`);
+  if (selectionKey !== `${slug}:${revision}`) {
+    setSelectionKey(`${slug}:${revision}`);
+    setSelectedVariantId(null);
+    setActiveImageIndex(0);
+    setQuantity(1);
+    setAddedNotice(false);
+  }
 
   const selectedVariant: PublicVariant | null = useMemo(() => {
     if (!product?.variants) return null;
@@ -48,7 +63,13 @@ export function ProductDetail({ slug }: { slug: string }) {
     if (!product || !selectedVariant || selectedVariant.stock <= 0) return;
 
     const label = `${product.name} · ${selectedVariant.name}`;
-    addToCart(selectedVariant.id, quantity, label);
+    addToCart(
+      selectedVariant.id,
+      quantity,
+      label,
+      undefined,
+      selectedVariant.promotional_price ?? selectedVariant.price,
+    );
     setAddedNotice(true);
   }
 
@@ -70,7 +91,11 @@ export function ProductDetail({ slug }: { slug: string }) {
             <ArrowLeft size={16} /> Volver al catálogo
           </Link>
         </nav>
-        <div role="alert" className="error-message" style={{ margin: "24px 0" }}>
+        <div
+          role="alert"
+          className="error-message"
+          style={{ margin: "24px 0" }}
+        >
           <p>{error || "Producto no encontrado o no disponible."}</p>
           <button
             type="button"
@@ -96,7 +121,10 @@ export function ProductDetail({ slug }: { slug: string }) {
       {/* Breadcrumb Navigation */}
       <nav className="detail-breadcrumb" aria-label="Navegación secundaria">
         <Link href="/catalogo">
-          <ArrowLeft size={14} style={{ display: "inline", verticalAlign: "middle" }} />{" "}
+          <ArrowLeft
+            size={14}
+            style={{ display: "inline", verticalAlign: "middle" }}
+          />{" "}
           Catálogo
         </Link>
         <span>/</span>
@@ -166,7 +194,8 @@ export function ProductDetail({ slug }: { slug: string }) {
         {/* Right Column: Product Info & Actions */}
         <section className="detail-info" aria-label="Información del producto">
           <div className="detail-category-brand">
-            <span>{product.category.name}</span> · <span>{product.brand.name}</span>
+            <span>{product.category.name}</span> ·{" "}
+            <span>{product.brand.name}</span>
           </div>
 
           <h1 className="detail-title">{product.name}</h1>
@@ -176,7 +205,10 @@ export function ProductDetail({ slug }: { slug: string }) {
             {selectedVariant?.promotional_price ? (
               <>
                 <div className="detail-price-row">
-                  <span className="price-current has-discount" style={{ fontSize: 26 }}>
+                  <span
+                    className="price-current has-discount"
+                    style={{ fontSize: 26 }}
+                  >
                     {cop(selectedVariant.promotional_price)}
                   </span>
                   <span className="price-original" style={{ fontSize: 18 }}>
@@ -243,7 +275,8 @@ export function ProductDetail({ slug }: { slug: string }) {
           <div className="card-stock">
             {selectedVariant && selectedVariant.stock > 0 ? (
               <p className="stock-in" style={{ fontSize: 14, margin: 0 }}>
-                ✓ {selectedVariant.stock} unidades disponibles para entrega inmediata
+                ✓ {selectedVariant.stock} unidades disponibles para entrega
+                inmediata
               </p>
             ) : (
               <p className="stock-out" style={{ fontSize: 14, margin: 0 }}>
@@ -282,15 +315,22 @@ export function ProductDetail({ slug }: { slug: string }) {
               disabled={!selectedVariant || selectedVariant.stock <= 0}
               onClick={handleAddToCart}
             >
-              <ShoppingCart size={18} style={{ display: "inline", verticalAlign: "middle", marginRight: 8 }} />
+              <ShoppingCart
+                size={18}
+                style={{
+                  display: "inline",
+                  verticalAlign: "middle",
+                  marginRight: 8,
+                }}
+              />
               {selectedVariant && selectedVariant.stock > 0
                 ? "Añadir al carrito"
                 : "Producto agotado"}
             </button>
 
             <p className="cart-notice">
-              * El carrito no reserva inventario hasta confirmar el pedido. Puedes
-              comprar sin registrarte inicialmente.
+              * El carrito no reserva inventario hasta confirmar el pedido.
+              Puedes comprar sin registrarte inicialmente.
             </p>
 
             {/* Added Notice Feedback */}
@@ -322,7 +362,13 @@ export function ProductDetail({ slug }: { slug: string }) {
           {product.description && (
             <div className="product-description-box">
               <h3>Descripción del producto</h3>
-              <p style={{ whiteSpace: "pre-line", color: "#334155", lineHeight: 1.6 }}>
+              <p
+                style={{
+                  whiteSpace: "pre-line",
+                  color: "#334155",
+                  lineHeight: 1.6,
+                }}
+              >
                 {product.description}
               </p>
             </div>
@@ -332,4 +378,3 @@ export function ProductDetail({ slug }: { slug: string }) {
     </div>
   );
 }
-

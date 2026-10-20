@@ -21,3 +21,5 @@ reports/
 .env*
 
 .wrangler/
+.agents/
+.vscode/

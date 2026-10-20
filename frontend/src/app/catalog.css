@@ -26,6 +26,7 @@
   white-space: nowrap;
 }
 .catalog-tabs {
+  flex-wrap: wrap;
   margin: 30px 0;
   gap: 8px;
   flex-wrap: wrap;

@@ -1,0 +1,131 @@
+{
+  "date": "2026-10-19",
+  "site": "https://cypher-oz.atlassian.net",
+  "sprintId": 74,
+  "storyPoints": 21,
+  "reportAttachment": {
+    "issue": "CO-57",
+    "id": 10000,
+    "filename": "sprint-4-report.md"
+  },
+  "evidenceAttachment": {
+    "issue": "CO-57",
+    "id": 10001,
+    "filename": "sprint4-validation.zip",
+    "sha256": "0AF0080D0ACFBD515CDF9797B9056C3FEE08D09EE20B7A66DFB2E1EB3AEBDB76"
+  },
+  "issues": [
+    {
+      "key": "CO-57",
+      "status": "Listo",
+      "checkboxes": 8,
+      "checked": 8,
+      "evidence": true
+    },
+    {
+      "key": "CO-37",
+      "status": "Listo",
+      "checkboxes": 7,
+      "checked": 7,
+      "evidence": true
+    },
+    {
+      "key": "CO-70",
+      "status": "Listo",
+      "checkboxes": 7,
+      "checked": 7,
+      "evidence": true
+    },
+    {
+      "key": "CO-62",
+      "status": "Listo",
+      "checkboxes": 6,
+      "checked": 6,
+      "evidence": true
+    },
+    {
+      "key": "CO-112",
+      "status": "Listo",
+      "checkboxes": 4,
+      "checked": 4,
+      "evidence": true
+    },
+    {
+      "key": "CO-113",
+      "status": "Listo",
+      "checkboxes": 4,
+      "checked": 4,
+      "evidence": true
+    },
+    {
+      "key": "CO-114",
+      "status": "Listo",
+      "checkboxes": 4,
+      "checked": 4,
+      "evidence": true
+    },
+    {
+      "key": "CO-115",
+      "status": "Listo",
+      "checkboxes": 4,
+      "checked": 4,
+      "evidence": true
+    },
+    {
+      "key": "CO-116",
+      "status": "Listo",
+      "checkboxes": 4,
+      "checked": 4,
+      "evidence": true
+    },
+    {
+      "key": "CO-117",
+      "status": "Listo",
+      "checkboxes": 4,
+      "checked": 4,
+      "evidence": true
+    },
+    {
+      "key": "CO-143",
+      "status": "Listo",
+      "checkboxes": 4,
+      "checked": 4,
+      "evidence": true
+    },
+    {
+      "key": "CO-144",
+      "status": "Listo",
+      "checkboxes": 4,
+      "checked": 4,
+      "evidence": true
+    },
+    {
+      "key": "CO-145",
+      "status": "Listo",
+      "checkboxes": 4,
+      "checked": 4,
+      "evidence": true
+    },
+    {
+      "key": "CO-164",
+      "status": "Listo",
+      "checkboxes": 4,
+      "checked": 4,
+      "evidence": true
+    },
+    {
+      "key": "CO-165",
+      "status": "Listo",
+      "checkboxes": 4,
+      "checked": 4,
+      "evidence": true
+    },
+    {
+      "key": "CO-166",
+      "status": "Listo",
+      "checkboxes": 4,
+      "checked": 4,
+      "evidence": true
+    }
+  ]
+}

@@ -40,21 +40,35 @@ test("renders empty promotions list and validates promotion creation", async () 
   await screen.findByText(/No hay promociones registradas/);
 
   // Fill in promotion name
-  await user.type(screen.getByLabelText("Nombre de la promoción"), "Cyber Monday");
-  expect(screen.getByLabelText("Nombre de la promoción")).toHaveValue("Cyber Monday");
+  await user.type(
+    screen.getByLabelText("Nombre de la promoción"),
+    "Cyber Monday",
+  );
+  expect(screen.getByLabelText("Nombre de la promoción")).toHaveValue(
+    "Cyber Monday",
+  );
 
   // Fill in starts_at and ends_at
   await user.type(screen.getByLabelText("Fecha de inicio"), "2026-11-20T00:00");
-  await user.type(screen.getByLabelText("Fecha de finalización"), "2026-11-25T23:59");
+  await user.type(
+    screen.getByLabelText("Fecha de finalización"),
+    "2026-11-25T23:59",
+  );
 
   // Select variant and offer price
-  await waitFor(() => expect(screen.getByRole("option", { name: /G502-BLK/ })).toBeInTheDocument());
+  await waitFor(() =>
+    expect(
+      screen.getByRole("option", { name: /G502-BLK/ }),
+    ).toBeInTheDocument(),
+  );
   await user.selectOptions(screen.getByLabelText("Variante"), "1");
 
   // Try adding price >= base price
   await user.type(screen.getByLabelText("Precio Oferta (COP)"), "160000");
   await user.click(screen.getByRole("button", { name: "+ Añadir a oferta" }));
-  expect(await screen.findByRole("alert")).toHaveTextContent("debe ser menor al precio base");
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "debe ser menor al precio base",
+  );
 
   // Now valid discount
   await user.clear(screen.getByLabelText("Precio Oferta (COP)"));
@@ -67,7 +81,11 @@ test("renders empty promotions list and validates promotion creation", async () 
 
   // Save promotion
   vi.mocked(api).mockImplementation((path, options) => {
-    if (typeof path === "string" && path.includes("/admin/promotions/") && options?.method === "POST") {
+    if (
+      typeof path === "string" &&
+      path.includes("/admin/promotions/") &&
+      options?.method === "POST"
+    ) {
       return Promise.resolve({
         id: 10,
         name: "Cyber Monday",

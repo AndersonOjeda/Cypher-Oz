@@ -23,6 +23,21 @@ class CartLineSerializer(StrictSerializer):
     quantity = IntegerField(min_value=1, max_value=10000)
 
 
+class CartValidationLineSerializer(CartLineSerializer):
+    unit_price = serializers.DecimalField(
+        max_digits=14, decimal_places=2, min_value=0, required=False
+    )
+
+
+class CartValidationSerializer(StrictSerializer):
+    items = CartValidationLineSerializer(many=True, max_length=100)
+
+    def validate_items(self, value):
+        if len({line["variant_id"] for line in value}) != len(value):
+            raise serializers.ValidationError("No repitas una variante.")
+        return value
+
+
 class CheckoutSerializer(StrictSerializer):
     items = CartLineSerializer(many=True, allow_empty=False, max_length=100)
     delivery_mode = serializers.ChoiceField(choices=["PICKUP", "URBAN", "SPECIAL"])

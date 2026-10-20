@@ -57,9 +57,7 @@ def test_request_uses_resend_http_api(urlopen, client, user):
 @pytest.mark.django_db
 @override_settings(RESEND_API_KEY="re_test")
 @patch("apps.users.email.urlopen", side_effect=URLError("unavailable"))
-def test_request_returns_503_and_discards_token_when_resend_fails(
-    urlopen, client, user
-):
+def test_request_returns_503_and_discards_token_when_resend_fails(urlopen, client, user):
     response = client.post(REQUEST, {"email": user.email}, format="json")
 
     assert response.status_code == 503

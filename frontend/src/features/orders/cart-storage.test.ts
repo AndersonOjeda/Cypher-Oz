@@ -33,16 +33,24 @@ describe("Anonymous Cart Storage (HU-08 / RF-13 / RF-14)", () => {
   it("adds items and increments quantity when the same variant is added", () => {
     addToCart(10, 2, "Laptop Gamer");
     let { items } = loadCart();
-    expect(items).toEqual([{ variant_id: 10, quantity: 2, label: "Laptop Gamer" }]);
+    expect(items).toEqual([
+      { variant_id: 10, quantity: 2, label: "Laptop Gamer" },
+    ]);
 
     addToCart(10, 3, "Laptop Gamer");
     items = loadCart().items;
-    expect(items).toEqual([{ variant_id: 10, quantity: 5, label: "Laptop Gamer" }]);
+    expect(items).toEqual([
+      { variant_id: 10, quantity: 5, label: "Laptop Gamer" },
+    ]);
 
     addToCart(20, 1, "Mouse Inalámbrico");
     items = loadCart().items;
     expect(items).toHaveLength(2);
-    expect(items[1]).toEqual({ variant_id: 20, quantity: 1, label: "Mouse Inalámbrico" });
+    expect(items[1]).toEqual({
+      variant_id: 20,
+      quantity: 1,
+      label: "Mouse Inalámbrico",
+    });
   });
 
   it("updates quantity and removes line when quantity is 0", () => {
@@ -92,7 +100,11 @@ describe("Anonymous Cart Storage (HU-08 / RF-13 / RF-14)", () => {
 
     const { items } = loadCart();
     expect(items).toHaveLength(1);
-    expect(items[0]).toEqual({ variant_id: 4, quantity: 2, label: "Valid Item" });
+    expect(items[0]).toEqual({
+      variant_id: 4,
+      quantity: 2,
+      label: "Valid Item",
+    });
   });
 
   it("dispatches cart-updated event on save and clear", () => {
@@ -108,4 +120,3 @@ describe("Anonymous Cart Storage (HU-08 / RF-13 / RF-14)", () => {
     window.removeEventListener("cart-updated", listener);
   });
 });
-

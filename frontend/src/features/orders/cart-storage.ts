@@ -25,6 +25,10 @@ export function sanitizeCartLine(item: unknown): CartLine | null {
     variant_id: cast.variant_id as number,
     quantity: cast.quantity as number,
     label: cast.label.slice(0, 200),
+    ...(typeof cast.unit_price === "string" &&
+    /^\d{1,12}\.\d{2}$/.test(cast.unit_price)
+      ? { unit_price: cast.unit_price }
+      : {}),
   };
 }
 
@@ -81,7 +85,8 @@ export function saveCart(
 ): void {
   if (typeof window === "undefined") return;
 
-  const validTtl = Number.isFinite(ttlDays) && ttlDays > 0 ? ttlDays : DEFAULT_CART_TTL_DAYS;
+  const validTtl =
+    Number.isFinite(ttlDays) && ttlDays > 0 ? ttlDays : DEFAULT_CART_TTL_DAYS;
   const expires =
     existingExpires && existingExpires > Date.now()
       ? existingExpires
@@ -108,6 +113,7 @@ export function addToCart(
   quantity: number,
   label: string,
   ttlDays: number = DEFAULT_CART_TTL_DAYS,
+  unitPrice?: string,
 ): CartLine[] {
   if (!Number.isSafeInteger(variantId) || variantId <= 0) return [];
   if (!Number.isSafeInteger(quantity) || quantity <= 0) return [];
@@ -129,7 +135,12 @@ export function addToCart(
   } else {
     updated = [
       ...items,
-      { variant_id: variantId, quantity: Math.min(10000, quantity), label },
+      {
+        variant_id: variantId,
+        quantity: Math.min(10000, quantity),
+        label,
+        unit_price: unitPrice,
+      },
     ];
   }
 
@@ -170,4 +181,3 @@ export function clearCart(): void {
     /* ignore storage failure */
   }
 }
-

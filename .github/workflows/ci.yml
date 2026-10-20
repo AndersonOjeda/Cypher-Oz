@@ -81,6 +81,7 @@ jobs:
           path: |
             reports/
             frontend/playwright-report/
+            docs/evidence/sprint-4/
             docs/evidence/sprint-1-current/*-mobile.png
             docs/evidence/sprint-1-current/*-tablet.png
             docs/evidence/sprint-1-current/*-desktop.png

@@ -163,4 +163,17 @@ describe("PublicCatalog Component (HU-04 / HU-05)", () => {
       screen.getByRole("button", { name: "Restablecer filtros" }),
     ).toBeInTheDocument();
   });
+
+  it("resets unsaved filter drafts when navigating back to a different URL", async () => {
+    mockSearchParams = new URLSearchParams("search=portatil&min_price=100&max_price=900");
+    const { rerender } = render(<PublicCatalog />);
+    await screen.findByText("Laptop ThinkPad E14");
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "sin guardar" } });
+    mockSearchParams = new URLSearchParams("search=audio&min_price=200&max_price=500");
+    rerender(<PublicCatalog />);
+    expect(screen.getByRole("searchbox")).toHaveValue("audio");
+    expect(screen.getByPlaceholderText("Mínimo")).toHaveValue(200);
+    expect(screen.getByPlaceholderText("Máximo")).toHaveValue(500);
+    await screen.findByText("Laptop ThinkPad E14");
+  });
 });
