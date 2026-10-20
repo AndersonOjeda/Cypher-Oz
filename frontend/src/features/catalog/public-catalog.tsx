@@ -4,9 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Filter, Package, RefreshCw, Search, X } from "lucide-react";
+import { Package, RefreshCw, X } from "lucide-react";
 import { cop } from "@/features/orders/types";
-import { errorText, Pager, publicTaxonomy, useResource } from "./shared";
+import { Pager, publicTaxonomy, useResource } from "./shared";
 import type { Page, PublicProductSummary, Taxonomy } from "./types";
 
 export function PublicCatalog() {
@@ -21,29 +21,45 @@ export function PublicCatalog() {
   const currentMaxPrice = searchParams.get("max_price") ?? "";
   const currentAvailable = searchParams.get("available") ?? "";
   const currentOrdering = searchParams.get("ordering") ?? "-updated_at";
-  const currentPage = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
+  const currentPage = Math.max(
+    1,
+    parseInt(searchParams.get("page") ?? "1", 10) || 1,
+  );
 
   // Local filter form state
-  const [searchInput, setSearchInput] = useState(currentSearch);
-  const [minPriceInput, setMinPriceInput] = useState(currentMinPrice);
-  const [maxPriceInput, setMaxPriceInput] = useState(currentMaxPrice);
+  const queryKey = JSON.stringify([
+    currentSearch,
+    currentMinPrice,
+    currentMaxPrice,
+  ]);
+  const [draft, setDraft] = useState({
+    queryKey,
+    searchInput: currentSearch,
+    minPriceInput: currentMinPrice,
+    maxPriceInput: currentMaxPrice,
+  });
+  // Reset URL-derived drafts before rendering children, including back/forward
+  // navigation, instead of synchronizing drafts after rendering in effects.
+  if (draft.queryKey !== queryKey) {
+    setDraft({
+      queryKey,
+      searchInput: currentSearch,
+      minPriceInput: currentMinPrice,
+      maxPriceInput: currentMaxPrice,
+    });
+  }
+  const { searchInput, minPriceInput, maxPriceInput } = draft;
+  const setSearchInput = (value: string) =>
+    setDraft((state) => ({ ...state, searchInput: value }));
+  const setMinPriceInput = (value: string) =>
+    setDraft((state) => ({ ...state, minPriceInput: value }));
+  const setMaxPriceInput = (value: string) =>
+    setDraft((state) => ({ ...state, maxPriceInput: value }));
 
   // Taxonomy options
   const [categories, setCategories] = useState<Taxonomy[]>([]);
   const [brands, setBrands] = useState<Taxonomy[]>([]);
   const [revision, setRevision] = useState(0);
-
-  useEffect(() => {
-    setSearchInput(currentSearch);
-  }, [currentSearch]);
-
-  useEffect(() => {
-    setMinPriceInput(currentMinPrice);
-  }, [currentMinPrice]);
-
-  useEffect(() => {
-    setMaxPriceInput(currentMaxPrice);
-  }, [currentMaxPrice]);
 
   useEffect(() => {
     let active = true;
@@ -117,11 +133,11 @@ export function PublicCatalog() {
 
   const hasActiveFilters = Boolean(
     currentSearch ||
-      currentCategory ||
-      currentBrand ||
-      currentMinPrice ||
-      currentMaxPrice ||
-      currentAvailable,
+    currentCategory ||
+    currentBrand ||
+    currentMinPrice ||
+    currentMaxPrice ||
+    currentAvailable,
   );
 
   return (
@@ -193,7 +209,9 @@ export function PublicCatalog() {
             <select
               id="filter-category"
               value={currentCategory}
-              onChange={(e) => updateFilters({ category: e.target.value || null })}
+              onChange={(e) =>
+                updateFilters({ category: e.target.value || null })
+              }
             >
               <option value="">Todas las categorías</option>
               {categories.map((cat) => (
@@ -263,7 +281,10 @@ export function PublicCatalog() {
         </aside>
 
         {/* Catalog Content */}
-        <main className="catalog-content">
+        <section
+          className="catalog-content"
+          aria-label="Resultados del catálogo"
+        >
           <div className="catalog-top-bar">
             <p className="results-count">
               {loading ? (
@@ -293,13 +314,20 @@ export function PublicCatalog() {
           </div>
 
           {loading && (
-            <div role="status" style={{ padding: "40px 0", textAlign: "center" }}>
+            <div
+              role="status"
+              style={{ padding: "40px 0", textAlign: "center" }}
+            >
               <p>Cargando catálogo de productos...</p>
             </div>
           )}
 
           {error && (
-            <div role="alert" className="error-message" style={{ margin: "24px 0" }}>
+            <div
+              role="alert"
+              className="error-message"
+              style={{ margin: "24px 0" }}
+            >
               <p>{error}</p>
               <button
                 type="button"
@@ -316,8 +344,8 @@ export function PublicCatalog() {
             <div className="catalog-empty">
               <h3>No se encontraron productos</h3>
               <p>
-                No encontramos productos que coincidan con los filtros aplicados.
-                Intenta ajustando los criterios de búsqueda.
+                No encontramos productos que coincidan con los filtros
+                aplicados. Intenta ajustando los criterios de búsqueda.
               </p>
               {hasActiveFilters && (
                 <button
@@ -378,7 +406,8 @@ export function PublicCatalog() {
                       </h2>
 
                       <div className="card-pricing">
-                        {product.has_promotion && product.promotional_min_price ? (
+                        {product.has_promotion &&
+                        product.promotional_min_price ? (
                           <>
                             <span className="price-current has-discount">
                               {cop(product.promotional_min_price)}
@@ -420,13 +449,14 @@ export function PublicCatalog() {
               <Pager
                 page={currentPage}
                 data={data}
-                onChange={(nextPage) => updateFilters({ page: String(nextPage) })}
+                onChange={(nextPage) =>
+                  updateFilters({ page: String(nextPage) })
+                }
               />
             </>
           )}
-        </main>
+        </section>
       </div>
     </div>
   );
 }
-

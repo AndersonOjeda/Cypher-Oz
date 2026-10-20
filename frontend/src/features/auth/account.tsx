@@ -579,6 +579,9 @@ export function Account() {
               <Link className="button subtle" href="/admin/inventario">
                 Inventario
               </Link>
+              <Link className="button subtle" href="/admin/clientes">
+                Clientes
+              </Link>
             </>
           )}
           <Link className="button subtle" href="/pedidos">

@@ -31,6 +31,22 @@
   align-items: start;
 }
 
+/* Reserve space during both the streamed fallback and the API request. */
+.catalog-content {
+  min-width: 0;
+  min-height: 900px;
+}
+
+.catalog-filters-placeholder {
+  height: 481px;
+}
+
+.catalog-placeholder-control {
+  height: 56px;
+  border-radius: 6px;
+  background: #f1f5f9;
+}
+
 @media (max-width: 860px) {
   .catalog-layout {
     grid-template-columns: 1fr;

@@ -21,6 +21,7 @@ import {
   saveCart,
   CART_STORAGE_KEY,
 } from "./cart-storage";
+import { CartValidator } from "./cart-validator";
 
 type Variant = {
   id: number;
@@ -376,6 +377,7 @@ export function Purchase() {
                   </li>
                 ))}
               </ul>
+              <CartValidator cart={cart} disabled={busy || !!attempt} />
               {!user ? (
                 <div className="purchase-actions">
                   <Link className="button primary" href="/login?next=/comprar">

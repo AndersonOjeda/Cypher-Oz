@@ -290,3 +290,35 @@ class AddressDetailView(APIView):
         User.objects.select_for_update().get(pk=request.user.pk)
         self.get_object(request, pk).delete()
         return private_response(status=204)
+
+
+class AdminCustomerListView(APIView):
+    """CO-62 HU-19-T01: Admin-only customer listing with order counts and search."""
+
+    def get_permissions(self):
+        from rest_framework.permissions import IsAuthenticated
+        from .permissions import IsAdmin
+        return [IsAuthenticated(), IsAdmin()]
+
+    def get(self, request):
+        from django.db.models import Count, Q
+
+        search = request.query_params.get("q", "").strip()
+        qs = (
+            User.objects.filter(role=User.Role.CLIENT, is_active=True)
+            .annotate(order_count=Count("order"))
+            .order_by("-created_at")
+        )
+        if search:
+            qs = qs.filter(Q(name__icontains=search) | Q(email__icontains=search))
+        data = [
+            {
+                "id": u.id,
+                "name": u.name,
+                "email": u.email,
+                "created_at": u.created_at.isoformat(),
+                "order_count": u.order_count,
+            }
+            for u in qs
+        ]
+        return private_response(data)
