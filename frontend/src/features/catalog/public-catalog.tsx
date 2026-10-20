@@ -8,6 +8,7 @@ import { Package, RefreshCw, X } from "lucide-react";
 import { cop } from "@/features/orders/types";
 import { Pager, publicTaxonomy, useResource } from "./shared";
 import type { Page, PublicProductSummary, Taxonomy } from "./types";
+import { CompareButton, ComparisonFloatingBar } from "./product-comparator";
 
 export function PublicCatalog() {
   const router = useRouter();
@@ -433,13 +434,23 @@ export function PublicCatalog() {
                         )}
                       </div>
 
-                      <div className="card-actions">
+                      <div className="card-actions flex items-center justify-between gap-2 mt-2">
                         <Link
-                          className="button primary"
+                          className="button primary flex-1 text-center"
                           href={`/catalogo/${product.slug}`}
                         >
                           Ver detalle
                         </Link>
+                        <CompareButton
+                          item={{
+                            id: product.id,
+                            name: product.name,
+                            slug: product.slug,
+                            category_id: product.category.id,
+                            category_name: product.category.name,
+                            image_url: product.image_url,
+                          }}
+                        />
                       </div>
                     </div>
                   </article>
@@ -455,6 +466,7 @@ export function PublicCatalog() {
               />
             </>
           )}
+          <ComparisonFloatingBar />
         </section>
       </div>
     </div>

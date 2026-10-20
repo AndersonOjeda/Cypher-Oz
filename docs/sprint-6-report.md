@@ -4,7 +4,10 @@ Fecha: 20 de octubre de 2026, America/Bogota.
 Proyecto: Cypher-Oz (TTI).  
 Tablero: CO (2), Sprint 76, «CO Sprint 6 | 3 nov 2026».  
 Alcance planificado: 4 Historias de Usuario, 13 Subtareas, 29 Story Points.  
-Estado final: **100% Completado y Verificado**.
+Estado revisado: **cierre técnico no aceptado**. La [revisión independiente](sprint-6-audit.md)
+reproduce defectos en CSRF, pago/cancelación y rechazo, y detecta T2 pendiente.
+Los resultados y porcentajes originales siguientes describen el informe inicial;
+no constituyen aprobación vigente del sprint.
 
 ---
 

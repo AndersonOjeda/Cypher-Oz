@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Pager, useResource } from "@/features/catalog/shared";
 import type { Page } from "@/features/catalog/types";
+import { OrderWhatsAppButton } from "@/components/whatsapp-button";
 import { cop, type Order } from "./types";
 
 const status: Record<string, string> = {
@@ -164,7 +165,7 @@ export function OrderDetail({ number }: { number: string }) {
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-between items-center pt-2 text-sm border-t">
+            <div className="flex flex-wrap justify-between items-center pt-2 text-sm border-t gap-3">
               <div>
                 <span className="text-gray-500">Estado Pedido: </span>
                 <strong className="text-gray-900">{status[order.status]}</strong>
@@ -173,17 +174,20 @@ export function OrderDetail({ number }: { number: string }) {
                 <span className="text-gray-500">Estado Pago: </span>
                 <strong className="text-gray-900">{status[order.payment.status]}</strong>
               </div>
-              {canCancel && (
-                <button
-                  onClick={() => {
-                    setShowCancelModal(true);
-                    setCancelError(null);
-                  }}
-                  className="bg-red-50 hover:bg-red-100 text-red-700 text-xs px-3 py-1.5 rounded font-medium border border-red-200"
-                >
-                  Cancelar pedido
-                </button>
-              )}
+              <div className="flex items-center gap-2">
+                <OrderWhatsAppButton orderNumber={order.number} />
+                {canCancel && (
+                  <button
+                    onClick={() => {
+                      setShowCancelModal(true);
+                      setCancelError(null);
+                    }}
+                    className="bg-red-50 hover:bg-red-100 text-red-700 text-xs px-3 py-1.5 rounded font-medium border border-red-200"
+                  >
+                    Cancelar pedido
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

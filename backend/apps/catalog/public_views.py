@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from apps.promotions.services import get_active_promotions_for_variants
 
-from .models import Product, Variant, VariantAttributeValue
+from .models import CategoryAttribute, Product, Variant, VariantAttributeValue
 from .storage import StorageUnavailable, image_url
 from .views import CatalogPagination
 
@@ -318,5 +318,204 @@ class PublicProductDetailView(APIView):
         }
 
         response = Response(data)
+        response["Cache-Control"] = "no-store"
+        return response
+
+class ProductCompareView(APIView):
+    """CO-35 HU-07: Public product comparison matrix for 2-4 compatible products."""
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def get(self, request):
+        ids_param = request.query_params.get("ids", "").strip()
+        slugs_param = request.query_params.get("slugs", "").strip()
+
+        if ids_param:
+            raw_items = [item.strip() for item in ids_param.split(",") if item.strip()]
+            seen = set()
+            requested_ids = []
+            for item in raw_items:
+                if item.isdigit() and int(item) not in seen:
+                    seen.add(int(item))
+                    requested_ids.append(int(item))
+            if len(requested_ids) < 2:
+                return Response(
+                    {"detail": "Debes seleccionar al menos 2 productos para comparar."},
+                    status=400,
+                )
+            if len(requested_ids) > 4:
+                return Response(
+                    {"detail": "Solo puedes comparar hasta 4 productos a la vez."},
+                    status=400,
+                )
+            filter_kwargs = {"pk__in": requested_ids}
+            ordered_keys = requested_ids
+            def key_getter(p): return p.pk
+        elif slugs_param:
+            raw_items = [item.strip() for item in slugs_param.split(",") if item.strip()]
+            seen = set()
+            requested_slugs = []
+            for item in raw_items:
+                if item not in seen:
+                    seen.add(item)
+                    requested_slugs.append(item)
+            if len(requested_slugs) < 2:
+                return Response(
+                    {"detail": "Debes seleccionar al menos 2 productos para comparar."},
+                    status=400,
+                )
+            if len(requested_slugs) > 4:
+                return Response(
+                    {"detail": "Solo puedes comparar hasta 4 productos a la vez."},
+                    status=400,
+                )
+            filter_kwargs = {"slug__in": requested_slugs}
+            ordered_keys = requested_slugs
+            def key_getter(p): return p.slug
+        else:
+            return Response(
+                {"detail": "Debes seleccionar al menos 2 productos para comparar."},
+                status=400,
+            )
+
+        products_qs = (
+            Product.objects.visible()
+            .filter(**filter_kwargs)
+            .select_related("category", "brand")
+            .prefetch_related(
+                "images",
+                Prefetch(
+                    "variants",
+                    queryset=Variant.objects.filter(
+                        is_active=True,
+                        price__gte=0,
+                    )
+                    .select_related("inventory_balance")
+                    .prefetch_related(
+                        Prefetch(
+                            "attribute_values",
+                            queryset=VariantAttributeValue.objects.select_related("attribute"),
+                        )
+                    ),
+                ),
+            )
+        )
+        products_by_key = {key_getter(p): p for p in products_qs}
+        if len(products_by_key) != len(ordered_keys):
+            return Response(
+                {
+                    "detail": (
+                        "Uno o más productos no existen o no están disponibles "
+                        "en el catálogo público."
+                    )
+                },
+                status=404,
+            )
+
+        products = [products_by_key[k] for k in ordered_keys]
+
+        # Category compatibility check
+        category_ids = {p.category_id for p in products}
+        if len(category_ids) > 1:
+            return Response(
+                {"detail": "Solo es posible comparar productos de la misma categoría."},
+                status=400,
+            )
+
+        category = products[0].category
+        category_attrs = list(
+            CategoryAttribute.objects.filter(category=category).order_by("name", "id")
+        )
+
+        # Promotions resolution
+        all_variant_ids = []
+        for p in products:
+            all_variant_ids.extend([v.pk for v in p.variants.all() if v.is_active])
+        promo_offers = get_active_promotions_for_variants(all_variant_ids)
+
+        serialized_products = []
+        for p in products:
+            images = list(p.images.all())
+            main_image = images[0] if images else None
+            active_variants = [v for v in p.variants.all() if v.is_active and v.price >= 0]
+
+            base_prices = [v.price for v in active_variants]
+            min_price = min(base_prices) if base_prices else Decimal("0")
+            max_price = max(base_prices) if base_prices else Decimal("0")
+
+            promo_prices = []
+            has_promotion = False
+            for v in active_variants:
+                offer = promo_offers.get(v.pk)
+                if offer:
+                    has_promotion = True
+                    promo_prices.append(offer["promotional_price"])
+                else:
+                    promo_prices.append(v.price)
+
+            promotional_min = min(promo_prices) if promo_prices and has_promotion else None
+
+            total_stock = sum(
+                getattr(getattr(v, "inventory_balance", None), "available_quantity", 0)
+                for v in active_variants
+            )
+
+            # Extract attribute values for this product across variants
+            attr_values_map = {}
+            for v in active_variants:
+                for val in v.attribute_values.all():
+                    code = val.attribute.code
+                    if code not in attr_values_map:
+                        attr_values_map[code] = []
+                    if val.value and val.value not in attr_values_map[code]:
+                        attr_values_map[code].append(val.value)
+
+            attributes = {}
+            for attr in category_attrs:
+                vals = attr_values_map.get(attr.code, [])
+                attributes[attr.code] = {
+                    "name": attr.name,
+                    "value": ", ".join(vals) if vals else "N/A",
+                }
+
+            serialized_products.append({
+                "id": p.pk,
+                "name": p.name,
+                "slug": p.slug,
+                "category": {
+                    "id": p.category_id,
+                    "name": p.category.name,
+                    "slug": p.category.slug,
+                },
+                "brand": {
+                    "id": p.brand_id,
+                    "name": p.brand.name,
+                    "slug": p.brand.slug,
+                },
+                "image_url": public_image_url(main_image) if main_image else None,
+                "description": p.description,
+                "warranty": p.warranty,
+                "min_price": format_money(min_price),
+                "max_price": format_money(max_price),
+                "promotional_min_price": format_money(promotional_min),
+                "has_promotion": has_promotion,
+                "total_stock": total_stock,
+                "is_available": total_stock > 0 and len(active_variants) > 0,
+                "attributes": attributes,
+            })
+
+        response = Response({
+            "category": {
+                "id": category.id,
+                "name": category.name,
+                "slug": category.slug,
+            },
+            "attributes": [
+                {"code": attr.code, "name": attr.name}
+                for attr in category_attrs
+            ],
+            "products": serialized_products,
+        })
         response["Cache-Control"] = "no-store"
         return response

@@ -1,5 +1,66 @@
 # Auditoría independiente del Sprint 6
 
+## Revisión independiente posterior: cierre técnico no aceptado
+
+Comprobación del 20/10/2026 sobre la entrega `362f333` (funcional `68977d9`).
+Las afirmaciones de aprobación de las secciones originales inferiores son antecedentes
+y quedan sustituidas por este dictamen. No se modificó código funcional ni Jira.
+
+### Bloqueantes reproducidos
+
+1. **Acciones de la UI rechazadas por CSRF.** Confirmar/rechazar pago, avanzar pedidos
+   y cancelar usan `fetch` con cookies, sin `X-CSRFToken`. El cliente compartido
+   `frontend/src/services/api.ts` sí implementa CSRF y renovación de sesión, pero estas
+   acciones no lo utilizan. Con login real de ADMIN, confirm/reject devuelven 403 sin
+   cabecera y 200 con ella. Las pruebas existentes usan `force_authenticate` o mocks.
+2. **Se confirma un pago de pedido cancelado.** Cancelar un pedido REPORTED devuelve
+   200 y repone stock; confirmar después también devuelve 200, dejando
+   CANCELLED/CONFIRMED. `confirm_payment` bloquea solo el pago y no valida el pedido.
+   Debe coordinarse con cancelación bajo el mismo orden de locks pedido → pago,
+   con política explícita y regresiones de ambas carreras PostgreSQL.
+3. **Rechazo incompleto.** `reject_payment` recibe el motivo pero no lo persiste;
+   `PaymentStatusHistory` no tiene campo para él. Tras rechazo, volver a reportar
+   devuelve 409: `report_payment` solo admite PENDING. La política promete corrección
+   del cliente, pero falta definir su plazo, persistirlo e implementar UI/API.
+4. **T2 no implementado.** Solo existe el runner T1 de Sprint 5. No hay procesamiento
+   T2 ni alerta de SLA vencido en la bandeja. La política lo describe, pero no lo
+   ejecuta el código; falta además acreditar la decisión de producto de CO-130.
+
+### Otros defectos y cierre
+
+- Las bandejas administrativas ignoran `next`, `previous` y `count`: solo muestran
+  la primera página. El enlace `/admin/pedidos/{number}` no tiene página implementada.
+- El seguimiento muestra «Pago Verificado» también cuando el pago está PENDING.
+- Los modales no implementan semántica de diálogo, gestión de foco ni Escape.
+- Las 4 historias y 13 subtareas están Listo en Jira, pero tienen 76 casillas sin
+  marcar y ninguna marcada en sus descripciones. Esto no acredita aceptación.
+- `main` remoto sigue en `b82fec734d3d88bfd99706636892e2f8df05fb18`: la entrega
+  revisada de Sprint 6 todavía no está integrada allí. No se verificó CI de entrega.
+
+### Comprobaciones ejecutadas en esta revisión
+
+| Comprobación | Resultado |
+|---|---|
+| Backend Sprint 6 + Sprint 5 + vencimiento T1, PostgreSQL | 49 aprobadas, 118,57 s |
+| Vitest completo | 96 aprobadas, 21 archivos |
+| ESLint y TypeScript | Aprobados |
+| Ruff lint | Aprobado |
+| Ruff formato | Falla: `apps/orders/services.py`, `tests/test_sprint5_backend.py` |
+| Migraciones pendientes | Ninguna detectada |
+| 5 comprobaciones diagnósticas adicionales | Reproducen los defectos, no acreditan corrección |
+
+Las comprobaciones diagnósticas prueban confirmación posterior a cancelación,
+rechazo sin campo persistente de motivo, corrección rechazada y CSRF con/sin token
+para confirmar y rechazar. [XML](evidence/sprint-6/review-probes.xml).
+No se ejecutaron build, suite backend completa, E2E nuevos de Sprint 6, Lighthouse
+ni carga en esta revisión. No se atribuyen aquí resultados de ejecuciones anteriores.
+La prioridad es corregir CSRF y coordinación pago/cancelación, resolver rechazo/T2,
+completar navegación y después validar regresión, integración y criterios de Jira.
+
+---
+
+## Antecedente: informe original de la entrega
+
 Fecha: 20/10/2026, America/Bogota. Rama: `feature/CO-70-sprint-6`.  
 Revisión técnica de la entrega integral de Sprint 6 (Sprint 76 en Jira: «CO Sprint 6 | 3 nov 2026»).
 

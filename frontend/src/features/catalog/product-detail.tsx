@@ -15,6 +15,7 @@ import { addToCart } from "@/features/orders/cart-storage";
 import { cop } from "@/features/orders/types";
 import { useResource } from "./shared";
 import type { PublicProductDetail, PublicVariant } from "./types";
+import { CompareButton, ComparisonFloatingBar } from "./product-comparator";
 
 export function ProductDetail({ slug }: { slug: string }) {
   const [revision, setRevision] = useState(0);
@@ -309,12 +310,13 @@ export function ProductDetail({ slug }: { slug: string }) {
               </div>
             )}
 
-            <button
-              type="button"
-              className="button primary add-cart-btn"
-              disabled={!selectedVariant || selectedVariant.stock <= 0}
-              onClick={handleAddToCart}
-            >
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                className="button primary add-cart-btn flex-1"
+                disabled={!selectedVariant || selectedVariant.stock <= 0}
+                onClick={handleAddToCart}
+              >
               <ShoppingCart
                 size={18}
                 style={{
@@ -327,6 +329,17 @@ export function ProductDetail({ slug }: { slug: string }) {
                 ? "Añadir al carrito"
                 : "Producto agotado"}
             </button>
+              <CompareButton
+                item={{
+                  id: product.id,
+                  name: product.name,
+                  slug: product.slug,
+                  category_id: product.category.id,
+                  category_name: product.category.name,
+                  image_url: images[0]?.url,
+                }}
+              />
+            </div>
 
             <p className="cart-notice">
               * El carrito no reserva inventario hasta confirmar el pedido.

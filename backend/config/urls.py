@@ -1,6 +1,10 @@
 from django.urls import include, path
 
-from apps.catalog.public_views import PublicProductDetailView, PublicProductsView
+from apps.catalog.public_views import (
+    ProductCompareView,
+    PublicProductDetailView,
+    PublicProductsView,
+)
 from apps.catalog.views import PublicBrandsView, PublicCategoriesView
 from apps.configuration.views import (
     AdminDeliverySettingsView,
@@ -27,6 +31,7 @@ urlpatterns = [
     path("api/v1/", include("apps.orders.urls")),
     path("api/v1/delivery/quote/", DeliveryQuoteView.as_view()),
     path("api/v1/products/", PublicProductsView.as_view()),
+    path("api/v1/products/compare/", ProductCompareView.as_view()),
     path("api/v1/products/<slug:slug>/", PublicProductDetailView.as_view()),
     path("api/v1/categories/", PublicCategoriesView.as_view()),
     path("api/v1/brands/", PublicBrandsView.as_view()),

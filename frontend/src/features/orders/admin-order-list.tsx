@@ -14,6 +14,7 @@ interface PageResponse<T> {
 export function AdminOrderList() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [deliveryFilter, setDeliveryFilter] = useState<string>("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +33,7 @@ export function AdminOrderList() {
     try {
       const params = new URLSearchParams();
       if (statusFilter) params.set("status", statusFilter);
+      if (deliveryFilter) params.set("delivery_mode", deliveryFilter);
       if (search) params.set("q", search);
 
       const res = await fetch(`/api/v1/admin/orders/?${params.toString()}`, {
@@ -45,7 +47,7 @@ export function AdminOrderList() {
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, search]);
+  }, [statusFilter, deliveryFilter, search]);
 
   useEffect(() => {
     let active = true;
@@ -139,6 +141,19 @@ export function AdminOrderList() {
     }
   };
 
+  const deliveryBadge = (mode?: string) => {
+    switch (mode) {
+      case "PICKUP":
+        return <span className="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded font-medium">🏪 Recogida en tienda</span>;
+      case "URBAN":
+        return <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded font-medium">🚚 Envío urbano</span>;
+      case "SPECIAL":
+        return <span className="bg-purple-100 text-purple-800 text-xs px-2 py-0.5 rounded font-medium">📍 Zona especial</span>;
+      default:
+        return <span className="bg-gray-100 text-gray-800 text-xs px-2 py-0.5 rounded">{mode || "N/A"}</span>;
+    }
+  };
+
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -193,6 +208,21 @@ export function AdminOrderList() {
           </select>
         </div>
 
+        <div className="flex items-center gap-2">
+          <label htmlFor="order-delivery-filter" className="text-sm font-medium">Entrega:</label>
+          <select
+            id="order-delivery-filter"
+            value={deliveryFilter}
+            onChange={(e) => setDeliveryFilter(e.target.value)}
+            className="border rounded px-3 py-1.5 text-sm bg-white"
+          >
+            <option value="">Todas</option>
+            <option value="URBAN">Envío urbano</option>
+            <option value="PICKUP">Recogida en tienda</option>
+            <option value="SPECIAL">Zona especial</option>
+          </select>
+        </div>
+
         <div className="flex-1 min-w-[200px]">
           <input
             type="search"
@@ -226,6 +256,7 @@ export function AdminOrderList() {
               <tr>
                 <th className="p-3">Pedido</th>
                 <th className="p-3">Cliente</th>
+                <th className="p-3">Entrega</th>
                 <th className="p-3">Total COP</th>
                 <th className="p-3">Estado Pedido</th>
                 <th className="p-3">Estado Pago</th>
@@ -251,6 +282,9 @@ export function AdminOrderList() {
                     <td className="p-3">
                       <p className="font-medium text-gray-900">{o.customer_name || "Cliente"}</p>
                       <p className="text-xs text-gray-500">{o.customer_email}</p>
+                    </td>
+                    <td className="p-3">
+                      {deliveryBadge(o.delivery?.mode)}
                     </td>
                     <td className="p-3 font-semibold text-gray-900">
                       {cop(o.total)}
@@ -388,6 +422,64 @@ export function AdminOrderList() {
                 ))}
               </ul>
             </div>
+
+            {/* Delivery Logistics Details - CO-71 HU-29 */}
+            {selectedOrder.delivery && (
+              <div className="border p-3.5 rounded-lg bg-gray-50/50 space-y-2">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold text-sm text-gray-800">
+                    Logística y Despacho de Entrega
+                  </h3>
+                  <div>{deliveryBadge(selectedOrder.delivery.mode)}</div>
+                </div>
+                {selectedOrder.delivery.mode === "PICKUP" ? (
+                  <p className="text-xs text-gray-600">
+                    Recogida directa en tienda por el cliente. Sin despacho por mensajería.
+                  </p>
+                ) : (
+                  <div className="text-xs text-gray-700 space-y-1 bg-white p-3 rounded border">
+                    <p>
+                      <strong>Destinatario:</strong>{" "}
+                      {selectedOrder.delivery.address?.recipient_name || selectedOrder.customer_name}
+                    </p>
+                    <p>
+                      <strong>Dirección:</strong>{" "}
+                      {selectedOrder.delivery.address?.address_line || "No especificada"}
+                    </p>
+                    <p>
+                      <strong>Ciudad / Departamento:</strong>{" "}
+                      {selectedOrder.delivery.address?.city || "Pasto"},{" "}
+                      {selectedOrder.delivery.address?.state || "Nariño"}
+                    </p>
+                    <p>
+                      <strong>Teléfono:</strong>{" "}
+                      {selectedOrder.delivery.address?.phone || "No especificado"}
+                    </p>
+                    {selectedOrder.delivery.address?.notes && (
+                      <p>
+                        <strong>Notas / Indicaciones:</strong>{" "}
+                        {selectedOrder.delivery.address.notes}
+                      </p>
+                    )}
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const addr = selectedOrder.delivery.address || {};
+                          const text = `DESTINATARIO: ${addr.recipient_name || selectedOrder.customer_name}\nDIRECCIÓN: ${addr.address_line || ""}\nCIUDAD: ${addr.city || "Pasto"}, ${addr.state || "Nariño"}\nTEL: ${addr.phone || ""}\nNOTAS: ${addr.notes || "N/A"}\nPEDIDO: #${selectedOrder.number}`;
+                          navigator.clipboard.writeText(text);
+                          setActionMessage("📋 Datos de despacho copiados al portapapeles.");
+                          setTimeout(() => setActionMessage(null), 3000);
+                        }}
+                        className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 border px-2.5 py-1 rounded inline-flex items-center gap-1 font-medium"
+                      >
+                        📋 Copiar rótulo de despacho
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Totals */}
             <div className="bg-gray-50 p-3 rounded text-sm space-y-1">

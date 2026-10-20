@@ -2,7 +2,8 @@
 
 > **Sprint 6 | CO Sprint 6 | 3 nov 2026**  
 > **Velocidad objetivo**: 29 SP · **Historias**: 4 · **Subtareas**: 13  
-> **Estado**: ✅ **100% COMPLETADO Y CERRADO EN JIRA**
+> **Estado**: Cerrado administrativamente en Jira; **cierre técnico no aceptado**.
+> Véase la [revisión independiente y pendientes](sprint-6-audit.md).
 
 ---
 

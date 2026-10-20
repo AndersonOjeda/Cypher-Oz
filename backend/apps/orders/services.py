@@ -345,7 +345,12 @@ class PaymentNotConfirmedConflict(APIException):
 def confirm_payment(actor, payment_id):
     if getattr(actor, "role", "") != User.Role.ADMIN:
         raise PermissionDenied("Se requieren permisos de administrador.")
-    payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id)
+    payment = get_object_or_404(
+        Payment.objects.select_for_update().select_related("order"), pk=payment_id
+    )
+    order = Order.objects.select_for_update().get(pk=payment.order_id)
+    if order.status == "CANCELLED":
+        raise CheckoutConflict("No se puede confirmar el pago de un pedido cancelado.")
     if payment.status != "REPORTED":
         raise CheckoutConflict(
             "Solo se pueden confirmar pagos que se encuentren en estado REPORTADO."
@@ -362,7 +367,12 @@ def reject_payment(actor, payment_id, reason):
         raise PermissionDenied("Se requieren permisos de administrador.")
     if not isinstance(reason, str) or not reason.strip():
         raise ValidationError({"reason": "Indica un motivo para rechazar el pago."})
-    payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id)
+    payment = get_object_or_404(
+        Payment.objects.select_for_update().select_related("order"), pk=payment_id
+    )
+    order = Order.objects.select_for_update().get(pk=payment.order_id)
+    if order.status == "CANCELLED":
+        raise CheckoutConflict("No se puede rechazar el pago de un pedido cancelado.")
     if payment.status != "REPORTED":
         raise CheckoutConflict(
             "Solo se pueden rechazar pagos que se encuentren en estado REPORTADO."

@@ -281,7 +281,7 @@ class AdminPaymentRejectView(APIView):
 
 
 class AdminOrderListView(APIView):
-    """CO-43 HU-17-T01: Admin order list and search."""
+    """CO-43 HU-17-T01 / CO-71 HU-29-T01: Admin order list and logistics delivery filtering."""
 
     permission_classes = [IsAuthenticated, IsAdmin]
 
@@ -294,6 +294,9 @@ class AdminOrderListView(APIView):
         status_param = request.query_params.get("status")
         if status_param:
             qs = qs.filter(status=status_param.upper())
+        delivery_mode = request.query_params.get("delivery_mode")
+        if delivery_mode:
+            qs = qs.filter(delivery__mode=delivery_mode.upper())
         search = request.query_params.get("q", "").strip()
         if search:
             qs = qs.filter(
