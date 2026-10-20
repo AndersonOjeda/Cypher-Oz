@@ -181,7 +181,7 @@ def test_non_owner_cannot_cancel_order(sprint5_setup):
     client.force_authenticate(user=other_user)
 
     res = client.post(f"/api/v1/orders/{order.number}/cancel/", format="json")
-    assert res.status_code == 409 or res.status_code == 404
+    assert res.status_code == 403
 
 
 def test_cannot_cancel_shipped_order(sprint5_setup):

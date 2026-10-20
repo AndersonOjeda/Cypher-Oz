@@ -124,3 +124,4 @@ Ejecución: `npm test -- --run`
 - **Historias de Usuario (3):** `CO-67`, `CO-59`, `CO-60` transicionadas a **Listo (31)** con comentarios de cierre en formato ADF.
 - **Subtareas (9):** `CO-155`, `CO-156`, `CO-157`, `CO-124`, `CO-125`, `CO-126`, `CO-127`, `CO-128`, `CO-129` transicionadas a **Listo (31)** con comentarios de evidencia de completitud detallando archivos, servicios y pruebas.
 - **Próximo Sprint:** `CO Sprint 6 | 3 nov 2026` (ID: 76) en estado `future`.
+

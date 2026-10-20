@@ -200,3 +200,4 @@ describe("Sprint 5 — CO-59 & CO-60: Instrucciones y Reporte de Pago", () => {
     expect(screen.getByText("Referencia: COMPROBANTE-9988")).toBeInTheDocument();
   });
 });
+

@@ -6,7 +6,7 @@ from decimal import Decimal
 from django.core import signing
 from django.db import transaction
 from django.utils import timezone
-from rest_framework.exceptions import APIException, ValidationError
+from rest_framework.exceptions import APIException, PermissionDenied, ValidationError
 from rest_framework.generics import get_object_or_404
 
 from apps.catalog.models import Brand, Category, Product, Variant
@@ -275,7 +275,7 @@ def cancel_order(user, number, reason="Cancelación voluntaria"):
         number=number,
     )
     if order.user_id != user.pk and getattr(user, "role", "") != "ADMIN":
-        raise CheckoutConflict("No tienes permisos para cancelar este pedido.")
+        raise PermissionDenied("No tienes permisos para cancelar este pedido.")
 
     if order.status == "CANCELLED":
         raise CheckoutConflict("El pedido ya se encuentra cancelado.")
