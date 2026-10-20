@@ -297,20 +297,26 @@ class AdminCustomerListView(APIView):
 
     def get_permissions(self):
         from rest_framework.permissions import IsAuthenticated
+
         from .permissions import IsAdmin
+
         return [IsAuthenticated(), IsAdmin()]
 
     def get(self, request):
         from django.db.models import Count, Q
 
-        search = request.query_params.get("q", "").strip()
+        from apps.catalog.views import CatalogPagination
+
+        search = request.query_params.get("q", "").strip()[:180]
         qs = (
             User.objects.filter(role=User.Role.CLIENT, is_active=True)
             .annotate(order_count=Count("order"))
-            .order_by("-created_at")
+            .order_by("-created_at", "-pk")
         )
         if search:
             qs = qs.filter(Q(name__icontains=search) | Q(email__icontains=search))
+        pager = CatalogPagination()
+        customers = pager.paginate_queryset(qs, request)
         data = [
             {
                 "id": u.id,
@@ -319,6 +325,8 @@ class AdminCustomerListView(APIView):
                 "created_at": u.created_at.isoformat(),
                 "order_count": u.order_count,
             }
-            for u in qs
+            for u in customers
         ]
-        return private_response(data)
+        response = pager.get_paginated_response(data)
+        response["Cache-Control"] = "no-store"
+        return response

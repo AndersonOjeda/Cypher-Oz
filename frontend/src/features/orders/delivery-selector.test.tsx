@@ -1,6 +1,9 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { DeliverySelector, type DeliveryQuoteResult } from "./delivery-selector";
+import {
+  DeliverySelector,
+  type DeliveryQuoteResult,
+} from "./delivery-selector";
 
 vi.mock("@/services/api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/services/api")>();
@@ -25,7 +28,8 @@ vi.mock("@/services/api", async (importOriginal) => {
             cost: null,
             can_confirm: false,
             label: "Zona especial — tarifa por confirmar",
-            message: "Tarifa especial por confirmar. No es posible crear el pedido todavía.",
+            message:
+              "Tarifa especial por confirmar. No es posible crear el pedido todavía.",
             free_shipping_threshold: "100000",
           });
         }
@@ -63,7 +67,9 @@ describe("DeliverySelector (CO-70 HU-28)", () => {
 
     expect(screen.getByText("Recogida en tienda")).toBeInTheDocument();
     expect(screen.getByText("Domicilio urbano en Pasto")).toBeInTheDocument();
-    expect(screen.getByText("Zona especial / Corregimientos")).toBeInTheDocument();
+    expect(
+      screen.getByText("Zona especial / Corregimientos"),
+    ).toBeInTheDocument();
 
     await waitFor(() => {
       expect(handleModeChange).toHaveBeenCalledWith(
@@ -84,7 +90,9 @@ describe("DeliverySelector (CO-70 HU-28)", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/¡Gratis! \(supera el umbral\)/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/¡Gratis! \(supera el umbral\)/i),
+      ).toBeInTheDocument();
       expect(handleModeChange).toHaveBeenCalledWith(
         "URBAN",
         expect.objectContaining({ cost: "0.00", is_free: true }),
@@ -103,12 +111,32 @@ describe("DeliverySelector (CO-70 HU-28)", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Tarifa pendiente de confirmación/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Tarifa pendiente de confirmación/i),
+      ).toBeInTheDocument();
       expect(handleModeChange).toHaveBeenCalledWith(
         "SPECIAL",
         expect.objectContaining({ can_confirm: false, cost: null }),
       );
     });
   });
-});
 
+  it("updates the selected mode immediately while its quote loads", async () => {
+    const handleModeChange = vi.fn();
+    render(
+      <DeliverySelector
+        subtotal={50000}
+        selectedMode="URBAN"
+        onModeChange={handleModeChange}
+      />,
+    );
+    await waitFor(() =>
+      expect(handleModeChange).toHaveBeenCalledWith(
+        "URBAN",
+        expect.any(Object),
+      ),
+    );
+    fireEvent.click(screen.getByRole("radio", { name: /Recogida en tienda/i }));
+    expect(handleModeChange).toHaveBeenLastCalledWith("PICKUP", null);
+  });
+});

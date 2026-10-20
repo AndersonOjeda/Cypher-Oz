@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, RefreshCw, Search, Users } from "lucide-react";
 import { api, ApiError } from "@/services/api";
+import { Pager } from "@/features/catalog/shared";
+import type { Page } from "@/features/catalog/types";
 
 export interface Customer {
   id: number;
@@ -15,34 +17,54 @@ export interface Customer {
 
 export function CustomerList() {
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [pagination, setPagination] = useState<Page<Customer> | null>(null);
+  const [page, setPage] = useState(1);
+  const query = useRef("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const generation = useRef(0);
 
-  const load = useCallback(async (query = "") => {
+  const load = useCallback(async (searchQuery = "", nextPage = 1) => {
+    query.current = searchQuery;
+    setPage(nextPage);
+    const current = ++generation.current;
     setLoading(true);
     setError(null);
     try {
-      const path = query.trim()
-        ? `/admin/customers/?q=${encodeURIComponent(query.trim())}`
-        : "/admin/customers/";
-      const data = await api<Customer[]>(path);
-      setCustomers(data);
+      const path = `/admin/customers/?q=${encodeURIComponent(searchQuery.trim())}&page=${nextPage}`;
+      const data = await api<Page<Customer>>(path);
+      if (current !== generation.current) return;
+      setCustomers(data.results);
+      setPagination(data);
     } catch (err: unknown) {
+      if (current !== generation.current) return;
       if (err instanceof ApiError && err.status === 403) {
         setError("No tienes permisos para consultar clientes.");
       } else if (err instanceof ApiError && err.status === 401) {
         setError("Sesión expirada. Inicia sesión nuevamente.");
       } else {
-        setError(err instanceof Error ? err.message : "Error al cargar la lista de clientes.");
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Error al cargar la lista de clientes.",
+        );
       }
     } finally {
-      setLoading(false);
+      if (current === generation.current) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    void load();
+    let active = true;
+    const requests = generation;
+    void Promise.resolve().then(() => {
+      if (active) void load();
+    });
+    return () => {
+      active = false;
+      ++requests.current;
+    };
   }, [load]);
 
   function handleSearch(e: React.FormEvent) {
@@ -65,15 +87,24 @@ export function CustomerList() {
   return (
     <section className="catalog-shell" aria-labelledby="customers-heading">
       <div className="catalog-heading">
-        <h1 id="customers-heading" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <h1
+          id="customers-heading"
+          style={{ display: "flex", alignItems: "center", gap: "8px" }}
+        >
           <Users size={24} aria-hidden="true" /> Clientes registrados
         </h1>
-        <Link href="/cuenta" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+        <Link
+          href="/cuenta"
+          style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}
+        >
           <ArrowLeft size={16} /> Volver a mi cuenta
         </Link>
       </div>
 
-      <form onSubmit={handleSearch} style={{ display: "flex", gap: "8px", margin: "16px 0" }}>
+      <form
+        onSubmit={handleSearch}
+        style={{ display: "flex", gap: "8px", margin: "16px 0" }}
+      >
         <label htmlFor="customer-search-input" className="sr-only">
           Buscar cliente
         </label>
@@ -86,6 +117,7 @@ export function CustomerList() {
           placeholder="Buscar por nombre o correo electrónico..."
           style={{
             flex: 1,
+            minWidth: 0,
             padding: "8px 12px",
             border: "1px solid #cbd5e1",
             borderRadius: "6px",
@@ -115,7 +147,11 @@ export function CustomerList() {
       </form>
 
       {error && (
-        <div role="alert" className="error-message" style={{ margin: "16px 0" }}>
+        <div
+          role="alert"
+          className="error-message"
+          style={{ margin: "16px 0" }}
+        >
           <p>{error}</p>
           <button
             type="button"
@@ -129,14 +165,22 @@ export function CustomerList() {
       )}
 
       {loading && (
-        <p role="status" style={{ textAlign: "center", padding: "40px 0", color: "#64748b" }}>
+        <p
+          role="status"
+          style={{ textAlign: "center", padding: "40px 0", color: "#64748b" }}
+        >
           Cargando clientes...
         </p>
       )}
 
       {!loading && !error && customers.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px 0", color: "#64748b" }}>
-          <p>No se encontraron clientes {search ? `para "${search}"` : "registrados"}.</p>
+        <div
+          style={{ textAlign: "center", padding: "40px 0", color: "#64748b" }}
+        >
+          <p>
+            No se encontraron clientes{" "}
+            {search ? `para "${search}"` : "registrados"}.
+          </p>
         </div>
       )}
 
@@ -151,12 +195,19 @@ export function CustomerList() {
             }}
           >
             <thead>
-              <tr style={{ background: "#f8fafc", borderBottom: "2px solid #e2e8f0" }}>
+              <tr
+                style={{
+                  background: "#f8fafc",
+                  borderBottom: "2px solid #e2e8f0",
+                }}
+              >
                 <th style={{ padding: "10px 12px" }}>ID</th>
                 <th style={{ padding: "10px 12px" }}>Nombre completo</th>
                 <th style={{ padding: "10px 12px" }}>Correo electrónico</th>
                 <th style={{ padding: "10px 12px" }}>Fecha de registro</th>
-                <th style={{ padding: "10px 12px", textAlign: "center" }}>Pedidos</th>
+                <th style={{ padding: "10px 12px", textAlign: "center" }}>
+                  Pedidos
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -167,9 +218,15 @@ export function CustomerList() {
                     borderBottom: "1px solid #f1f5f9",
                   }}
                 >
-                  <td style={{ padding: "10px 12px", color: "#64748b" }}>#{c.id}</td>
-                  <td style={{ padding: "10px 12px", fontWeight: 500 }}>{c.name}</td>
-                  <td style={{ padding: "10px 12px", color: "#334155" }}>{c.email}</td>
+                  <td style={{ padding: "10px 12px", color: "#64748b" }}>
+                    #{c.id}
+                  </td>
+                  <td style={{ padding: "10px 12px", fontWeight: 500 }}>
+                    {c.name}
+                  </td>
+                  <td style={{ padding: "10px 12px", color: "#334155" }}>
+                    {c.email}
+                  </td>
                   <td style={{ padding: "10px 12px", color: "#64748b" }}>
                     {formatDate(c.created_at)}
                   </td>
@@ -181,7 +238,8 @@ export function CustomerList() {
                         borderRadius: "12px",
                         fontSize: "12px",
                         fontWeight: 600,
-                        backgroundColor: c.order_count > 0 ? "#e0f2fe" : "#f1f5f9",
+                        backgroundColor:
+                          c.order_count > 0 ? "#e0f2fe" : "#f1f5f9",
                         color: c.order_count > 0 ? "#0369a1" : "#64748b",
                       }}
                     >
@@ -193,11 +251,17 @@ export function CustomerList() {
             </tbody>
           </table>
           <p style={{ fontSize: "12px", color: "#94a3b8", marginTop: "12px" }}>
-            Total: {customers.length} cliente(s) listado(s).
+            Total: {pagination?.count ?? 0} cliente(s).
           </p>
         </div>
+      )}
+      {!loading && !error && pagination && (
+        <Pager
+          page={page}
+          data={pagination}
+          onChange={(next) => void load(query.current, next)}
+        />
       )}
     </section>
   );
 }
-

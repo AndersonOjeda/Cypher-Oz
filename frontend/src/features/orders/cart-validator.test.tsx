@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CartValidator, type RevalidationResponse } from "./cart-validator";
 import type { CartLine } from "./types";
+import { api } from "@/services/api";
 
 const mockCart: CartLine[] = [
   { variant_id: 101, quantity: 2, label: "Laptop Pro · 16GB RAM" },
@@ -57,7 +58,9 @@ describe("CartValidator (CO-57 HU-09)", () => {
 
   it("validates cart and displays confirmation when all items are available and current", async () => {
     const handleComplete = vi.fn();
-    render(<CartValidator cart={mockCart} onValidationComplete={handleComplete} />);
+    render(
+      <CartValidator cart={mockCart} onValidationComplete={handleComplete} />,
+    );
 
     await waitFor(() => {
       expect(
@@ -75,7 +78,10 @@ describe("CartValidator (CO-57 HU-09)", () => {
     ];
     const handleComplete = vi.fn();
     render(
-      <CartValidator cart={outOfStockCart} onValidationComplete={handleComplete} />,
+      <CartValidator
+        cart={outOfStockCart}
+        onValidationComplete={handleComplete}
+      />,
     );
 
     await waitFor(() => {
@@ -88,5 +94,46 @@ describe("CartValidator (CO-57 HU-09)", () => {
       );
     });
   });
-});
 
+  it("sends the observed price and requires explicit acceptance of a changed price", async () => {
+    const changed: RevalidationResponse = {
+      has_changes: true,
+      items: [
+        {
+          variant_id: 101,
+          status: "price_changed",
+          message: "El precio ha cambiado.",
+          current_price: "3600000.00",
+          available_qty: 10,
+        },
+      ],
+    };
+    vi.mocked(api).mockResolvedValueOnce(changed);
+    const accept = vi.fn();
+    render(
+      <CartValidator
+        cart={[{ ...mockCart[0], unit_price: "3500000.00" }]}
+        onAcceptPrices={accept}
+      />,
+    );
+    const button = await screen.findByRole("button", {
+      name: "Aceptar precios actualizados",
+    });
+    expect(
+      JSON.parse(vi.mocked(api).mock.calls[0][1]!.body as string).items[0]
+        .unit_price,
+    ).toBe("3500000.00");
+    expect(accept).not.toHaveBeenCalled();
+    fireEvent.click(button);
+    expect(accept).toHaveBeenCalledWith(changed.items);
+  });
+
+  it("does not show confirmation after a failed validation", async () => {
+    vi.mocked(api).mockRejectedValueOnce(new Error("Sin conexión"));
+    render(<CartValidator cart={mockCart} />);
+    await screen.findByRole("alert");
+    expect(
+      screen.queryByText(/Disponibilidad y precios confirmados/),
+    ).not.toBeInTheDocument();
+  });
+});

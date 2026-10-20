@@ -102,16 +102,22 @@ class PublicProductsView(APIView):
         # EXISTS keeps one row per product without joining/deduplicating every
         # variant. All price/stock filters below must match the same variant.
         sellable = Variant.objects.filter(
-            product_id=OuterRef("pk"), is_active=True, price__gte=0,
+            product_id=OuterRef("pk"),
+            is_active=True,
+            price__gte=0,
         )
         queryset = (
             Product.objects.visible()
             .select_related("category", "brand")
             .prefetch_related(
                 "images",
-                Prefetch("variants", queryset=Variant.objects.filter(
-                    is_active=True, price__gte=0,
-                ).select_related("inventory_balance")),
+                Prefetch(
+                    "variants",
+                    queryset=Variant.objects.filter(
+                        is_active=True,
+                        price__gte=0,
+                    ).select_related("inventory_balance"),
+                ),
             )
         )
 
@@ -184,11 +190,18 @@ class PublicProductsView(APIView):
             queryset = queryset.order_by("-name", "-pk")
         elif ordering in {"price", "-price"}:
             # Order by the displayed starting price, ignoring hidden variants.
-            prices = Variant.objects.filter(
-                product_id=OuterRef("pk"), is_active=True, price__gte=0,
-            ).order_by("price").values("price")[:1]
+            prices = (
+                Variant.objects.filter(
+                    product_id=OuterRef("pk"),
+                    is_active=True,
+                    price__gte=0,
+                )
+                .order_by("price")
+                .values("price")[:1]
+            )
             queryset = queryset.alias(starting_price=Subquery(prices)).order_by(
-                "starting_price" if ordering == "price" else "-starting_price", "pk",
+                "starting_price" if ordering == "price" else "-starting_price",
+                "pk",
             )
         else:
             queryset = queryset.order_by("-updated_at", "-id")
@@ -220,14 +233,20 @@ class PublicProductDetailView(APIView):
             .select_related("category", "brand")
             .prefetch_related(
                 "images",
-                Prefetch("variants", queryset=Variant.objects.filter(
-                    is_active=True, price__gte=0,
-                ).select_related("inventory_balance").prefetch_related(
-                    Prefetch(
-                        "attribute_values",
-                        queryset=VariantAttributeValue.objects.select_related("attribute"),
+                Prefetch(
+                    "variants",
+                    queryset=Variant.objects.filter(
+                        is_active=True,
+                        price__gte=0,
+                    )
+                    .select_related("inventory_balance")
+                    .prefetch_related(
+                        Prefetch(
+                            "attribute_values",
+                            queryset=VariantAttributeValue.objects.select_related("attribute"),
+                        ),
                     ),
-                )),
+                ),
             )
             .first()
         )

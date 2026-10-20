@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Package, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { api, ApiError, type Address, type User } from "@/services/api";
 import { errorText, Pager, useResource } from "@/features/catalog/shared";
@@ -15,13 +15,9 @@ import {
   type Order,
   type Quote,
 } from "./types";
-import {
-  clearCart,
-  loadCart,
-  saveCart,
-  CART_STORAGE_KEY,
-} from "./cart-storage";
-import { CartValidator } from "./cart-validator";
+import { clearCart, loadCart, saveCart } from "./cart-storage";
+import { CartValidator, type RevalidationResponse } from "./cart-validator";
+import { DeliverySelector, type DeliveryModeKey } from "./delivery-selector";
 
 type Variant = {
   id: number;
@@ -37,7 +33,6 @@ type Attempt = {
   key: string;
   body: CheckoutBody & { quote_token: string };
 };
-const CART = CART_STORAGE_KEY;
 const ATTEMPT = "tti.purchase.attempt";
 
 export function Purchase() {
@@ -54,8 +49,23 @@ export function Purchase() {
   const [user, setUser] = useState<User | null>(null);
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [addressId, setAddressId] = useState("");
-  const [mode, setMode] = useState("URBAN");
+  const [mode, setMode] = useState<DeliveryModeKey>("URBAN");
   const [quote, setQuote] = useState<Quote | null>(null);
+  const [validation, setValidation] = useState<RevalidationResponse | null>(
+    null,
+  );
+  const handleValidation = useCallback(
+    (result: RevalidationResponse) => setValidation(result),
+    [],
+  );
+  const handleValidationStart = useCallback(() => {
+    setValidation(null);
+    setQuote(null);
+  }, []);
+  const handleModeChange = useCallback((next: DeliveryModeKey) => {
+    setMode(next);
+    setQuote(null);
+  }, []);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [attempt, setAttempt] = useState<Attempt | null>(null);
@@ -70,6 +80,8 @@ export function Purchase() {
       const { items, expires } = loadCart();
       cartExpiry.current = expires;
       setCart(items);
+      setQuote(null);
+      setValidation(null);
       setReady(true);
     }
     syncCart();
@@ -121,6 +133,7 @@ export function Purchase() {
   }, []);
 
   function updateCart(next: CartLine[]) {
+    setValidation(null);
     setCart(next);
     setQuote(null);
     setError("");
@@ -143,7 +156,7 @@ export function Purchase() {
   }
 
   async function review() {
-    if (submitting.current) return;
+    if (submitting.current || !validation || validation.has_changes) return;
     submitting.current = true;
     setBusy(true);
     setError("");
@@ -312,6 +325,7 @@ export function Purchase() {
                               variant_id: variant.id,
                               quantity: 1,
                               label: `${variant.product_name} · ${variant.sku}`,
+                              unit_price: variant.price,
                             },
                           ],
                     );
@@ -377,7 +391,24 @@ export function Purchase() {
                   </li>
                 ))}
               </ul>
-              <CartValidator cart={cart} disabled={busy || !!attempt} />
+              <CartValidator
+                cart={cart}
+                disabled={busy || !!attempt}
+                onValidationComplete={handleValidation}
+                onValidationStart={handleValidationStart}
+                onAcceptPrices={(items) =>
+                  updateCart(
+                    cart.map((line) => {
+                      const result = items.find(
+                        (item) => item.variant_id === line.variant_id,
+                      );
+                      return result?.current_price
+                        ? { ...line, unit_price: result.current_price }
+                        : line;
+                    }),
+                  )
+                }
+              />
               {!user ? (
                 <div className="purchase-actions">
                   <Link className="button primary" href="/login?next=/comprar">
@@ -389,22 +420,24 @@ export function Purchase() {
                 <>
                   <fieldset disabled={busy || !!attempt}>
                     <legend>Entrega</legend>
-                    <label>
-                      Modalidad
-                      <select
-                        value={mode}
-                        onChange={(e) => {
-                          setMode(e.target.value);
-                          setQuote(null);
-                        }}
-                      >
-                        <option value="URBAN">Domicilio urbano en Pasto</option>
-                        <option value="PICKUP">Recogida en tienda</option>
-                        <option value="SPECIAL">
-                          Zona especial / fuera del área urbana
-                        </option>
-                      </select>
-                    </label>
+                    <DeliverySelector
+                      subtotal={cart.reduce(
+                        (sum, line) =>
+                          sum +
+                          Number(
+                            validation?.items.find(
+                              (item) => item.variant_id === line.variant_id,
+                            )?.current_price ??
+                              line.unit_price ??
+                              0,
+                          ) *
+                            line.quantity,
+                        0,
+                      )}
+                      selectedMode={mode}
+                      onModeChange={handleModeChange}
+                      disabled={busy || !!attempt}
+                    />
                     {mode !== "PICKUP" && (
                       <label>
                         Dirección
@@ -430,7 +463,13 @@ export function Purchase() {
                   {!attempt && (
                     <button
                       className="button primary"
-                      disabled={busy || (mode !== "PICKUP" && !addressId)}
+                      disabled={
+                        busy ||
+                        !validation ||
+                        validation.has_changes ||
+                        mode === "SPECIAL" ||
+                        (mode !== "PICKUP" && !addressId)
+                      }
                       onClick={review}
                     >
                       {busy ? "Consultando..." : "Revisar total"}

@@ -25,13 +25,17 @@ LOGGING = {
         "performance": {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": str(LOAD_ARTIFACTS / "requests.log"),
-            "maxBytes": 10_000_000, "backupCount": 3, "encoding": "utf-8",
+            "maxBytes": 10_000_000,
+            "backupCount": 3,
+            "encoding": "utf-8",
         },
         "server": {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": str(LOAD_ARTIFACTS / "server.log"),
             "formatter": "timestamp",
-            "maxBytes": 10_000_000, "backupCount": 3, "encoding": "utf-8",
+            "maxBytes": 10_000_000,
+            "backupCount": 3,
+            "encoding": "utf-8",
         },
     },
     "loggers": {

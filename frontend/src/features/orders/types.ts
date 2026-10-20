@@ -1,4 +1,9 @@
-export type CartLine = { variant_id: number; quantity: number; label: string };
+export type CartLine = {
+  variant_id: number;
+  quantity: number;
+  label: string;
+  unit_price?: string;
+};
 export type CheckoutBody = {
   items: { variant_id: number; quantity: number }[];
   address_id: number | null;

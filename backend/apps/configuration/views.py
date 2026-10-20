@@ -5,6 +5,7 @@ from rest_framework import serializers
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 
+from apps.orders.serializers import StrictSerializer
 from apps.users.permissions import IsAdmin
 from apps.users.views import private_response
 
@@ -29,6 +30,25 @@ class SettingsSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 {"whatsapp_number": "Usa código de país y número, solo dígitos."}
             )
+        return attrs
+
+
+class DeliveryQuoteSerializer(StrictSerializer):
+    mode = serializers.ChoiceField(choices=["PICKUP", "URBAN", "SPECIAL"])
+    subtotal = serializers.DecimalField(max_digits=18, decimal_places=2, min_value=0, default=0)
+
+
+class DeliverySettingsSerializer(StrictSerializer):
+    urban_flat_shipping_rate = serializers.IntegerField(
+        min_value=0, max_value=2147483647, required=False
+    )
+    free_shipping_threshold = serializers.IntegerField(
+        min_value=0, max_value=2147483647, required=False
+    )
+
+    def validate(self, attrs):
+        if not attrs:
+            raise serializers.ValidationError("Ningún campo de entrega proporcionado.")
         return attrs
 
 
@@ -84,44 +104,41 @@ class DeliveryQuoteView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        from decimal import Decimal, InvalidOperation
+        from decimal import Decimal
 
-        raw_mode = str(request.data.get("mode", "")).strip().upper()
-        if raw_mode not in {"PICKUP", "URBAN", "SPECIAL"}:
-            return private_response(
-                {"detail": "Modalidad no válida. Use: PICKUP, URBAN o SPECIAL."}, status=400
-            )
-
-        raw_subtotal = request.data.get("subtotal", 0)
-        try:
-            subtotal = Decimal(str(raw_subtotal))
-            if subtotal < 0:
-                subtotal = Decimal("0")
-        except (InvalidOperation, TypeError, ValueError):
-            subtotal = Decimal("0")
+        serializer = DeliveryQuoteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        raw_mode = serializer.validated_data["mode"]
+        subtotal = serializer.validated_data["subtotal"]
 
         settings = all_settings()
         urban_rate = int(settings.get("urban_flat_shipping_rate", 5000))
         threshold = int(settings.get("free_shipping_threshold", 100000))
 
         if raw_mode == "PICKUP":
-            return private_response({
-                "mode": "PICKUP",
-                "cost": "0.00",
-                "can_confirm": true if hasattr(request, "_never") else True,
-                "label": "Recogida en tienda (gratis)",
-                "message": "",
-                "free_shipping_threshold": str(threshold),
-            })
+            return private_response(
+                {
+                    "mode": "PICKUP",
+                    "cost": "0.00",
+                    "can_confirm": True,
+                    "label": "Recogida en tienda (gratis)",
+                    "message": "",
+                    "free_shipping_threshold": str(threshold),
+                }
+            )
         elif raw_mode == "SPECIAL":
-            return private_response({
-                "mode": "SPECIAL",
-                "cost": None,
-                "can_confirm": False,
-                "label": "Zona especial — tarifa por confirmar",
-                "message": "Tarifa especial por confirmar. No es posible crear el pedido todavía.",
-                "free_shipping_threshold": str(threshold),
-            })
+            return private_response(
+                {
+                    "mode": "SPECIAL",
+                    "cost": None,
+                    "can_confirm": False,
+                    "label": "Zona especial — tarifa por confirmar",
+                    "message": (
+                        "Tarifa especial por confirmar. No es posible crear el pedido todavía."
+                    ),
+                    "free_shipping_threshold": str(threshold),
+                }
+            )
         else:  # URBAN
             is_free = subtotal >= Decimal(str(threshold))
             cost = Decimal("0.00") if is_free else Decimal(str(urban_rate))
@@ -130,16 +147,18 @@ class DeliveryQuoteView(APIView):
                 if is_free
                 else f"Envío urbano en Pasto ($ {urban_rate:,} COP)"
             )
-            return private_response({
-                "mode": "URBAN",
-                "cost": format(cost, ".2f"),
-                "can_confirm": True,
-                "is_free": is_free,
-                "label": label,
-                "message": "",
-                "free_shipping_threshold": str(threshold),
-                "urban_rate": str(urban_rate),
-            })
+            return private_response(
+                {
+                    "mode": "URBAN",
+                    "cost": format(cost, ".2f"),
+                    "can_confirm": True,
+                    "is_free": is_free,
+                    "label": label,
+                    "message": "",
+                    "free_shipping_threshold": str(threshold),
+                    "urban_rate": str(urban_rate),
+                }
+            )
 
 
 class AdminDeliverySettingsView(APIView):
@@ -149,25 +168,24 @@ class AdminDeliverySettingsView(APIView):
 
     def get(self, request):
         settings = all_settings()
-        return private_response({
-            "urban_flat_shipping_rate": settings.get("urban_flat_shipping_rate", 5000),
-            "free_shipping_threshold": settings.get("free_shipping_threshold", 100000),
-            "pickup_cost": 0,
-        })
+        return private_response(
+            {
+                "urban_flat_shipping_rate": settings.get("urban_flat_shipping_rate", 5000),
+                "free_shipping_threshold": settings.get("free_shipping_threshold", 100000),
+                "pickup_cost": 0,
+            }
+        )
 
     def patch(self, request):
-        allowed = {"urban_flat_shipping_rate", "free_shipping_threshold"}
-        updates = {k: v for k, v in request.data.items() if k in allowed}
-        if not updates:
-            return private_response({"detail": "Ningún campo de entrega proporcionado."}, status=400)
+        serializer = DeliverySettingsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        updates = serializer.validated_data
 
         with transaction.atomic():
             rows = list(StoreSetting.objects.select_for_update().filter(key__in=updates.keys()))
             current = {r.key: r.value for r in rows}
             for key, val in updates.items():
-                int_val = int(val)
-                if int_val < 0:
-                    raise serializers.ValidationError({key: "Debe ser mayor o igual a 0."})
+                int_val = val
                 SettingChange.objects.create(
                     actor=request.user,
                     key=key,
@@ -177,8 +195,10 @@ class AdminDeliverySettingsView(APIView):
                 StoreSetting.objects.update_or_create(key=key, defaults={"value": int_val})
 
         settings = all_settings()
-        return private_response({
-            "urban_flat_shipping_rate": settings.get("urban_flat_shipping_rate", 5000),
-            "free_shipping_threshold": settings.get("free_shipping_threshold", 100000),
-            "pickup_cost": 0,
-        })
+        return private_response(
+            {
+                "urban_flat_shipping_rate": settings.get("urban_flat_shipping_rate", 5000),
+                "free_shipping_threshold": settings.get("free_shipping_threshold", 100000),
+                "pickup_cost": 0,
+            }
+        )

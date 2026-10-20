@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { addToCart, loadCart, clearCart, CART_STORAGE_KEY } from "./cart-storage";
+import { addToCart, loadCart, CART_STORAGE_KEY } from "./cart-storage";
 import { CartValidator } from "./cart-validator";
 import { DeliverySelector } from "./delivery-selector";
 import { CustomerList } from "@/features/users/customer-list";
@@ -12,45 +12,58 @@ vi.mock("@/services/api", async (importOriginal) => {
     api: vi.fn((path: string, options?: RequestInit) => {
       // CO-62 Admin customer listing
       if (path.includes("/admin/customers/?q=Carlos")) {
-        return Promise.resolve([
-          {
-            id: 10,
-            name: "Carlos Gomez",
-            email: "carlos@test.com",
-            created_at: "2026-04-01T08:00:00Z",
-            order_count: 5,
-          },
-        ]);
+        return Promise.resolve({
+          count: 1,
+          previous: null,
+          next: null,
+          results: [
+            {
+              id: 10,
+              name: "Carlos Gomez",
+              email: "carlos@test.com",
+              created_at: "2026-04-01T08:00:00Z",
+              order_count: 5,
+            },
+          ],
+        });
       }
       if (path.includes("/admin/customers/")) {
-        return Promise.resolve([
-          {
-            id: 10,
-            name: "Carlos Gomez",
-            email: "carlos@test.com",
-            created_at: "2026-04-01T08:00:00Z",
-            order_count: 5,
-          },
-          {
-            id: 11,
-            name: "Diana Rios",
-            email: "diana@test.com",
-            created_at: "2026-04-02T09:00:00Z",
-            order_count: 0,
-          },
-        ]);
+        return Promise.resolve({
+          count: 2,
+          previous: null,
+          next: null,
+          results: [
+            {
+              id: 10,
+              name: "Carlos Gomez",
+              email: "carlos@test.com",
+              created_at: "2026-04-01T08:00:00Z",
+              order_count: 5,
+            },
+            {
+              id: 11,
+              name: "Diana Rios",
+              email: "diana@test.com",
+              created_at: "2026-04-02T09:00:00Z",
+              order_count: 0,
+            },
+          ],
+        });
       }
 
       // CO-57 Checkout validate
       if (path.includes("/checkout/validate/")) {
         const body = JSON.parse((options?.body as string) || "{}");
         const items = body.items || [];
-        const hasIssue = items.some((i: { variant_id: number }) => i.variant_id === 500);
+        const hasIssue = items.some(
+          (i: { variant_id: number }) => i.variant_id === 500,
+        );
         return Promise.resolve({
           has_changes: hasIssue,
           items: items.map((i: { variant_id: number }) => ({
             variant_id: i.variant_id,
-            product_name: i.variant_id === 500 ? "Teclado RGB" : "Mouse Inalámbrico",
+            product_name:
+              i.variant_id === 500 ? "Teclado RGB" : "Mouse Inalámbrico",
             status: i.variant_id === 500 ? "out_of_stock" : "ok",
             message: i.variant_id === 500 ? "Sin stock disponible." : null,
             current_price: "85000.00",
@@ -78,7 +91,8 @@ vi.mock("@/services/api", async (importOriginal) => {
             cost: null,
             can_confirm: false,
             label: "Zona especial — tarifa por confirmar",
-            message: "Tarifa especial por confirmar. No es posible crear el pedido todavía.",
+            message:
+              "Tarifa especial por confirmar. No es posible crear el pedido todavía.",
             free_shipping_threshold: "100000",
           });
         }
@@ -137,7 +151,9 @@ describe("Sprint 4 Integrated Acceptance Tests", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/Tu carrito presenta cambios de inventario o precio/i),
+          screen.getByText(
+            /Tu carrito presenta cambios de inventario o precio/i,
+          ),
         ).toBeInTheDocument();
         expect(screen.getByText(/Agotado temporalmente/i)).toBeInTheDocument();
       });
@@ -152,7 +168,9 @@ describe("Sprint 4 Integrated Acceptance Tests", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/Disponibilidad y precios confirmados con la tienda/i),
+          screen.getByText(
+            /Disponibilidad y precios confirmados con la tienda/i,
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -171,7 +189,9 @@ describe("Sprint 4 Integrated Acceptance Tests", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText(/Gratis \(Recogida local en Pasto\)/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Gratis \(Recogida local en Pasto\)/i),
+        ).toBeInTheDocument();
         expect(onModeChange).toHaveBeenCalledWith(
           "PICKUP",
           expect.objectContaining({ cost: "0.00", can_confirm: true }),
@@ -193,7 +213,11 @@ describe("Sprint 4 Integrated Acceptance Tests", () => {
         expect(screen.getByText(/\$ [\s\u00a0]?5\.000/i)).toBeInTheDocument();
         expect(onModeChange).toHaveBeenCalledWith(
           "URBAN",
-          expect.objectContaining({ cost: "5000.00", is_free: false, can_confirm: true }),
+          expect.objectContaining({
+            cost: "5000.00",
+            is_free: false,
+            can_confirm: true,
+          }),
         );
       });
     });
@@ -209,10 +233,16 @@ describe("Sprint 4 Integrated Acceptance Tests", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText(/¡Gratis! \(supera el umbral\)/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/¡Gratis! \(supera el umbral\)/i),
+        ).toBeInTheDocument();
         expect(onModeChange).toHaveBeenCalledWith(
           "URBAN",
-          expect.objectContaining({ cost: "0.00", is_free: true, can_confirm: true }),
+          expect.objectContaining({
+            cost: "0.00",
+            is_free: true,
+            can_confirm: true,
+          }),
         );
       });
     });
@@ -228,7 +258,9 @@ describe("Sprint 4 Integrated Acceptance Tests", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText(/Tarifa pendiente de confirmación/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Tarifa pendiente de confirmación/i),
+        ).toBeInTheDocument();
         expect(onModeChange).toHaveBeenCalledWith(
           "SPECIAL",
           expect.objectContaining({ can_confirm: false, cost: null }),

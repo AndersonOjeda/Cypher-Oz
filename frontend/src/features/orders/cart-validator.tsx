@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { AlertCircle, AlertTriangle, CheckCircle2, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AlertTriangle, CheckCircle2, RefreshCw } from "lucide-react";
 import { api, ApiError } from "@/services/api";
 import { cop, type CartLine } from "./types";
 
@@ -10,7 +10,8 @@ export interface RevalidationItemResult {
   product_name?: string;
   variant_name?: string;
   sku?: string;
-  status: "ok" | "price_changed" | "out_of_stock" | "insufficient_stock" | "inactive";
+  status:
+    "ok" | "price_changed" | "out_of_stock" | "insufficient_stock" | "inactive";
   message: string | null;
   current_price: string | null;
   available_qty: number;
@@ -25,19 +26,26 @@ interface CartValidatorProps {
   cart: CartLine[];
   onValidationComplete?: (response: RevalidationResponse) => void;
   disabled?: boolean;
+  onAcceptPrices?: (items: RevalidationItemResult[]) => void;
+  onValidationStart?: () => void;
 }
 
 export function CartValidator({
   cart,
   onValidationComplete,
   disabled = false,
+  onAcceptPrices,
+  onValidationStart,
 }: CartValidatorProps) {
   const [results, setResults] = useState<RevalidationItemResult[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const generation = useRef(0);
   const [error, setError] = useState<string | null>(null);
 
   const revalidate = useCallback(async () => {
+    const current = ++generation.current;
+    onValidationStart?.();
     if (cart.length === 0) {
       setResults([]);
       setHasChanges(false);
@@ -51,6 +59,7 @@ export function CartValidator({
       items: cart.map((line) => ({
         variant_id: line.variant_id,
         quantity: line.quantity,
+        ...(line.unit_price ? { unit_price: line.unit_price } : {}),
       })),
     };
 
@@ -59,22 +68,32 @@ export function CartValidator({
         method: "POST",
         body: JSON.stringify(payload),
       });
+      if (current !== generation.current) return;
       setResults(response.items);
       setHasChanges(response.has_changes);
       onValidationComplete?.(response);
     } catch (err) {
+      if (current !== generation.current) return;
       const msg =
         err instanceof ApiError
           ? err.message
           : "No pudimos validar la disponibilidad de tu carrito.";
       setError(msg);
     } finally {
-      setLoading(false);
+      if (current === generation.current) setLoading(false);
     }
-  }, [cart, onValidationComplete]);
+  }, [cart, onValidationComplete, onValidationStart]);
 
   useEffect(() => {
-    void revalidate();
+    let active = true;
+    const requests = generation;
+    void Promise.resolve().then(() => {
+      if (active) void revalidate();
+    });
+    return () => {
+      active = false;
+      ++requests.current;
+    };
   }, [revalidate]);
 
   if (cart.length === 0) return null;
@@ -107,12 +126,19 @@ export function CartValidator({
           ) : (
             <CheckCircle2 size={18} color="#16a34a" aria-hidden="true" />
           )}
-          <span style={{ fontWeight: 600, color: hasChanges ? "#92400e" : "#166534" }}>
+          <span
+            style={{
+              fontWeight: 600,
+              color: hasChanges ? "#92400e" : "#166534",
+            }}
+          >
             {loading
               ? "Revalidando disponibilidad y precios..."
               : hasChanges
                 ? "Atención: Tu carrito presenta cambios de inventario o precio"
-                : "Disponibilidad y precios confirmados con la tienda"}
+                : error
+                  ? "No se pudo confirmar el carrito"
+                  : "Disponibilidad y precios confirmados con la tienda"}
           </span>
         </div>
 
@@ -144,7 +170,9 @@ export function CartValidator({
       )}
 
       {hasChanges && (
-        <ul style={{ margin: "8px 0 0 0", paddingLeft: "20px", color: "#78350f" }}>
+        <ul
+          style={{ margin: "8px 0 0 0", paddingLeft: "20px", color: "#78350f" }}
+        >
           {results
             .filter((r) => r.status !== "ok")
             .map((item) => (
@@ -155,7 +183,8 @@ export function CartValidator({
                 </strong>{" "}
                 {item.status === "price_changed" && (
                   <span>
-                    El precio se actualizó a {item.current_price ? cop(item.current_price) : ""}.
+                    El precio se actualizó a{" "}
+                    {item.current_price ? cop(item.current_price) : ""}.
                   </span>
                 )}
                 {item.status === "out_of_stock" && (
@@ -177,7 +206,18 @@ export function CartValidator({
             ))}
         </ul>
       )}
+      {!loading &&
+        !error &&
+        onAcceptPrices &&
+        results.some((item) => item.status === "price_changed") && (
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onAcceptPrices(results)}
+          >
+            Aceptar precios actualizados
+          </button>
+        )}
     </div>
   );
 }
-

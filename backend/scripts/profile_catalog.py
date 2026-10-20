@@ -36,9 +36,13 @@ def profile():
                 response = client.get(path, HTTP_HOST="localhost")
             if response.status_code != 200:
                 raise RuntimeError(f"{name}: HTTP {response.status_code}")
-            samples.append({"elapsed_ms": round((perf_counter() - start) * 1000, 2),
-                            "queries": len(queries),
-                            "db_ms": round(sum(float(q["time"]) for q in queries) * 1000, 2)})
+            samples.append(
+                {
+                    "elapsed_ms": round((perf_counter() - start) * 1000, 2),
+                    "queries": len(queries),
+                    "db_ms": round(sum(float(q["time"]) for q in queries) * 1000, 2),
+                }
+            )
         result[name] = {"samples": samples, "sql": [q["sql"] for q in queries]}
     return result
 
@@ -71,8 +75,17 @@ if __name__ == "__main__":
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2), encoding="utf-8")
     if args.explain_source:
-        print(json.dumps({key: {"execution_ms": value["Execution Time"],
-                               "rows": value["Plan"]["Actual Rows"]}
-                          for key, value in result.items()}, indent=2))
+        print(
+            json.dumps(
+                {
+                    key: {
+                        "execution_ms": value["Execution Time"],
+                        "rows": value["Plan"]["Actual Rows"],
+                    }
+                    for key, value in result.items()
+                },
+                indent=2,
+            )
+        )
     else:
         print(json.dumps({key: value["samples"] for key, value in result.items()}, indent=2))

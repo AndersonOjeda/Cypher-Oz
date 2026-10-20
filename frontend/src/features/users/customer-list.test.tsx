@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CustomerList } from "./customer-list";
+import { api, ApiError } from "@/services/api";
 
 const mockCustomers = [
   {
@@ -25,10 +26,20 @@ vi.mock("@/services/api", async (importOriginal) => {
     ...actual,
     api: vi.fn((path: string) => {
       if (path.includes("/admin/customers/?q=Juan")) {
-        return Promise.resolve([mockCustomers[0]]);
+        return Promise.resolve({
+          count: 1,
+          previous: null,
+          next: null,
+          results: [mockCustomers[0]],
+        });
       }
       if (path.includes("/admin/customers/")) {
-        return Promise.resolve(mockCustomers);
+        return Promise.resolve({
+          count: 2,
+          previous: null,
+          next: null,
+          results: mockCustomers,
+        });
       }
       return Promise.reject(new Error("Not found"));
     }),
@@ -75,5 +86,42 @@ describe("CustomerList (CO-62 HU-19)", () => {
       expect(screen.queryByText("Maria Lopez")).not.toBeInTheDocument();
     });
   });
-});
 
+  it("requests the next page and preserves the submitted search", async () => {
+    vi.mocked(api).mockResolvedValueOnce({
+      count: 21,
+      next: "/admin/customers/?page=2",
+      previous: null,
+      results: [mockCustomers[0]],
+    });
+    render(<CustomerList />);
+    const next = await screen.findByRole("button", { name: "Siguiente" });
+    expect(next).toBeEnabled();
+    fireEvent.click(next);
+    await waitFor(() =>
+      expect(vi.mocked(api)).toHaveBeenLastCalledWith(
+        "/admin/customers/?q=&page=2",
+      ),
+    );
+  });
+
+  it("shows empty results and blocks non-admin access with a clear error", async () => {
+    vi.mocked(api).mockResolvedValueOnce({
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
+    });
+    render(<CustomerList />);
+    await screen.findByText(/No se encontraron clientes/);
+    vi.mocked(api).mockRejectedValueOnce(
+      new ApiError(403, "forbidden", "Forbidden"),
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Buscar" }),
+    );
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "No tienes permisos para consultar clientes.",
+    );
+  });
+});

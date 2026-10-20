@@ -259,8 +259,11 @@ def test_public_product_detail_success_and_not_found(catalog_setup):
 @pytest.mark.parametrize("ordering", ["price", "-price"])
 def test_price_order_has_one_row_per_product_and_ignores_inactive_variants(catalog_setup, ordering):
     Variant.objects.create(
-        product=catalog_setup["p2"], name="Oculta", sku="HIDDEN-PRICE",
-        price=Decimal("1.00"), is_active=False,
+        product=catalog_setup["p2"],
+        name="Oculta",
+        sku="HIDDEN-PRICE",
+        price=Decimal("1.00"),
+        is_active=False,
     )
     response = APIClient().get(f"/api/v1/products/?ordering={ordering}&page_size=1")
     assert response.status_code == 200
@@ -269,9 +272,11 @@ def test_price_order_has_one_row_per_product_and_ignores_inactive_variants(catal
     if ordering == "-price":
         expected.reverse()
     first = response.data["results"][0]["slug"]
-    second = APIClient().get(
-        f"/api/v1/products/?ordering={ordering}&page_size=1&page=2"
-    ).data["results"][0]["slug"]
+    second = (
+        APIClient()
+        .get(f"/api/v1/products/?ordering={ordering}&page_size=1&page=2")
+        .data["results"][0]["slug"]
+    )
     assert [first, second] == expected
 
 
@@ -287,8 +292,11 @@ def test_price_bounds_must_match_the_same_active_variant(catalog_setup):
 def test_catalog_query_budget_does_not_grow_with_page_size(catalog_setup, page_size):
     for index in range(20):
         product = Product.objects.create(
-            name=f"Equipo {index}", slug=f"equipo-{index}", description="Prueba de carga",
-            category=catalog_setup["cat_perifericos"], brand=catalog_setup["brand_logitech"],
+            name=f"Equipo {index}",
+            slug=f"equipo-{index}",
+            description="Prueba de carga",
+            category=catalog_setup["cat_perifericos"],
+            brand=catalog_setup["brand_logitech"],
             is_active=True,
         )
         Variant.objects.create(product=product, sku=f"PERF-{index}", price="1000.00")
@@ -301,11 +309,15 @@ def test_catalog_query_budget_does_not_grow_with_page_size(catalog_setup, page_s
 
 def test_detail_preserves_variant_attributes_with_bounded_queries(catalog_setup):
     attribute = CategoryAttribute.objects.create(
-        category=catalog_setup["cat_perifericos"], code="color", name="Color",
+        category=catalog_setup["cat_perifericos"],
+        code="color",
+        name="Color",
     )
     for key, value in [("v1_1", "Negro"), ("v1_2", "Blanco")]:
         VariantAttributeValue.objects.create(
-            variant=catalog_setup[key], attribute=attribute, value=value,
+            variant=catalog_setup[key],
+            attribute=attribute,
+            value=value,
         )
     with CaptureQueriesContext(connection) as queries:
         response = APIClient().get("/api/v1/products/mouse-gamer-g502/")
