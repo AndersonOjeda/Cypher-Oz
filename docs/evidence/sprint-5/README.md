@@ -1,5 +1,15 @@
 # Evidencias de la auditoría del Sprint 5
 
+## Continuación para completar el cierre
+
+`expiration.xml`: 20/20 pruebas del runner T1 aprobadas, incluidas carreras reales
+de reporte–vencimiento en ambos órdenes y dos runners superpuestos. Se observa
+la espera de locks de PostgreSQL; no se simula la decisión del proceso de vencimiento.
+`expiration-first-run.xml` conserva 1 fallo/17 aprobadas de la primera versión
+del fixture; la repetición añadió dos regresiones y aprobó sus 20 casos.
+La regresión completa de esta continuación se publica en los checks de PR #21 y
+su artefacto CI para el SHA integrado; los resultados siguientes son históricos.
+
 Ejecución local del 20/10/2026. Fuentes revisadas: `fc9dfa4`, `3ae0a3c` y la
 integración con main. Correcciones en rama `review/sprint-5-verification`.
 
@@ -48,6 +58,6 @@ Smoke público: `https://cypher-oz.vercel.app/catalogo`,
 `https://cypher-oz.vercel.app/api/v1/products/` respondieron HTTP 200.
 Health devolvió `status=ok`, `database=postgresql`. No se hicieron escrituras remotas.
 
-No se ejecutó Lighthouse ni carga de 1.000 usuarios en esta revisión. No existe todavía
-un scheduler de vencimiento de pedidos/pagos para verificar CO-129 A4. Las capturas
+No se ejecutó Lighthouse ni carga de 1.000 usuarios en esta revisión. El runner T1
+añadido en la continuación verifica CO-129 A4; la resolución T2 sigue en Sprint 6. Las capturas
 muestran datos de prueba sintéticos y no acreditan despliegue de esta rama.

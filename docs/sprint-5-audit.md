@@ -4,8 +4,25 @@ Fecha: 20/10/2026, America/Bogota. Rama: `review/sprint-5-verification`.
 Revisión de las entregas de Antigravity `fc9dfa4` y `3ae0a3c`, integradas con `origin/main`.
 
 El cierre administrativo de Sprint 75 no acredita por sí solo su aceptación técnica.
-Se encontraron defectos reales y afirmaciones incorrectas en los informes previos.
-La auditoría anterior que declaraba «100% sin pendientes» queda sustituida por este documento.
+La primera revisión encontró defectos y reabrió CO-60/CO-129; las secciones siguientes
+registran su corrección. La afirmación original de «100% sin pendientes» no era válida.
+
+## Resolución del pendiente de cierre
+
+Se implementó el runner real T1 `expire_unpaid_orders`, con cancelación, historial y
+restitución en una misma transacción. Las 20 pruebas nuevas de PostgreSQL pasan:
+reporte que gana y suspende T1, vencimiento que gana y rechaza el reporte tardío,
+dos runners superpuestos, límite inclusivo, permisos, estados excluidos, lotes y rollback.
+Las carreras observan la espera real de bloqueo de conexiones independientes.
+El primer intento de la suite tenía un fallo de fixture por una relación cacheada;
+se conserva en `expiration-first-run.xml`; la repetición completa pasa 20/20.
+
+Esto completa CO-129 A4 para el vencimiento T1 del alcance de HU-14. No hace falta
+resolver T2 o rechazos de HU-15 para probar esa carrera: REPORTED queda excluido
+explícitamente del runner. El contrato y ejecución están en [T1](order-expiration-t1.md).
+La CI y la integración final se verifican en [PR #21](https://github.com/AndersonOjeda/Cypher-Oz/pull/21).
+Los estados de Jira se concilian después de validar e integrar, conservando el historial
+de reapertura, calendario, estimaciones y decisiones pendientes de Sprint 6.
 
 ## Hallazgos y correcciones
 
@@ -26,8 +43,9 @@ La auditoría anterior que declaraba «100% sin pendientes» queda sustituida po
 `restore_cancelled_order_inventory(user, number, reason)` requiere que el llamador haya
 autorizado y cambiado el pedido a CANCELLED **en la misma transacción exterior**.
 El servicio no decide la política, no cambia estados del pedido/pago ni registra la
-transición que corresponde al llamador. HU-18/scheduler deben integrar esa transición,
-su auditoría y la restitución como una única operación. No existe una API pública nueva
+transición que corresponde al llamador. El runner T1 ya integra esa transición,
+su auditoría y la restitución como una única operación; HU-18 hará lo propio para
+otras cancelaciones autorizadas. No existe una API pública nueva
 para evitar esa responsabilidad. Se comprueban origen SALE, variante y cantidad; se
 conservan los snapshots. Pedidos con balances o ledger inconsistentes fallan y requieren
 conciliación. La migración es aditiva y no modifica movimientos históricos.
@@ -41,12 +59,13 @@ conciliación. La migración es aditiva y no modifica movimientos históricos.
 | CO-157 | PostgreSQL: reversión concurrente única y rollback con transacción del llamador; E2E compara suma del ledger y SALE único | UI de cancelación queda expresamente para HU-18 |
 | CO-59 / CO-124–126 | Pruebas API de propiedad/anonimato y GET sin cambios; E2E en tres tamaños, instrucciones vigentes con total/T1 históricos y copia | Verificado localmente |
 | CO-60 / CO-127–128 | Referencias, permisos/CSRF, T1/T2, estados, auditoría, replay, rollback y reportes concurrentes; UI/recarga/reintento | Implementación de reporte verificada |
-| CO-129 A4 | No existe proceso de vencimiento automático de pedidos/pagos en `backend/apps` | **Pendiente**: concurrencia real reporte–scheduler según política CO-130 |
+| CO-129 A4 | `test_order_expiration.py`: runner T1 real frente a reporte con espera de lock PostgreSQL en ambos órdenes | Carrera ejecutada; ninguna doble restitución ni cancelación de REPORTED |
 
-Las pruebas de frontera T1 y dos reportes simultáneos no equivalen a una carrera contra
-un scheduler real. No se marca esa actividad ni se declara HU-14 aceptada al 100%.
-CO-60 y CO-129 quedan En curso. Se conserva Sprint 75 cerrado, sus fechas y sus 16 SP;
-no se inicia otro sprint ni se alteran estimaciones para ocultar el pendiente.
+Las pruebas antiguas de frontera T1 y dos reportes simultáneos no equivalían a esa
+carrera. La suite nueva añade el proceso real de vencimiento y cubre la dependencia.
+La reapertura anterior de CO-60/129 se conserva como historial; el cierre requiere
+regresión e integración aprobadas. Se conservan Sprint 75, sus fechas y sus 16 SP.
+No se inicia otro sprint ni se cambia su alcance para aparentar completitud.
 
 ## Desarrollo, pruebas y operación
 
