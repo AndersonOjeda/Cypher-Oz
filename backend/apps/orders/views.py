@@ -19,7 +19,7 @@ from .serializers import (
     PaymentReportSerializer,
     PaymentSerializer,
 )
-from .services import create_order, preview, report_payment
+from .services import cancel_order, create_order, preview, report_payment
 
 
 class PurchaseVariantsView(APIView):
@@ -208,3 +208,14 @@ class CartValidateView(APIView):
 
         has_changes = any(r["status"] != "ok" for r in results)
         return Response({"items": results, "has_changes": has_changes})
+
+
+class OrderCancelView(APIView):
+    """CO-67 HU-25-T02: Order cancellation endpoint with automatic stock restitution."""
+
+    def post(self, request, number):
+        reason = request.data.get("reason", "Cancelación voluntaria")
+        if not isinstance(reason, str) or not reason.strip():
+            reason = "Cancelación voluntaria"
+        order = cancel_order(request.user, number, reason=reason.strip()[:300])
+        return private_response(OrderSerializer(order).data)

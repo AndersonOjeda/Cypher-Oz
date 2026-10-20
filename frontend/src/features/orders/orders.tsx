@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Pager, useResource } from "@/features/catalog/shared";
+import { Pager, errorText, useResource } from "@/features/catalog/shared";
 import type { Page } from "@/features/catalog/types";
+import { api } from "@/services/api";
 import { cop, type Order } from "./types";
 
 const status: Record<string, string> = {
@@ -19,11 +20,40 @@ const status: Record<string, string> = {
 
 export function OrderDetail({ number }: { number: string }) {
   const [revision, setRevision] = useState(0);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState("");
+  const [cancelSuccess, setCancelSuccess] = useState(false);
   const resource = useResource<Order>(
     `/orders/${encodeURIComponent(number)}/`,
     revision,
   );
   const order = resource.data;
+
+  async function handleCancel() {
+    if (
+      !window.confirm(
+        "¿Estás seguro de que deseas cancelar este pedido? El inventario será restituido inmediatamente.",
+      )
+    ) {
+      return;
+    }
+    setCancelling(true);
+    setCancelError("");
+    setCancelSuccess(false);
+    try {
+      await api<Order>(`/orders/${encodeURIComponent(number)}/cancel/`, {
+        method: "POST",
+        body: JSON.stringify({ reason: "Cancelado por el cliente" }),
+      });
+      setCancelSuccess(true);
+      setRevision((n) => n + 1);
+    } catch (err) {
+      setCancelError(errorText(err));
+    } finally {
+      setCancelling(false);
+    }
+  }
+
   return (
     <section className="purchase-shell order-detail">
       <div className="purchase-heading">
@@ -106,6 +136,37 @@ export function OrderDetail({ number }: { number: string }) {
               <Link href={`/pedidos/${order.number}/pago`}>
                 Instrucciones de pago
               </Link>
+              {["PENDING", "PREPARING"].includes(order.status) && (
+                <div style={{ marginTop: "1rem" }}>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    disabled={cancelling}
+                    style={{
+                      background: "#fee2e2",
+                      color: "#991b1b",
+                      border: "1px solid #f87171",
+                      borderRadius: "6px",
+                      padding: "8px 16px",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      cursor: cancelling ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    {cancelling ? "Cancelando pedido..." : "Cancelar pedido"}
+                  </button>
+                </div>
+              )}
+              {cancelSuccess && (
+                <p role="status" style={{ color: "#166534", marginTop: "0.5rem" }}>
+                  Pedido cancelado exitosamente. El inventario ha sido restituido.
+                </p>
+              )}
+              {cancelError && (
+                <p role="alert" style={{ color: "#991b1b", marginTop: "0.5rem" }}>
+                  {cancelError}
+                </p>
+              )}
             </section>
           </div>
         </>

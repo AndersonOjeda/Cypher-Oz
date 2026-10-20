@@ -265,3 +265,55 @@ def report_payment(user, number, reference):
     payment.save(update_fields=["status", "reference", "reported_at", "review_deadline_at"])
     PaymentStatusHistory.objects.create(payment=payment, status="REPORTED", actor=user)
     return payment
+
+
+@transaction.atomic
+def cancel_order(user, number, reason="Cancelación voluntaria"):
+    """CO-67 HU-25-T02: Atomic order cancellation with automatic inventory restitution."""
+    order = get_object_or_404(
+        Order.objects.select_for_update(),
+        number=number,
+    )
+    if order.user_id != user.pk and getattr(user, "role", "") != "ADMIN":
+        raise CheckoutConflict("No tienes permisos para cancelar este pedido.")
+
+    if order.status == "CANCELLED":
+        raise CheckoutConflict("El pedido ya se encuentra cancelado.")
+    if order.status not in ["PENDING", "PREPARING"]:
+        raise CheckoutConflict("El estado actual del pedido no permite cancelarlo.")
+
+    Payment.objects.select_for_update().get(order=order)
+
+    # Restock all order items atomically
+    items = list(order.items.select_related("variant").order_by("pk"))
+    variant_ids = sorted([item.variant_id for item in items])
+    balances = {
+        b.variant_id: b
+        for b in InventoryBalance.objects.select_for_update()
+        .filter(variant_id__in=variant_ids)
+        .order_by("variant_id")
+    }
+
+    for item in items:
+        balance = balances.get(item.variant_id)
+        if balance is not None:
+            prev_qty = balance.available_quantity
+            balance.available_quantity += item.quantity
+            balance.save(update_fields=["available_quantity", "updated_at"])
+
+            StockMovement.objects.create(
+                variant_id=item.variant_id,
+                sku=item.sku,
+                type="CANCELLATION",
+                quantity=item.quantity,
+                previous_quantity=prev_qty,
+                resulting_quantity=balance.available_quantity,
+                reason=f"Cancelación pedido {order.number}: {reason}",
+                actor=user,
+            )
+
+    order.status = "CANCELLED"
+    order.save(update_fields=["status"])
+    OrderStatusHistory.objects.create(order=order, status="CANCELLED", actor=user)
+
+    return order
