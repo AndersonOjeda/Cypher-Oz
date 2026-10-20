@@ -1,5 +1,7 @@
 import re
 from datetime import timedelta
+from unittest.mock import patch
+from urllib.error import URLError
 
 import pytest
 from django.core import mail
@@ -31,6 +33,49 @@ def test_request_is_generic_and_stores_only_hash(client, user):
     assert unknown.status_code == 200
     assert unknown.data == existing.data
     assert len(mail.outbox) == 1
+
+
+@pytest.mark.django_db
+@override_settings(
+    RESEND_API_KEY="re_test",
+    RESEND_FROM_EMAIL="Cypher Oz <onboarding@resend.dev>",
+)
+@patch("apps.users.email.urlopen")
+def test_request_uses_resend_http_api(urlopen, client, user):
+    urlopen.return_value.__enter__.return_value.read.return_value = b'{"id":"email_1"}'
+
+    response = client.post(REQUEST, {"email": user.email}, format="json")
+
+    assert response.status_code == 200
+    request = urlopen.call_args.args[0]
+    assert request.full_url == "https://api.resend.com/emails"
+    assert request.headers["Authorization"] == "Bearer re_test"
+    assert request.headers["User-agent"] == "CypherOz/1.0"
+    assert user.email in request.data.decode("utf-8")
+
+
+@pytest.mark.django_db
+@override_settings(RESEND_API_KEY="re_test")
+@patch("apps.users.email.urlopen", side_effect=URLError("unavailable"))
+def test_request_returns_503_and_discards_token_when_resend_fails(
+    urlopen, client, user
+):
+    response = client.post(REQUEST, {"email": user.email}, format="json")
+
+    assert response.status_code == 503
+    assert response.data["code"] == "email_service_unavailable"
+    assert not PasswordResetToken.objects.filter(user=user).exists()
+
+
+@pytest.mark.django_db
+@override_settings(RESEND_API_KEY="")
+@patch("apps.users.email.send_mail", side_effect=OSError("blocked"))
+def test_request_returns_503_when_smtp_is_unavailable(send_mail, client, user):
+    response = client.post(REQUEST, {"email": user.email}, format="json")
+
+    assert response.status_code == 503
+    assert response.data["code"] == "email_service_unavailable"
+    assert not PasswordResetToken.objects.filter(user=user).exists()
 
 
 @pytest.mark.django_db

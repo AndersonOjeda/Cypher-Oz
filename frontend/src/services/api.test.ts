@@ -24,6 +24,49 @@ test("unsafe request gets CSRF and includes cookies", async () => {
   expect(fetch.mock.calls[1][1].credentials).toBe("include");
 });
 
+test("retries an unsafe request once with a fresh CSRF token", async () => {
+  const fetch = vi
+    .fn()
+    .mockResolvedValueOnce(response(200, { csrfToken: "stale-csrf" }))
+    .mockResolvedValueOnce(
+      response(403, {
+        code: "permission_denied",
+        message: "Solicitud no válida.",
+      }),
+    )
+    .mockResolvedValueOnce(response(200, { csrfToken: "fresh-csrf" }))
+    .mockResolvedValueOnce(response(201, { id: 1 }));
+  vi.stubGlobal("fetch", fetch);
+  const { api } = await import("./api");
+
+  await expect(
+    api("/auth/register/", { method: "POST", body: "{}" }),
+  ).resolves.toEqual({ id: 1 });
+  expect(fetch).toHaveBeenCalledTimes(4);
+  expect(fetch.mock.calls[1][1].headers.get("X-CSRFToken")).toBe("stale-csrf");
+  expect(fetch.mock.calls[3][1].headers.get("X-CSRFToken")).toBe("fresh-csrf");
+});
+
+test("does not loop when a refreshed CSRF token is rejected", async () => {
+  const forbidden = {
+    code: "permission_denied",
+    message: "Solicitud no válida.",
+  };
+  const fetch = vi
+    .fn()
+    .mockResolvedValueOnce(response(200, { csrfToken: "stale-csrf" }))
+    .mockResolvedValueOnce(response(403, forbidden))
+    .mockResolvedValueOnce(response(200, { csrfToken: "fresh-csrf" }))
+    .mockResolvedValueOnce(response(403, forbidden));
+  vi.stubGlobal("fetch", fetch);
+  const { api } = await import("./api");
+
+  await expect(
+    api("/auth/register/", { method: "POST", body: "{}" }),
+  ).rejects.toMatchObject({ status: 403 });
+  expect(fetch).toHaveBeenCalledTimes(4);
+});
+
 test("expired access refreshes then retries protected request", async () => {
   const fetch = vi
     .fn()

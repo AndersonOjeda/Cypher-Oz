@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from apps.promotions.services import get_active_promotions_for_variants
 
 from .models import Product, Variant, VariantAttributeValue
-from .storage import image_url
+from .storage import StorageUnavailable, image_url
 from .views import CatalogPagination
 
 
@@ -18,6 +18,14 @@ def format_money(val):
     if val is None:
         return None
     return format(Decimal(str(val)), ".2f")
+
+
+def public_image_url(image):
+    """Keep the catalog usable when object storage cannot sign an image URL."""
+    try:
+        return image_url(image.storage_key)
+    except StorageUnavailable:
+        return image.storage_url
 
 
 def serialize_variant(variant, promo_offer=None):
@@ -83,7 +91,7 @@ def serialize_product_summary(product, promo_offers):
             "name": product.brand.name,
             "slug": product.brand.slug,
         },
-        "image_url": image_url(main_image.storage_key) if main_image else None,
+        "image_url": public_image_url(main_image) if main_image else None,
         "min_price": format_money(min_price),
         "max_price": format_money(max_price),
         "promotional_min_price": format_money(promotional_min),
@@ -152,7 +160,7 @@ class PublicProductsView(APIView):
         if min_price_param is not None and min_price_param != "":
             try:
                 min_val = Decimal(min_price_param)
-                if min_val < 0:
+                if not min_val.is_finite() or min_val < 0:
                     raise serializers.ValidationError({"min_price": "Debe ser mayor o igual a 0."})
                 sellable = sellable.filter(price__gte=min_val)
             except InvalidOperation as exc:
@@ -164,13 +172,18 @@ class PublicProductsView(APIView):
         if max_price_param is not None and max_price_param != "":
             try:
                 max_val = Decimal(max_price_param)
-                if max_val < 0:
+                if not max_val.is_finite() or max_val < 0:
                     raise serializers.ValidationError({"max_price": "Debe ser mayor o igual a 0."})
                 sellable = sellable.filter(price__lte=max_val)
             except InvalidOperation as exc:
                 raise serializers.ValidationError(
                     {"max_price": "Usa un valor numérico válido."}
                 ) from exc
+
+        if min_price_param and max_price_param and min_val > max_val:
+            raise serializers.ValidationError(
+                {"max_price": "Debe ser mayor o igual al precio mínimo."}
+            )
 
         # Availability filter (total_stock > 0)
         available_param = request.query_params.get("available")
@@ -179,6 +192,14 @@ class PublicProductsView(APIView):
                 raise serializers.ValidationError({"available": "Usa true o false."})
             if available_param == "true":
                 sellable = sellable.filter(inventory_balance__available_quantity__gt=0)
+            else:
+                in_stock = Variant.objects.filter(
+                    product_id=OuterRef("pk"),
+                    is_active=True,
+                    price__gte=0,
+                    inventory_balance__available_quantity__gt=0,
+                )
+                queryset = queryset.filter(~Exists(in_stock))
 
         queryset = queryset.filter(Exists(sellable))
 
@@ -265,7 +286,7 @@ class PublicProductDetailView(APIView):
         images = [
             {
                 "id": img.pk,
-                "url": image_url(img.storage_key),
+                "url": public_image_url(img),
                 "alt_text": img.alt_text,
                 "sort_order": img.sort_order,
             }
