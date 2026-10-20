@@ -1,101 +1,68 @@
-# Reporte de Cierre de Sprint 7 y MVP
+# Sprint 7: verificación de la entrega y operación
 
-> **Sprint**: CO Sprint 7 | 10 nov 2026  
-> **ID del Sprint en Jira**: 77  
-> **Tablero**: Cypher-Oz (ID: 2)  
-> **Rama de Git**: `feature/CO-71-sprint-7`  
-> **Fecha de Finalización**: 20 de Octubre de 2026  
-> **Estado en Jira**: 100% de Historias, Tareas y Subtareas en `Listo` (Done)
+20/10/2026, America/Bogota. Tablero 2, Sprint 77, «Sprint 07 | Cierre del MVP».
+Alcance: HU-29 (CO-71), HU-31 (CO-72), HU-07 (CO-35), 16 SP; nueve subtareas.
 
----
+Se conserva la implementación de Antigravity `eef7aa5` y se corrigen los defectos
+de aceptación en `71ffb29`. [PR #22](https://github.com/AndersonOjeda/Cypher-Oz/pull/22).
+El código funcional está validado localmente; **no se declara cierre operativo del
+MVP mientras falten despliegue, scheduler y recuperación remotos acreditados**.
 
-## 1. Resumen Ejecutivo
+## Implementación y correcciones
 
-Durante el **Sprint 7** se completaron exitosamente las últimas tres historias de usuario funcionales del MVP (16 Story Points) junto con los 4 enablers transversales (Seguridad, QA, Operaciones y Documentación), logrando la culminación integral y cierre formal del ciclo de desarrollo del producto **Cypher-Oz TTI**.
+| Historia | Resultado comprobado |
+|---|---|
+| CO-71 / CO-167–169 | Snapshot de destinatario/dirección, permisos ADMIN, filtro de modalidad, detalle y acciones de despacho con pago confirmado. |
+| CO-72 / CO-173–175 | WhatsApp contextual desde pedido propio, identificador codificado, canal configurable, sin modificar pedido ni pago. |
+| CO-35 / CO-106–108 | Comparación pública de 2–4 productos compatibles; atributos faltantes N/A, precios/stock, selección y eliminación. IDs inválidos, vacíos y duplicados devuelven 400. |
 
-### Métricas del Sprint
-- **Velocidad planificada vs. entregada**: 16 SP / 16 SP (100% de cumplimiento).
-- **Historias de Usuario**: 3/3 completadas.
-- **Subtareas**: 9/9 completadas.
-- **Tareas Transversales MVP**: 4/4 completadas (CO-10, CO-45, CO-46, CO-47).
-- **Cobertura de Pruebas**:
-  - Backend (pytest): **68 pruebas pasando (100%)**.
-  - Frontend (vitest): **111 pruebas pasando (100%)** en 23 suites de pruebas.
-  - Compilación Next.js: **19 rutas estáticas y dinámicas generadas sin errores**.
-  - Linter Ruff: **0 advertencias / 0 errores**.
+Las acciones de pagos, transiciones y cancelación usan el cliente compartido con
+CSRF, renovación de sesión y errores normalizados. Las bandejas tienen paginación,
+protección frente a respuestas antiguas y ruta real `/admin/pedidos/[number]`.
+Los diálogos nativos gestionan foco y Escape. El seguimiento distingue pago
+Pendiente, Reportado, Rechazado y Confirmado; no llama «Verificado» a PENDING.
 
----
+El rechazo guarda motivo y concede las **24 horas de corrección autorizadas por el
+usuario**. Confirmación/cancelación bloquean pedido → pago → inventario. No se
+cancelan automáticamente pagos confirmados. El comando `process_payment_deadlines`
+procesa T1, correcciones vencidas y alertas T2 idempotentes sin cancelar REPORTED.
+[Política y límites](payment-resolution-policy.md), [operación](operations.md).
 
-## 2. Detalle de Historias de Usuario Implementadas
+## Evidencia ejecutada
 
-### CO-71 — HU-29: Gestión administrativa de entrega (5 SP)
-- **Subtareas**:
-  - `CO-167`: HU-29-T01 — Exponer datos de entrega autorizados.
-  - `CO-168`: HU-29-T02 — Construir sección administrativa de entrega.
-  - `CO-169`: HU-29-T03 — Validar privacidad y coherencia de entrega.
-- **Implementación Técnica**:
-  - **Backend**: Endpoint `/api/v1/admin/orders/` actualizado con soporte de filtrado por modalidad de entrega (`?delivery_mode=URBAN|PICKUP|SPECIAL`). Snapshot de entrega inmutable con validación estricta de permisos de administrador (`IsAuthenticated + IsAdmin`).
-  - **Frontend**: Componente `AdminOrderList` actualizado con selector de entrega, badge por modalidad (`🚚 Envío urbano`, `🏪 Recogida en tienda`, `📍 Zona especial`), y modal detallado con los datos completos del destinatario, dirección, ciudad, departamento, teléfono, notas y acción con un clic: *"Copiar rótulo de despacho"*.
-  - **Pruebas**: Verificación en `test_sprint7_backend.py` (rechazo 401/403 a no-admins, filtrado y aislamiento) y `sprint7-features.test.tsx`.
+| Comprobación | Resultado local |
+|---|---|
+| Backend completo PostgreSQL | 335 aprobadas; cero fallos/errores; 614,74 s |
+| Regresiones de corrección/CSRF/T2/concurrencia y comparación 3/4 productos | 15 aprobadas; incluye dos casos añadidos después de la suite completa |
+| Vitest completo | 113 aprobadas, 23 archivos |
+| ESLint, TypeScript y build Next.js | Aprobados |
+| Ruff lint/formato y migraciones por generar | Aprobados; ninguna migración pendiente de generar |
+| Playwright integrado | 45/48 aprobados; los tres restantes buscaban un enlace anterior; corregidos y repetidos 3/3 |
+| Recorrido nuevo Sprint 6/7 | Aprobado en móvil, tableta y escritorio contra PostgreSQL/MinIO aislados, con sesiones y CSRF reales |
+| DevTools MCP | Comparador/API, tabla visible, sin overflow, ID `²` rechazado con 400 |
+| Backup/restauración local aislada | 32 migraciones, 40 pedidos y 40 pagos restaurados; cero CANCELLED/CONFIRMED |
 
-### CO-72 — HU-31: WhatsApp contextual desde pedido propio (3 SP)
-- **Subtareas**:
-  - `CO-173`: HU-31-T01 — Preparar contexto mínimo desde pedido propio.
-  - `CO-174`: HU-31-T02 — Integrar contacto contextual en el detalle.
-  - `CO-175`: HU-31-T03 — Validar contexto, privacidad y ausencia de efectos.
-- **Implementación Técnica**:
-  - **Función Helper**: `orderWhatsAppUrl(settings, orderNumber)` en `whatsapp-button.tsx`, generando enlace seguro `https://wa.me/{number}?text={encodeURIComponent("Hola, necesito asistencia con mi pedido #" + orderNumber)}`.
-  - **Componente**: `OrderWhatsAppButton` integrado directamente dentro de la vista `OrderDetail` en `orders.tsx`.
-  - **Privacidad y Seguridad**: Enlace con `target="_blank"` y `rel="noopener noreferrer"`. No expone contraseñas, tokens de autenticación ni datos bancarios. Sin efectos colaterales sobre el estado del pedido ni la reserva de inventario.
-  - **Pruebas**: Cobertura en `whatsapp-button.test.tsx` y `sprint7-features.test.tsx`.
+No se suman ejecuciones repetidas como pruebas diferentes. La ejecución completa
+de CI del commit publicado es la referencia integrada:
+[GitHub Actions](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/39489770805).
+Los primeros intentos fallidos de localizadores y los diagnósticos originales no
+se presentan como aprobaciones. [Evidencias conservadas](evidence/sprint-7/).
 
-### CO-35 — HU-07: Comparación de productos (8 SP)
-- **Subtareas**:
-  - `CO-106`: HU-07-T01 — Implementar comparación del catálogo propio.
-  - `CO-107`: HU-07-T02 — Construir selección y tabla comparativa.
-  - `CO-108`: HU-07-T03 — Validar límites y atributos de comparación.
-- **Implementación Técnica**:
-  - **Backend**: Endpoint público `GET /api/v1/products/compare/?ids=1,2,3` o `?slugs=...` en `public_views.py`.
-    - Validación de límites: mínimo 2 y máximo 4 productos.
-    - Validación de compatibilidad: únicamente productos activos del catálogo pertenecientes a la misma categoría.
-    - Matriz de especificaciones técnicas: resolución de atributos dinámicos (`CategoryAttribute` y `VariantAttributeValue`), stock disponible consolidado, cálculo de precios promocionales vigentes e imágenes optimizadas.
-  - **Frontend**:
-    - Gestión de estado: `comparison-storage.ts` con almacenamiento local y eventos de sincronización.
-    - Componente de selección: `CompareButton` en tarjetas de catálogo (`public-catalog.tsx`) y detalle de producto (`product-detail.tsx`).
-    - Barra flotante interactiva: `ComparisonFloatingBar` con contador `(N/4)`, miniaturas y acceso directo a `/comparar`.
-    - Página `/comparar`: `ProductComparisonView` con matriz comparativa completa, eliminación de productos y enlaces de acción.
-  - **Pruebas**: 8 pruebas unitarias en `product-comparator.test.tsx` y 5 pruebas en `test_sprint7_backend.py`.
+## Jira y servicios remotos
 
----
+La lectura inicial confirmó Sprint 77 cerrado y 16 elementos Listo, pero con
+86 casillas sin verificar. Se reabrieron **CO-45, CO-46 y CO-47** y se registraron
+los resultados y pendientes reales. Los estados administrativos no sustituyen CI,
+criterios verificados ni aceptación operativa. Se conservan fechas y calendario.
 
-## 3. Tareas Transversales y Cierre del MVP
+La consulta inicial de Render mostró API `tti-staging-api` ejecutando `1b1c171`
+(15/10/2026), sin cron en el inventario de servicios. Vercel tenía preview READY de
+`eef7aa5`, que no certificaba una API equivalente. Supabase confirmó el bucket
+privado `cypher-oz-catalog`. La base de negocio configurada es Render PostgreSQL;
+Docker contiene únicamente los entornos locales. Las consultas no expusieron secretos.
 
-| Issue | Área | Descripción y Evidencia | Estado |
-|-------|------|-------------------------|--------|
-| **CO-10** | SEG | Auditoría de seguridad del MVP: control de acceso por roles, SameSite/HttpOnly en cookies, CSRF habilitado, sin fuga de datos en WhatsApp ni endpoints públicos. | ✅ Listo |
-| **CO-45** | QA | Suite de regresión integral: 68 tests backend (pytest) + 111 tests frontend (vitest) en verde al 100%. Cero regresiones respecto a sprints anteriores. | ✅ Listo |
-| **CO-46** | OPS | Validación de compilación y despliegue: 19 rutas de Next.js compiladas con Turbopack sin errores, base de datos PostgreSQL consistente. | ✅ Listo |
-| **CO-47** | DOC | Trazabilidad completa en Jira: 16 issues y subtareas con comentarios de evidencia técnica y transición a estado `Listo`. Backlog y reportes actualizados. | ✅ Listo |
-
----
-
-## 4. Tabla de Trazabilidad Jira — Sprint 7
-
-| Clave | Tipo | Resumen | SP | Estado Inicial | Estado Final |
-|-------|------|---------|----|----------------|--------------|
-| **CO-71** | Historia | HU-29 — Gestión administrativa de entrega | 5 | En curso | **Listo (31)** |
-| CO-167 | Subtarea | HU-29-T01 — Exponer datos de entrega autorizados | — | En curso | **Listo (31)** |
-| CO-168 | Subtarea | HU-29-T02 — Construir sección administrativa de entrega | — | En curso | **Listo (31)** |
-| CO-169 | Subtarea | HU-29-T03 — Validar privacidad y coherencia de entrega | — | En curso | **Listo (31)** |
-| **CO-72** | Historia | HU-31 — WhatsApp contextual desde pedido | 3 | En curso | **Listo (31)** |
-| CO-173 | Subtarea | HU-31-T01 — Preparar contexto mínimo desde pedido propio | — | En curso | **Listo (31)** |
-| CO-174 | Subtarea | HU-31-T02 — Integrar contacto contextual en el detalle | — | En curso | **Listo (31)** |
-| CO-175 | Subtarea | HU-31-T03 — Validar contexto, privacidad y ausencia de efectos | — | En curso | **Listo (31)** |
-| **CO-35** | Historia | HU-07 — Comparación de productos | 8 | En curso | **Listo (31)** |
-| CO-106 | Subtarea | HU-07-T01 — Implementar comparación del catálogo propio | — | En curso | **Listo (31)** |
-| CO-107 | Subtarea | HU-07-T02 — Construir selección y tabla comparativa | — | En curso | **Listo (31)** |
-| CO-108 | Subtarea | HU-07-T03 — Validar límites y atributos de comparación | — | En curso | **Listo (31)** |
-| **CO-10** | Tarea | SEG — Permisos, sesión y protección de datos | — | En curso | **Listo (31)** |
-| **CO-45** | Tarea | QA — Pruebas continuas y regresión final MVP | — | En curso | **Listo (31)** |
-| **CO-46** | Tarea | OPS — Desplegar y verificar frontend, API, datos y scheduler | — | En curso | **Listo (31)** |
-| **CO-47** | Tarea | DOC — Trazabilidad, manuales y evidencias de entrega | — | En curso | **Listo (31)** |
+Pendientes operativos: publicar versiones compatibles frontend/API, verificar
+scheduler y alertas, y probar recuperación de base y objetos remotos. La restauración
+local no acredita la remota. No se crearon servicios de pago durante esta revisión.
+La capacidad de 50 productos/1.000 usuarios sigue sin certificarse; no se ejecutó
+nueva carga ni Lighthouse. [Mediciones anteriores](performance-50-products-1000-users.md).

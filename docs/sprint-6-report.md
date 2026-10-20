@@ -1,5 +1,21 @@
 # Informe de Cierre: Sprint 6
 
+## Actualización de correcciones, 20/10/2026
+
+La entrega de Antigravity se conserva y sus bloqueantes funcionales se corrigen en
+`71ffb29`, [PR #22](https://github.com/AndersonOjeda/Cypher-Oz/pull/22): cliente con CSRF,
+motivo de rechazo persistido, corrección en 24 horas autorizada por el usuario,
+vencimientos T1/T2, bloqueo consistente pedido → pago y regresiones PostgreSQL de
+confirmación/cancelación. La cancelación de pagos confirmados exige conciliación
+manual. Las bandejas ahora tienen paginación, detalle y diálogos accesibles.
+
+Resultados, XML, CI y pendientes remotos se mantienen en un único
+[informe vigente de verificación](sprint-7-report.md). Las cifras y afirmaciones
+del informe inicial inferior son históricas. Cerrar funcionalidad local no acredita
+scheduler ni recuperación remotos ni aceptación integral del MVP.
+
+---
+
 Fecha: 20 de octubre de 2026, America/Bogota.  
 Proyecto: Cypher-Oz (TTI).  
 Tablero: CO (2), Sprint 76, «CO Sprint 6 | 3 nov 2026».  

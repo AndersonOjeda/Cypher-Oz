@@ -20,6 +20,21 @@ import {
   type ComparisonResponse,
 } from "./product-comparator";
 
+const navigationState = vi.hoisted(() => ({ ids: "1,2" }));
+beforeEach(() => { navigationState.ids = "1,2"; });
+
+it("hides the previous comparison when a new query fails", async () => {
+  vi.stubGlobal("fetch", vi.fn()
+    .mockResolvedValueOnce(new Response(JSON.stringify(mockComparisonData)))
+    .mockResolvedValueOnce(new Response(JSON.stringify({detail: "Product unavailable"}), {status: 404})));
+  const view = render(<ProductComparisonView />);
+  await screen.findByRole("table");
+  navigationState.ids = "1,9999";
+  view.rerender(<ProductComparisonView />);
+  await screen.findByText("Product unavailable");
+  expect(screen.queryByRole("table")).not.toBeInTheDocument();
+});
+
 // Mock router and navigation
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -27,7 +42,7 @@ vi.mock("next/navigation", () => ({
     replace: vi.fn(),
   }),
   useSearchParams: () => ({
-    get: (param: string) => (param === "ids" ? "1,2" : null),
+    get: (param: string) => (param === "ids" ? navigationState.ids : null),
   }),
 }));
 

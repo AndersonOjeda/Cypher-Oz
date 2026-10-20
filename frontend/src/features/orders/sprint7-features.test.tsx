@@ -252,3 +252,4 @@ describe("Sprint 7 Frontend Acceptance Tests", () => {
     });
   });
 });
+

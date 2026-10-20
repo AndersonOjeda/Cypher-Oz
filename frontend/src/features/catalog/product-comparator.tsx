@@ -313,7 +313,7 @@ export function ProductComparisonView() {
       )}
 
       {/* Comparison Matrix Table */}
-      {data && data.products.length >= 2 && !loading && (
+      {data && data.products.length >= 2 && !loading && !error && (
         <div className="overflow-x-auto bg-white border rounded-xl shadow-sm">
           <table className="w-full border-collapse text-sm text-left">
             <thead>

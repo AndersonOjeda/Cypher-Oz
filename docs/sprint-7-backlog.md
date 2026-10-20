@@ -3,7 +3,8 @@
 > **Sprint 7 | CO Sprint 7 | 10 nov 2026**  
 > **Velocidad objetivo**: 16 SP funcionales + Tareas transversales  
 > **Historias**: 3 · **Tareas transversales**: 4 · **Subtareas**: 9  
-> **Estado del Sprint**: ✅ **COMPLETADO (100%)**
+> **Estado del Sprint**: Cerrado en Jira; **cierre técnico y del MVP no aceptado**.
+> Véase la [revisión independiente, resultados y pendientes](sprint-7-report.md).
 
 ---
 
@@ -15,9 +16,9 @@
 | **CO-72** | Historia | HU-31 — WhatsApp contextual desde pedido | 3 | 🟠 High | 🟢 Listo | EP-12 (CO-54) |
 | **CO-35** | Historia | HU-07 — Comparación de productos | 8 | 🟡 Medium | 🟢 Listo | EP-03 (CO-48) |
 | **CO-10** | Tarea | SEG — Permisos, sesión y protección de datos | — | 🔴 Highest | 🟢 Listo | EP-01 (CO-25) |
-| **CO-45** | Tarea | QA — Pruebas continuas y regresión final MVP | — | 🔴 Highest | 🟢 Listo | EP-01 (CO-25) |
-| **CO-46** | Tarea | OPS — Desplegar y verificar frontend, API, datos y scheduler | — | 🔴 Highest | 🟢 Listo | EP-01 (CO-25) |
-| **CO-47** | Tarea | DOC — Trazabilidad, manuales y evidencias de entrega | — | 🔴 Highest | 🟢 Listo | EP-01 (CO-25) |
+| **CO-45** | Tarea | QA — Pruebas continuas y regresión final MVP | — | 🔴 Highest | 🟢 En curso | EP-01 (CO-25) |
+| **CO-46** | Tarea | OPS — Desplegar y verificar frontend, API, datos y scheduler | — | 🔴 Highest | 🟢 En curso | EP-01 (CO-25) |
+| **CO-47** | Tarea | DOC — Trazabilidad, manuales y evidencias de entrega | — | 🔴 Highest | 🟢 En curso | EP-01 (CO-25) |
 
 ---
 
@@ -83,6 +84,7 @@
 ## Tareas transversales del MVP
 
 - **CO-10 (SEG)**: Auditoría y endurecimiento de endpoints, validación de sesiones, cookies HttpOnly, SameSite, CSRF y headers de seguridad. ✅ **Listo**
-- **CO-45 (QA)**: Ejecución de suites de pruebas E2E, cobertura unitaria y regresión integral del sistema completo (68 tests backend + 111 tests frontend). ✅ **Listo**
-- **CO-46 (OPS)**: Verificación de despliegue, rutas compiladas en Next.js (19 rutas), compatibilidad con PostgreSQL y preparación de entorno. ✅ **Listo**
-- **CO-47 (DOC)**: Documentación de arquitectura final, contratos de API, manuales de administración y evidencias de aceptación del cliente. ✅ **Listo**
+- **CO-45 (QA)**: En curso; ver resultados y pendientes en [el informe vigente](sprint-7-report.md).
+- **CO-46 (OPS)**: En curso; ver resultados y pendientes en [el informe vigente](sprint-7-report.md).
+- **CO-47 (DOC)**: En curso; ver resultados y pendientes en [el informe vigente](sprint-7-report.md).
+

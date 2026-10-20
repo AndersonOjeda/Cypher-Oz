@@ -1,0 +1,14 @@
+<testsuites id="" name="" tests="3" failures="0" skipped="0" errors="0" time="57.166089">
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-10-20T20:12:46.475Z" hostname="mobile" tests="1" failures="0" skipped="0" time="13.88" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="13.88">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-10-20T20:12:46.475Z" hostname="tablet" tests="1" failures="0" skipped="0" time="14.116" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="14.116">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-10-20T20:12:46.475Z" hostname="desktop" tests="1" failures="0" skipped="0" time="13.769" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="13.769">
+</testcase>
+</testsuite>
+</testsuites>

@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-20",
+  "implementation": "71ffb2921e30d848e1396a8e8135a4244cc59128",
+  "antigravity_base": "eef7aa5e82578d99233a48901c9d78db6bac0b67",
+  "pull_request": "https://github.com/AndersonOjeda/Cypher-Oz/pull/22",
+  "local": {
+    "backend_full": {
+      "passed": 335,
+      "failed": 0,
+      "seconds": 614.74
+    },
+    "backend_completion": {
+      "passed": 15,
+      "failed": 0,
+      "includes_later_added_cases": 2
+    },
+    "frontend": {
+      "passed": 113,
+      "failed": 0
+    },
+    "browser": {
+      "suite_passed": 45,
+      "suite_outdated_locator_errors": 3,
+      "corrected_retry_passed": 3,
+      "new_acceptance_flow_projects": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ]
+    },
+    "lint": true,
+    "format": true,
+    "typecheck": true,
+    "build": true,
+    "wireframes": 28,
+    "devtools": {
+      "comparison_table_visible": true,
+      "horizontal_overflow": false,
+      "malformed_id_status": 400
+    },
+    "isolated_restore": {
+      "migrations": 32,
+      "orders": 40,
+      "payments": 40,
+      "cancelled_confirmed_pairs": 0
+    }
+  },
+  "ci": {
+    "run": 39489770805,
+    "status": "in_progress"
+  },
+  "remote_observed": {
+    "render_api_commit": "1b1c17149d746a75a54ae53119e82c739d274865",
+    "vercel_preview_commit": "eef7aa5e82578d99233a48901c9d78db6bac0b67",
+    "storage_bucket": "cypher-oz-catalog",
+    "storage_public": false,
+    "resend_connected_account_domains": 0,
+    "health_http": 200,
+    "catalog_http": 200
+  },
+  "pending": [
+    "Integrated delivery CI and publication",
+    "Remote scheduler activation and alerts",
+    "Remote database and object recovery test",
+    "Effective transactional email sender verification",
+    "50 products / 1000 users capacity certification"
+  ],
+  "jira_reopened": [
+    "CO-45",
+    "CO-46",
+    "CO-47"
+  ]
+}

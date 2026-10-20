@@ -1,5 +1,10 @@
 # Auditoría independiente del Sprint 6
 
+> Actualización posterior: los bloqueantes funcionales descritos en esta auditoría
+> se corrigieron en PR #22. Los resultados vigentes están en el
+> [informe consolidado de Sprint 7](sprint-7-report.md). Se conserva el diagnóstico
+> inicial como historial; no describe el estado funcional de la rama corregida.
+
 ## Revisión independiente posterior: cierre técnico no aceptado
 
 Comprobación del 20/10/2026 sobre la entrega `362f333` (funcional `68977d9`).
