@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="18" time="38.455" timestamp="2026-10-20T10:31:08.585867-05:00" hostname="DESKTOP-TAOVHM8"><testcase classname="tests.test_order_expiration" name="test_expiry_command_dry_run_then_single_atomic_restitution" time="3.699"><failure message="assert datetime.datetime(2026, 10, 20, 15, 31, 11, 371090, tzinfo=datetime.timezone.utc) == datetime.datetime(2026, 10, 21, 3, 31, 12, 351002, tzinfo=datetime.timezone.utc)&#10; +  where datetime.datetime(2026, 10, 20, 15, 31, 11, 371090, tzinfo=datetime.timezone.utc) = &lt;Payment: Payment object (1)&gt;.report_deadline_at&#10; +    where &lt;Payment: Payment object (1)&gt; = &lt;Order: Order object (1)&gt;.payment">sprint5_setup = {'user': &lt;User: sprint5_client@test.com&gt;, 'other_user': &lt;User: sprint5_other@test.com&gt;, 'admin': &lt;User: sprint5_admin@test.com&gt;, 'variant': &lt;Variant: Variant object (1)&gt;, ...}
+
+    def test_expiry_command_dry_run_then_single_atomic_restitution(sprint5_setup):
+        order = due_order(sprint5_setup)
+        original_deadline = order.payment.report_deadline_at
+        # Future configuration must not postpone an existing payment's T1.
+        StoreSetting.objects.filter(key="unpaid_order_timeout_hours").update(value=999)
+        options = {"actor_email": sprint5_setup["admin"].email}
+        output = StringIO()
+        call_command("expire_unpaid_orders", dry_run=True, stdout=output, **options)
+        assert json.loads(output.getvalue())["candidates"] == 1
+        order.refresh_from_db()
+        assert order.status == "PENDING"
+        for expected in [1, 0]:
+            output = StringIO()
+            call_command("expire_unpaid_orders", stdout=output, **options)
+            assert json.loads(output.getvalue())["cancelled"] == expected
+        order.refresh_from_db()
+        order.payment.refresh_from_db()
+        assert order.status == "CANCELLED"
+        assert order.payment.status == "PENDING"
+&gt;       assert order.payment.report_deadline_at == original_deadline
+E       assert datetime.datetime(2026, 10, 20, 15, 31, 11, 371090, tzinfo=datetime.timezone.utc) == datetime.datetime(2026, 10, 21, 3, 31, 12, 351002, tzinfo=datetime.timezone.utc)
+E        +  where datetime.datetime(2026, 10, 20, 15, 31, 11, 371090, tzinfo=datetime.timezone.utc) = &lt;Payment: Payment object (1)&gt;.report_deadline_at
+E        +    where &lt;Payment: Payment object (1)&gt; = &lt;Order: Order object (1)&gt;.payment
+
+tests\test_order_expiration.py:52: AssertionError</failure></testcase><testcase classname="tests.test_order_expiration" name="test_t1_does_not_resolve_other_states_or_t2[PENDING-REPORTED]" time="1.851" /><testcase classname="tests.test_order_expiration" name="test_t1_does_not_resolve_other_states_or_t2[PENDING-CONFIRMED]" time="2.012" /><testcase classname="tests.test_order_expiration" name="test_t1_does_not_resolve_other_states_or_t2[PENDING-REJECTED]" time="1.904" /><testcase classname="tests.test_order_expiration" name="test_t1_does_not_resolve_other_states_or_t2[PREPARING-PENDING]" time="1.902" /><testcase classname="tests.test_order_expiration" name="test_t1_does_not_resolve_other_states_or_t2[SHIPPED-CONFIRMED]" time="1.922" /><testcase classname="tests.test_order_expiration" name="test_t1_does_not_resolve_other_states_or_t2[DELIVERED-CONFIRMED]" time="1.895" /><testcase classname="tests.test_order_expiration" name="test_t1_does_not_resolve_other_states_or_t2[CANCELLED-PENDING]" time="2.094" /><testcase classname="tests.test_order_expiration" name="test_expiry_uses_inclusive_persisted_boundary" time="2.025" /><testcase classname="tests.test_order_expiration" name="test_expiry_rejects_non_admin_and_inactive_audit_actor" time="1.938" /><testcase classname="tests.test_order_expiration" name="test_expiry_batch_rejects_invalid_limits[0]" time="1.906" /><testcase classname="tests.test_order_expiration" name="test_expiry_batch_rejects_invalid_limits[-1]" time="1.894" /><testcase classname="tests.test_order_expiration" name="test_expiry_batch_rejects_invalid_limits[1001]" time="1.952" /><testcase classname="tests.test_order_expiration" name="test_expiry_batch_rejects_invalid_limits[True]" time="1.914" /><testcase classname="tests.test_order_expiration" name="test_failed_restitution_rolls_back_cancellation_and_command_reports_failure" time="2.050" /><testcase classname="tests.test_order_expiration" name="test_failure_after_inventory_write_rolls_back_everything" time="1.915" /><testcase classname="tests.test_order_expiration" name="test_report_and_real_expiry_runner_serialize_without_lost_stock[report]" time="2.348" /><testcase classname="tests.test_order_expiration" name="test_report_and_real_expiry_runner_serialize_without_lost_stock[expiration]" time="2.660" /></testsuite></testsuites>

@@ -1,0 +1,4 @@
+Script ran on page and returned:
+```json
+{"url":"http://localhost:3001/catalogo","title":"Catálogo de Productos · TTI Tienda Tecnológica Inteligente","heading":"Catálogo de Productos","status":200,"count":59,"alerts":[],"horizontalOverflow":false}
+```

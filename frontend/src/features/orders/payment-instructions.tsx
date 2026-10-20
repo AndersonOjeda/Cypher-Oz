@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { Send } from "lucide-react";
+import { Copy, Check, Send } from "lucide-react";
 import { api } from "@/services/api";
 import { errorText, useResource } from "@/features/catalog/shared";
 import { cop, type Payment } from "./types";
@@ -13,6 +13,8 @@ export function PaymentInstructions({ number }: { number: string }) {
   const [reported, setReported] = useState<Payment | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState("");
   const submitting = useRef(false);
   const result = useResource<{
     instructions: string;
@@ -23,6 +25,22 @@ export function PaymentInstructions({ number }: { number: string }) {
     payment: Payment;
   }>(`/orders/${encodeURIComponent(number)}/payment-instructions/`, revision);
   const payment = reported ?? result.data?.payment;
+
+  async function copyInstructions() {
+    setCopied(false);
+    setCopyError("");
+    if (result.data?.instructions) {
+      try {
+        await navigator.clipboard.writeText(result.data.instructions);
+        setCopied(true);
+      } catch {
+        setCopyError(
+          "No se pudieron copiar las instrucciones. Selecciona y copia el texto manualmente.",
+        );
+      }
+    }
+  }
+
   async function report(event: React.FormEvent) {
     event.preventDefault();
     if (submitting.current) return;
@@ -47,20 +65,62 @@ export function PaymentInstructions({ number }: { number: string }) {
       setBusy(false);
     }
   }
+
   return (
     <section className="purchase-shell order-detail">
       <h1>Instrucciones de pago</h1>
       <Link href={`/pedidos/${number}`}>Volver al pedido</Link>
       {result.loading && <p role="status">Cargando instrucciones...</p>}
       {result.error && <p role="alert">{result.error}</p>}
+      {copyError && <p role="alert">{copyError}</p>}
       {result.data && (
         <>
           <p>Pedido {number}</p>
           <p>
             Total: <strong>{cop(result.data.total)}</strong>
           </p>
-          {result.data.configured ? (
-            <p className="payment-instructions">{result.data.instructions}</p>
+          {result.data.order_status === "CANCELLED" ? (
+            <p role="status">
+              Este pedido está cancelado. No realices transferencias para este
+              pedido. Contacta con la tienda si ya transferiste dinero.
+            </p>
+          ) : payment?.status === "PENDING" && !payment.report_window_active ? (
+            <p role="status">
+              El plazo de este pedido venció. No realices transferencias sin
+              consultar antes con la tienda.
+            </p>
+          ) : result.data.configured ? (
+            <div style={{ marginBottom: "1rem" }}>
+              <p className="payment-instructions">{result.data.instructions}</p>
+              <button
+                type="button"
+                onClick={copyInstructions}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "12px",
+                  padding: "6px 12px",
+                  borderRadius: "4px",
+                  border: "1px solid #cbd5e1",
+                  background: "#f8fafc",
+                  color: "#334155",
+                  cursor: "pointer",
+                  marginTop: "6px",
+                }}
+              >
+                {copied ? (
+                  <>
+                    <Check size={14} aria-hidden="true" /> ¡Instrucciones
+                    copiadas!
+                  </>
+                ) : (
+                  <>
+                    <Copy size={14} aria-hidden="true" /> Copiar instrucciones
+                  </>
+                )}
+              </button>
+            </div>
           ) : (
             <p role="status">
               La tienda aún no ha configurado las instrucciones de pago.

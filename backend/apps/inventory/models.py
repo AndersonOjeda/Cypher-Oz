@@ -39,6 +39,9 @@ class StockMovement(models.Model):
     reason = models.CharField(max_length=1000)
     actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
+    reversal_of = models.OneToOneField(
+        "self", null=True, blank=True, on_delete=models.PROTECT, related_name="reversal"
+    )
 
     class Meta:
         db_table = "stock_movements"

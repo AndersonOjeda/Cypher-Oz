@@ -26,6 +26,56 @@ const instructions = {
 };
 beforeEach(() => vi.resetAllMocks());
 
+test.each([
+  { order_status: "CANCELLED", report_window_active: true },
+  { order_status: "PENDING", report_window_active: false },
+])(
+  "does not invite payment for an expired or cancelled order: %o",
+  async (state) => {
+    vi.mocked(api).mockResolvedValueOnce({
+      ...instructions,
+      configured: true,
+      instructions: "Synthetic account details",
+      order_status: state.order_status,
+      payment: { ...payment, report_window_active: state.report_window_active },
+    });
+    render(<PaymentInstructions number="order-1" />);
+    expect(
+      await screen.findByText(/no realices transferencias/i),
+    ).toBeVisible();
+    expect(
+      screen.queryByText("Synthetic account details"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Copiar instrucciones" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Reportar pago" }),
+    ).not.toBeInTheDocument();
+  },
+);
+
+test("clipboard denial explains how to copy manually without reporting a payment", async () => {
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: { writeText: vi.fn().mockRejectedValue(new Error("denied")) },
+  });
+  vi.mocked(api).mockResolvedValueOnce({
+    ...instructions,
+    configured: true,
+    instructions: "Synthetic payment instructions",
+  });
+  render(<PaymentInstructions number="order-1" />);
+  await userEvent.click(
+    await screen.findByRole("button", { name: "Copiar instrucciones" }),
+  );
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "copia el texto manualmente",
+  );
+  expect(api).toHaveBeenCalledTimes(1);
+  expect(screen.getByRole("button", { name: "Reportar pago" })).toBeEnabled();
+});
+
 test("reports reference without presenting funds as confirmed", async () => {
   vi.mocked(api)
     .mockResolvedValueOnce(instructions)
@@ -42,9 +92,7 @@ test("reports reference without presenting funds as confirmed", async () => {
     await screen.findByLabelText("Referencia del pago"),
     "REF-123",
   );
-  await userEvent.click(
-    screen.getByRole("button", { name: "Reportar pago" }),
-  );
+  await userEvent.click(screen.getByRole("button", { name: "Reportar pago" }));
   expect(
     await screen.findByText(
       "Pendiente de revisión. Fondos aún no confirmados.",
@@ -85,12 +133,8 @@ test("a failed request preserves the reference and permits retry", async () => {
     await screen.findByLabelText("Referencia del pago"),
     "REF-123",
   );
-  await userEvent.click(
-    screen.getByRole("button", { name: "Reportar pago" }),
-  );
+  await userEvent.click(screen.getByRole("button", { name: "Reportar pago" }));
   expect(await screen.findByText("Sin conexión")).toBeVisible();
   expect(screen.getByLabelText("Referencia del pago")).toHaveValue("REF-123");
-  expect(
-    screen.getByRole("button", { name: "Reportar pago" }),
-  ).toBeEnabled();
+  expect(screen.getByRole("button", { name: "Reportar pago" })).toBeEnabled();
 });
