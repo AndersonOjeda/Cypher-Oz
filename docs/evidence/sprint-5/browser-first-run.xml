@@ -1,0 +1,272 @@
+<testsuites id="" name="" tests="45" failures="3" skipped="0" errors="0" time="273.35249300000004">
+<testsuite name="sprint1-current.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="mobile" tests="3" failures="0" skipped="0" time="20.219" errors="0">
+<testcase name="HU-03 perfil y direcciones persisten, cambian principal y confirman eliminación" classname="sprint1-current.spec.ts" time="8.622">
+</testcase>
+<testcase name="HU-20 categorías y marcas: alta, duplicado, edición, actividad y borrado" classname="sprint1-current.spec.ts" time="6.491">
+</testcase>
+<testcase name="EN-01 y HU-30 configuración persistente y canal habilitable" classname="sprint1-current.spec.ts" time="5.106">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="mobile" tests="1" failures="0" skipped="0" time="16.388" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="16.388">
+</testcase>
+</testsuite>
+<testsuite name="sprint1.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="mobile" tests="3" failures="0" skipped="0" time="12.05" errors="0">
+<testcase name="registro, duplicado, credenciales, sesión persistente, permisos y logout" classname="sprint1.spec.ts" time="7.539">
+</testcase>
+<testcase name="WhatsApp configurado, responsive, accesible y sin cubrir CTA" classname="sprint1.spec.ts" time="2.219">
+</testcase>
+<testcase name="administrador autorizado y visitante rechazado" classname="sprint1.spec.ts" time="2.292">
+</testcase>
+</testsuite>
+<testsuite name="sprint2-current.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="mobile" tests="2" failures="0" skipped="0" time="2.394" errors="0">
+<testcase name="HU-32 solicita recuperación sin revelar si la cuenta existe" classname="sprint2-current.spec.ts" time="1.345">
+</testcase>
+<testcase name="HU-32 rechaza confirmación sin token" classname="sprint2-current.spec.ts" time="1.049">
+</testcase>
+</testsuite>
+<testsuite name="sprint2.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="mobile" tests="2" failures="0" skipped="0" time="11.328" errors="0">
+<testcase name="administrar catálogo completo con imágenes en almacenamiento real" classname="sprint2.spec.ts" time="10.558">
+</testcase>
+<testcase name="visitante no accede al administrador ni a datos del catálogo" classname="sprint2.spec.ts" time="0.77">
+</testcase>
+</testsuite>
+<testsuite name="sprint3.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="mobile" tests="2" failures="0" skipped="0" time="11.742" errors="0">
+<testcase name="variantes estándar, atributos, precio exacto y disponibilidad persisten" classname="sprint3.spec.ts" time="8.863">
+</testcase>
+<testcase name="visitante y cliente no gestionan variantes, precios ni atributos" classname="sprint3.spec.ts" time="2.879">
+</testcase>
+</testsuite>
+<testsuite name="sprint4.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="mobile" tests="1" failures="0" skipped="0" time="14.216" errors="0">
+<testcase name="Sprint 4: carrito real, autenticación tardía, cambios, entrega y privacidad" classname="sprint4.spec.ts" time="14.216">
+</testcase>
+</testsuite>
+<testsuite name="sprint5.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="mobile" tests="1" failures="1" skipped="0" time="1.586" errors="0">
+<testcase name="Sprint 5: instructions, persistent deadline, report and unique SALE" classname="sprint5.spec.ts" time="1.586">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-mobile\test-failed-1.png]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-mobile\error-context.md]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-mobile\trace.zip]]
+]]>
+</system-out>
+<failure message="{&quot;code&quot;:&quot;invalid&quot;,&quot;message&quot;:&quot;Revisa los datos ingresados.&quot;,&quot;details&quot;:{&quot;description&quot;:[&quot;Este campo es requerido.&quot;]}}" type="expect.toBe">
+<![CDATA[  [mobile] › sprint5.spec.ts:7:5 › Sprint 5: instructions, persistent deadline, report and unique SALE 
+
+    Error: {"code":"invalid","message":"Revisa los datos ingresados.","details":{"description":["Este campo es requerido."]}}
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 400
+
+      43 |         data,
+      44 |       });
+    > 45 |       expect(response.status(), await response.text()).toBe(201);
+         |                                                        ^
+      46 |       return response.json();
+      47 |     }
+      48 |     const category = await create("categories", {
+        at create (C:\Users\Anderson Ojeda\Downloads\Gestion de Proyectos Software\Cypher-Oz\.runtime\sprint5-review\frontend\e2e\sprint5.spec.ts:45:56)
+        at C:\Users\Anderson Ojeda\Downloads\Gestion de Proyectos Software\Cypher-Oz\.runtime\sprint5-review\frontend\e2e\sprint5.spec.ts:58:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-mobile\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+</testcase>
+</testsuite>
+<testsuite name="sprint1-current.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="tablet" tests="3" failures="0" skipped="0" time="16.196" errors="0">
+<testcase name="HU-03 perfil y direcciones persisten, cambian principal y confirman eliminación" classname="sprint1-current.spec.ts" time="6.556">
+</testcase>
+<testcase name="HU-20 categorías y marcas: alta, duplicado, edición, actividad y borrado" classname="sprint1-current.spec.ts" time="5.609">
+</testcase>
+<testcase name="EN-01 y HU-30 configuración persistente y canal habilitable" classname="sprint1-current.spec.ts" time="4.031">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="tablet" tests="1" failures="0" skipped="0" time="14.293" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="14.293">
+</testcase>
+</testsuite>
+<testsuite name="sprint1.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="tablet" tests="3" failures="0" skipped="0" time="11.854" errors="0">
+<testcase name="registro, duplicado, credenciales, sesión persistente, permisos y logout" classname="sprint1.spec.ts" time="7.683">
+</testcase>
+<testcase name="WhatsApp configurado, responsive, accesible y sin cubrir CTA" classname="sprint1.spec.ts" time="1.961">
+</testcase>
+<testcase name="administrador autorizado y visitante rechazado" classname="sprint1.spec.ts" time="2.21">
+</testcase>
+</testsuite>
+<testsuite name="sprint2-current.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="tablet" tests="2" failures="0" skipped="0" time="1.74" errors="0">
+<testcase name="HU-32 solicita recuperación sin revelar si la cuenta existe" classname="sprint2-current.spec.ts" time="0.995">
+</testcase>
+<testcase name="HU-32 rechaza confirmación sin token" classname="sprint2-current.spec.ts" time="0.745">
+</testcase>
+</testsuite>
+<testsuite name="sprint2.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="tablet" tests="2" failures="0" skipped="0" time="10.465" errors="0">
+<testcase name="administrar catálogo completo con imágenes en almacenamiento real" classname="sprint2.spec.ts" time="9.732">
+</testcase>
+<testcase name="visitante no accede al administrador ni a datos del catálogo" classname="sprint2.spec.ts" time="0.733">
+</testcase>
+</testsuite>
+<testsuite name="sprint3.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="tablet" tests="2" failures="0" skipped="0" time="11.559" errors="0">
+<testcase name="variantes estándar, atributos, precio exacto y disponibilidad persisten" classname="sprint3.spec.ts" time="8.346">
+</testcase>
+<testcase name="visitante y cliente no gestionan variantes, precios ni atributos" classname="sprint3.spec.ts" time="3.213">
+</testcase>
+</testsuite>
+<testsuite name="sprint4.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="tablet" tests="1" failures="0" skipped="0" time="12.098" errors="0">
+<testcase name="Sprint 4: carrito real, autenticación tardía, cambios, entrega y privacidad" classname="sprint4.spec.ts" time="12.098">
+</testcase>
+</testsuite>
+<testsuite name="sprint5.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="tablet" tests="1" failures="1" skipped="0" time="1.451" errors="0">
+<testcase name="Sprint 5: instructions, persistent deadline, report and unique SALE" classname="sprint5.spec.ts" time="1.451">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-tablet\test-failed-1.png]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-tablet\error-context.md]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-tablet\trace.zip]]
+]]>
+</system-out>
+<failure message="{&quot;code&quot;:&quot;invalid&quot;,&quot;message&quot;:&quot;Revisa los datos ingresados.&quot;,&quot;details&quot;:{&quot;description&quot;:[&quot;Este campo es requerido.&quot;]}}" type="expect.toBe">
+<![CDATA[  [tablet] › sprint5.spec.ts:7:5 › Sprint 5: instructions, persistent deadline, report and unique SALE 
+
+    Error: {"code":"invalid","message":"Revisa los datos ingresados.","details":{"description":["Este campo es requerido."]}}
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 400
+
+      43 |         data,
+      44 |       });
+    > 45 |       expect(response.status(), await response.text()).toBe(201);
+         |                                                        ^
+      46 |       return response.json();
+      47 |     }
+      48 |     const category = await create("categories", {
+        at create (C:\Users\Anderson Ojeda\Downloads\Gestion de Proyectos Software\Cypher-Oz\.runtime\sprint5-review\frontend\e2e\sprint5.spec.ts:45:56)
+        at C:\Users\Anderson Ojeda\Downloads\Gestion de Proyectos Software\Cypher-Oz\.runtime\sprint5-review\frontend\e2e\sprint5.spec.ts:58:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-tablet\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-tablet\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-tablet\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-tablet\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+</testcase>
+</testsuite>
+<testsuite name="sprint1-current.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="desktop" tests="3" failures="0" skipped="0" time="16.035" errors="0">
+<testcase name="HU-03 perfil y direcciones persisten, cambian principal y confirman eliminación" classname="sprint1-current.spec.ts" time="6.643">
+</testcase>
+<testcase name="HU-20 categorías y marcas: alta, duplicado, edición, actividad y borrado" classname="sprint1-current.spec.ts" time="5.392">
+</testcase>
+<testcase name="EN-01 y HU-30 configuración persistente y canal habilitable" classname="sprint1-current.spec.ts" time="4">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="desktop" tests="1" failures="0" skipped="0" time="13.985" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="13.985">
+</testcase>
+</testsuite>
+<testsuite name="sprint1.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="desktop" tests="3" failures="0" skipped="0" time="12.358" errors="0">
+<testcase name="registro, duplicado, credenciales, sesión persistente, permisos y logout" classname="sprint1.spec.ts" time="7.9">
+</testcase>
+<testcase name="WhatsApp configurado, responsive, accesible y sin cubrir CTA" classname="sprint1.spec.ts" time="2.162">
+</testcase>
+<testcase name="administrador autorizado y visitante rechazado" classname="sprint1.spec.ts" time="2.296">
+</testcase>
+</testsuite>
+<testsuite name="sprint2-current.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="desktop" tests="2" failures="0" skipped="0" time="1.778" errors="0">
+<testcase name="HU-32 solicita recuperación sin revelar si la cuenta existe" classname="sprint2-current.spec.ts" time="1.127">
+</testcase>
+<testcase name="HU-32 rechaza confirmación sin token" classname="sprint2-current.spec.ts" time="0.651">
+</testcase>
+</testsuite>
+<testsuite name="sprint2.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="desktop" tests="2" failures="0" skipped="0" time="11.148" errors="0">
+<testcase name="administrar catálogo completo con imágenes en almacenamiento real" classname="sprint2.spec.ts" time="10.251">
+</testcase>
+<testcase name="visitante no accede al administrador ni a datos del catálogo" classname="sprint2.spec.ts" time="0.897">
+</testcase>
+</testsuite>
+<testsuite name="sprint3.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="desktop" tests="2" failures="0" skipped="0" time="12.38" errors="0">
+<testcase name="variantes estándar, atributos, precio exacto y disponibilidad persisten" classname="sprint3.spec.ts" time="9.242">
+</testcase>
+<testcase name="visitante y cliente no gestionan variantes, precios ni atributos" classname="sprint3.spec.ts" time="3.138">
+</testcase>
+</testsuite>
+<testsuite name="sprint4.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="desktop" tests="1" failures="0" skipped="0" time="12.561" errors="0">
+<testcase name="Sprint 4: carrito real, autenticación tardía, cambios, entrega y privacidad" classname="sprint4.spec.ts" time="12.561">
+</testcase>
+</testsuite>
+<testsuite name="sprint5.spec.ts" timestamp="2026-10-20T13:30:20.248Z" hostname="desktop" tests="1" failures="1" skipped="0" time="1.504" errors="0">
+<testcase name="Sprint 5: instructions, persistent deadline, report and unique SALE" classname="sprint5.spec.ts" time="1.504">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-desktop\test-failed-1.png]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-desktop\error-context.md]]
+
+[[ATTACHMENT|..\..\..\frontend\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-desktop\trace.zip]]
+]]>
+</system-out>
+<failure message="{&quot;code&quot;:&quot;invalid&quot;,&quot;message&quot;:&quot;Revisa los datos ingresados.&quot;,&quot;details&quot;:{&quot;description&quot;:[&quot;Este campo es requerido.&quot;]}}" type="expect.toBe">
+<![CDATA[  [desktop] › sprint5.spec.ts:7:5 › Sprint 5: instructions, persistent deadline, report and unique SALE 
+
+    Error: {"code":"invalid","message":"Revisa los datos ingresados.","details":{"description":["Este campo es requerido."]}}
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 400
+
+      43 |         data,
+      44 |       });
+    > 45 |       expect(response.status(), await response.text()).toBe(201);
+         |                                                        ^
+      46 |       return response.json();
+      47 |     }
+      48 |     const category = await create("categories", {
+        at create (C:\Users\Anderson Ojeda\Downloads\Gestion de Proyectos Software\Cypher-Oz\.runtime\sprint5-review\frontend\e2e\sprint5.spec.ts:45:56)
+        at C:\Users\Anderson Ojeda\Downloads\Gestion de Proyectos Software\Cypher-Oz\.runtime\sprint5-review\frontend\e2e\sprint5.spec.ts:58:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-desktop\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-desktop\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\sprint5-Sprint-5-instructi-bd22a-line-report-and-unique-SALE-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+</testcase>
+</testsuite>
+</testsuites>
