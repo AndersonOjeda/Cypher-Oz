@@ -81,3 +81,4 @@ En este Sprint 6 se completó el ciclo integral de verificación de pagos por tr
   - Vitest: 21 archivos de pruebas, 96 pruebas unitarias y de integración pasadas (100%).
 - **Frontend Build**:
   - Next.js Turbopack: Compilación exitosa, TypeScript 0 errores, 18 rutas estáticas y dinámicas generadas.
+

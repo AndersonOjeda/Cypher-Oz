@@ -63,3 +63,4 @@ stateDiagram-v2
 4. **Cancelación y Reembolsos**:
    - Los pedidos con pago `CONFIRMED` no admiten cancelación directa automática por el cliente ("no asumir reembolso/cancelación automática de pago confirmado").
    - La cancelación de un pedido con pago confirmado requiere gestión administrativa con nota de crédito o acuerdo directo fuera de la plataforma automatizada.
+

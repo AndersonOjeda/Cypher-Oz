@@ -48,7 +48,13 @@ export function AdminOrderList() {
   }, [statusFilter, search]);
 
   useEffect(() => {
-    fetchOrders();
+    let active = true;
+    void Promise.resolve().then(() => {
+      if (active) void fetchOrders();
+    });
+    return () => {
+      active = false;
+    };
   }, [fetchOrders]);
 
   const handleTransition = async (orderNumber: string, targetStatus: string) => {
@@ -476,3 +482,4 @@ export function AdminOrderList() {
     </div>
   );
 }
+

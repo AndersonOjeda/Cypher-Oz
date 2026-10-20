@@ -48,7 +48,13 @@ export function AdminPaymentList() {
   }, [statusFilter, search]);
 
   useEffect(() => {
-    fetchPayments();
+    let active = true;
+    void Promise.resolve().then(() => {
+      if (active) void fetchPayments();
+    });
+    return () => {
+      active = false;
+    };
   }, [fetchPayments]);
 
   const handleConfirm = async (id: number) => {
@@ -319,3 +325,4 @@ export function AdminPaymentList() {
     </div>
   );
 }
+

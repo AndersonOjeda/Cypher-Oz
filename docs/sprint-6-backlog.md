@@ -127,3 +127,4 @@
   - `frontend/src/features/orders/sprint6-features.test.tsx`: 5 pruebas unitarias y de integración.
   - Vitest: 96 pruebas frontend pasando (100%).
   - Next.js: Compilación y build de producción exitoso.
+
