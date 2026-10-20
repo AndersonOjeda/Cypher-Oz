@@ -76,3 +76,4 @@ describe("CustomerList (CO-62 HU-19)", () => {
     });
   });
 });
+

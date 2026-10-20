@@ -241,3 +241,4 @@ def test_admin_delivery_settings_get_and_patch(test_setup):
     client_cli.force_authenticate(user=test_setup["client"])
     res_client = client_cli.get("/api/v1/admin/delivery/settings/")
     assert res_client.status_code == 403
+
