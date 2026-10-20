@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "@/services/api";
@@ -56,70 +56,19 @@ const mockOrderPending: Order = {
   },
 };
 
-const mockOrderCancelled: Order = {
-  ...mockOrderPending,
-  status: "CANCELLED",
-};
-
-const mockOrderShipped: Order = {
-  ...mockOrderPending,
-  status: "SHIPPED",
-};
-
-describe("Sprint 5 — CO-67: Cancelación de Pedidos y Restitución de Stock", () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-    vi.spyOn(window, "confirm").mockReturnValue(true);
-  });
-
-  it("muestra el botón de 'Cancelar pedido' cuando el pedido está PENDIENTE", async () => {
-    vi.mocked(api).mockResolvedValueOnce(mockOrderPending);
-    render(<OrderDetail number="ord-sprint5-001" />);
-
-    expect(await screen.findByText("Detalle del pedido")).toBeInTheDocument();
-    expect(await screen.findByText("Número:")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /cancelar pedido/i })).toBeInTheDocument();
-  });
-
-  it("ejecuta la cancelación llamando al endpoint /cancel/ y actualiza el estado", async () => {
-    vi.mocked(api)
-      .mockResolvedValueOnce(mockOrderPending) // initial load
-      .mockResolvedValueOnce(mockOrderCancelled) // post /cancel/
-      .mockResolvedValueOnce(mockOrderCancelled); // reload after revision
-
-    render(<OrderDetail number="ord-sprint5-001" />);
-
-    const cancelBtn = await screen.findByRole("button", { name: /cancelar pedido/i });
-    await userEvent.click(cancelBtn);
-
-    expect(window.confirm).toHaveBeenCalled();
-    await waitFor(() => {
-      expect(api).toHaveBeenCalledWith(
-        "/orders/ord-sprint5-001/cancel/",
-        expect.objectContaining({
-          method: "POST",
-          body: JSON.stringify({ reason: "Cancelado por el cliente" }),
-        }),
-      );
-    });
-
-    expect(
-      await screen.findByText(/pedido cancelado exitosamente/i),
-    ).toBeInTheDocument();
-  });
-
-  it("no muestra el botón de cancelar si el pedido ya está CANCELADO o ENVIADO", async () => {
-    vi.mocked(api).mockResolvedValueOnce(mockOrderCancelled);
-    const { unmount } = render(<OrderDetail number="ord-sprint5-001" />);
-    expect(await screen.findByText(/pedido: cancelado/i)).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /cancelar pedido/i })).not.toBeInTheDocument();
-    unmount();
-
-    vi.mocked(api).mockResolvedValueOnce(mockOrderShipped);
-    render(<OrderDetail number="ord-sprint5-001" />);
-    expect(await screen.findByText(/pedido: enviado/i)).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /cancelar pedido/i })).not.toBeInTheDocument();
-  });
+describe("Sprint 5: cancellation policy belongs to HU-18", () => {
+  beforeEach(() => vi.resetAllMocks());
+  it.each(["PENDING", "PREPARING", "CANCELLED", "SHIPPED"])(
+    "does not expose cancellation for %s",
+    async (status) => {
+      vi.mocked(api).mockResolvedValueOnce({ ...mockOrderPending, status });
+      render(<OrderDetail number="ord-sprint5-001" />);
+      await screen.findByText(mockOrderPending.number);
+      expect(
+        screen.queryByRole("button", { name: /cancelar pedido/i }),
+      ).not.toBeInTheDocument();
+    },
+  );
 });
 
 describe("Sprint 5 — CO-59 & CO-60: Instrucciones y Reporte de Pago", () => {
@@ -137,7 +86,8 @@ describe("Sprint 5 — CO-59 & CO-60: Instrucciones y Reporte de Pago", () => {
 
     vi.mocked(api).mockResolvedValueOnce({
       configured: true,
-      instructions: "Transferir a Bancolombia Ahorros # 123-456789-00 a nombre de TTI Pasto.",
+      instructions:
+        "Transferir a Bancolombia Ahorros # 123-456789-00 a nombre de TTI Pasto.",
       total: "105000.00",
       report_deadline_at: "2026-10-21T10:00:00Z",
       order_status: "PENDING",
@@ -150,7 +100,9 @@ describe("Sprint 5 — CO-59 & CO-60: Instrucciones y Reporte de Pago", () => {
       await screen.findByText(/transferir a bancolombia ahorros/i),
     ).toBeInTheDocument();
 
-    const copyBtn = screen.getByRole("button", { name: /copiar instrucciones/i });
+    const copyBtn = screen.getByRole("button", {
+      name: /copiar instrucciones/i,
+    });
     expect(copyBtn).toBeInTheDocument();
 
     await userEvent.click(copyBtn);
@@ -195,8 +147,12 @@ describe("Sprint 5 — CO-59 & CO-60: Instrucciones y Reporte de Pago", () => {
     );
 
     expect(
-      await screen.findByText("Pendiente de revisión. Fondos aún no confirmados."),
+      await screen.findByText(
+        "Pendiente de revisión. Fondos aún no confirmados.",
+      ),
     ).toBeInTheDocument();
-    expect(screen.getByText("Referencia: COMPROBANTE-9988")).toBeInTheDocument();
+    expect(
+      screen.getByText("Referencia: COMPROBANTE-9988"),
+    ).toBeInTheDocument();
   });
 });

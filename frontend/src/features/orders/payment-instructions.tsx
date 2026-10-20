@@ -14,6 +14,7 @@ export function PaymentInstructions({ number }: { number: string }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState("");
   const submitting = useRef(false);
   const result = useResource<{
     instructions: string;
@@ -26,13 +27,16 @@ export function PaymentInstructions({ number }: { number: string }) {
   const payment = reported ?? result.data?.payment;
 
   async function copyInstructions() {
+    setCopied(false);
+    setCopyError("");
     if (result.data?.instructions) {
       try {
         await navigator.clipboard.writeText(result.data.instructions);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
       } catch {
-        // Fallback or ignore if clipboard permission denied
+        setCopyError(
+          "No se pudieron copiar las instrucciones. Selecciona y copia el texto manualmente.",
+        );
       }
     }
   }
@@ -68,6 +72,7 @@ export function PaymentInstructions({ number }: { number: string }) {
       <Link href={`/pedidos/${number}`}>Volver al pedido</Link>
       {result.loading && <p role="status">Cargando instrucciones...</p>}
       {result.error && <p role="alert">{result.error}</p>}
+      {copyError && <p role="alert">{copyError}</p>}
       {result.data && (
         <>
           <p>Pedido {number}</p>
@@ -96,7 +101,8 @@ export function PaymentInstructions({ number }: { number: string }) {
               >
                 {copied ? (
                   <>
-                    <Check size={14} aria-hidden="true" /> ¡Instrucciones copiadas!
+                    <Check size={14} aria-hidden="true" /> ¡Instrucciones
+                    copiadas!
                   </>
                 ) : (
                   <>

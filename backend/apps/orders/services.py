@@ -11,7 +11,7 @@ from rest_framework.generics import get_object_or_404
 
 from apps.catalog.models import Brand, Category, Product, Variant
 from apps.configuration.models import StoreSetting
-from apps.inventory.models import InventoryBalance, StockMovement
+from apps.inventory.models import MAX_QUANTITY, InventoryBalance, StockMovement
 from apps.promotions.models import Promotion, PromotionVariant
 from apps.users.models import Address, User
 
@@ -268,52 +268,68 @@ def report_payment(user, number, reference):
 
 
 @transaction.atomic
-def cancel_order(user, number, reason="Cancelación voluntaria"):
-    """CO-67 HU-25-T02: Atomic order cancellation with automatic inventory restitution."""
-    order = get_object_or_404(
-        Order.objects.select_for_update(),
-        number=number,
-    )
+def restore_cancelled_order_inventory(user, number, reason):
+    """Restore a cancellation decided by the caller (HU-18); never choose its policy.
+
+    The caller must change the order status in the same outer transaction. Order and
+    balance locks serialize retries; the unique source link protects the ledger.
+    """
+    order = get_object_or_404(Order.objects.select_for_update(), number=number)
     if order.user_id != user.pk and getattr(user, "role", "") != "ADMIN":
-        raise CheckoutConflict("No tienes permisos para cancelar este pedido.")
-
-    if order.status == "CANCELLED":
-        raise CheckoutConflict("El pedido ya se encuentra cancelado.")
-    if order.status not in ["PENDING", "PREPARING"]:
-        raise CheckoutConflict("El estado actual del pedido no permite cancelarlo.")
-
-    Payment.objects.select_for_update().get(order=order)
-
-    # Restock all order items atomically
-    items = list(order.items.select_related("variant").order_by("pk"))
-    variant_ids = sorted([item.variant_id for item in items])
+        raise CheckoutConflict("No tienes permisos para restituir este pedido.")
+    if order.status != "CANCELLED":
+        raise CheckoutConflict("La restitución requiere una cancelación autorizada.")
+    if not isinstance(reason, str) or not reason.strip() or len(reason) > 300:
+        raise ValidationError({"reason": "Indica un motivo de hasta 300 caracteres."})
+    items = list(order.items.select_related("movement").order_by("variant_id"))
+    if not items:
+        raise CheckoutConflict("El pedido no tiene movimientos para restituir.")
     balances = {
-        b.variant_id: b
-        for b in InventoryBalance.objects.select_for_update()
-        .filter(variant_id__in=variant_ids)
+        balance.variant_id: balance
+        for balance in InventoryBalance.objects.select_for_update()
+        .filter(variant_id__in=[item.variant_id for item in items])
         .order_by("variant_id")
     }
-
     for item in items:
+        source = item.movement
+        if (
+            source.type != "SALE"
+            or source.variant_id != item.variant_id
+            or source.quantity != -item.quantity
+        ):
+            raise CheckoutConflict("El movimiento original requiere conciliación.")
+        existing = StockMovement.objects.filter(reversal_of=source).first()
+        if existing is not None:
+            if (
+                existing.type != "CANCELLATION"
+                or existing.quantity != item.quantity
+                or existing.variant_id != item.variant_id
+            ):
+                raise CheckoutConflict("La reversión existente requiere conciliación.")
+            continue
+        # Legacy cancellations had no source link. Fail closed instead of restoring twice.
+        if StockMovement.objects.filter(
+            variant_id=item.variant_id,
+            type="CANCELLATION",
+            reversal_of__isnull=True,
+            reason__startswith=f"Cancelación pedido {order.number}:",
+        ).exists():
+            raise CheckoutConflict("La cancelación anterior requiere conciliación.")
         balance = balances.get(item.variant_id)
-        if balance is not None:
-            prev_qty = balance.available_quantity
-            balance.available_quantity += item.quantity
-            balance.save(update_fields=["available_quantity", "updated_at"])
-
-            StockMovement.objects.create(
-                variant_id=item.variant_id,
-                sku=item.sku,
-                type="CANCELLATION",
-                quantity=item.quantity,
-                previous_quantity=prev_qty,
-                resulting_quantity=balance.available_quantity,
-                reason=f"Cancelación pedido {order.number}: {reason}",
-                actor=user,
-            )
-
-    order.status = "CANCELLED"
-    order.save(update_fields=["status"])
-    OrderStatusHistory.objects.create(order=order, status="CANCELLED", actor=user)
-
+        if balance is None or balance.available_quantity > MAX_QUANTITY - item.quantity:
+            raise CheckoutConflict("El balance de inventario requiere conciliación.")
+        previous = balance.available_quantity
+        balance.available_quantity += item.quantity
+        balance.save(update_fields=["available_quantity", "updated_at"])
+        StockMovement.objects.create(
+            variant_id=item.variant_id,
+            sku=item.sku,
+            type="CANCELLATION",
+            quantity=item.quantity,
+            previous_quantity=previous,
+            resulting_quantity=balance.available_quantity,
+            reason=f"Cancelación pedido {order.number}: {reason.strip()}",
+            actor=user,
+            reversal_of=source,
+        )
     return order

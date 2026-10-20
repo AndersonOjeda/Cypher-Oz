@@ -110,93 +110,138 @@ def sprint5_setup(db):
 # ==================== CO-67: HU-25 Actualización automática de stock ====================
 
 
-def test_order_cancellation_restitutes_stock_with_movement(sprint5_setup):
+def test_restitution_links_sale_and_is_idempotent(sprint5_setup):
+    from apps.orders.services import restore_cancelled_order_inventory
+
     user = sprint5_setup["user"]
-    var = sprint5_setup["variant"]
-    make_order = sprint5_setup["make_order"]
+    order = sprint5_setup["make_order"](user, qty=3)
+    order.status = "CANCELLED"
+    order.save(update_fields=["status"])
+    for _ in range(2):
+        restore_cancelled_order_inventory(user, order.number, "Cancelación autorizada de prueba")
+    movement = StockMovement.objects.get(type="CANCELLATION")
+    assert movement.reversal_of_id == order.items.get().movement_id
+    assert movement.quantity == 3
+    assert InventoryBalance.objects.get(variant=sprint5_setup["variant"]).available_quantity == 15
+    order.payment.refresh_from_db()
+    assert order.payment.status == "PENDING"  # The caller owns payment policy.
 
-    order = make_order(user, qty=3)
-    # Available was 15 - 3 = 12
-    assert InventoryBalance.objects.get(variant=var).available_quantity == 12
 
+@pytest.mark.parametrize("status", ["PENDING", "PREPARING", "SHIPPED"])
+def test_restitution_requires_authorized_cancellation(sprint5_setup, status):
+    from apps.orders.services import CheckoutConflict, restore_cancelled_order_inventory
+
+    user = sprint5_setup["user"]
+    order = sprint5_setup["make_order"](user)
+    order.status = status
+    order.save(update_fields=["status"])
+    with pytest.raises(CheckoutConflict):
+        restore_cancelled_order_inventory(user, order.number, "Prueba")
+    assert not StockMovement.objects.filter(type="CANCELLATION").exists()
+
+
+def test_missing_balance_fails_without_restitution(sprint5_setup):
+    from apps.orders.services import CheckoutConflict, restore_cancelled_order_inventory
+
+    user = sprint5_setup["user"]
+    order = sprint5_setup["make_order"](user)
+    order.status = "CANCELLED"
+    order.save(update_fields=["status"])
+    InventoryBalance.objects.filter(variant=sprint5_setup["variant"]).delete()
+    with pytest.raises(CheckoutConflict):
+        restore_cancelled_order_inventory(user, order.number, "Prueba")
+    assert not StockMovement.objects.filter(type="CANCELLATION").exists()
+
+
+def test_restitution_rolls_back_with_callers_transaction(sprint5_setup):
+    from django.db import transaction
+
+    from apps.orders.services import restore_cancelled_order_inventory
+
+    user = sprint5_setup["user"]
+    order = sprint5_setup["make_order"](user)
+    with pytest.raises(RuntimeError), transaction.atomic():
+        order.status = "CANCELLED"
+        order.save(update_fields=["status"])
+        restore_cancelled_order_inventory(user, order.number, "Prueba")
+        raise RuntimeError("Fallo posterior de la política de cancelación")
+    order.refresh_from_db()
+    assert order.status == "PENDING"
+    assert InventoryBalance.objects.get(variant=sprint5_setup["variant"]).available_quantity == 13
+    assert not StockMovement.objects.filter(type="CANCELLATION").exists()
+
+
+def test_public_cancellation_is_deferred_to_hu18(sprint5_setup):
+    user = sprint5_setup["user"]
+    order = sprint5_setup["make_order"](user)
     client = APIClient()
     client.force_authenticate(user=user)
-
-    res = client.post(
-        f"/api/v1/orders/{order.number}/cancel/",
-        {"reason": "Me equivoqué de modelo"},
-        format="json",
-    )
-    assert res.status_code == 200
-    assert res.data["status"] == "CANCELLED"
-
-    # Verify inventory was restituted: 12 + 3 = 15
-    balance = InventoryBalance.objects.get(variant=var)
-    assert balance.available_quantity == 15
-
-    # Verify StockMovement was recorded
-    movement = StockMovement.objects.filter(variant=var, type="CANCELLATION").first()
-    assert movement is not None
-    assert movement.quantity == 3  # positive
-    assert movement.previous_quantity == 12
-    assert movement.resulting_quantity == 15
-    assert "Cancelación pedido" in movement.reason
-    assert "Me equivoqué de modelo" in movement.reason
+    assert client.post(f"/api/v1/orders/{order.number}/cancel/", format="json").status_code == 404
 
 
-def test_order_cancellation_cannot_restitute_twice(sprint5_setup):
+@pytest.mark.parametrize("failure", ["overflow", "legacy", "foreign", "source"])
+def test_restitution_rejects_inconsistent_ledger(sprint5_setup, failure):
+    from apps.inventory.models import MAX_QUANTITY
+    from apps.orders.services import CheckoutConflict, restore_cancelled_order_inventory
+
     user = sprint5_setup["user"]
-    var = sprint5_setup["variant"]
-    make_order = sprint5_setup["make_order"]
+    order = sprint5_setup["make_order"](user)
+    order.status = "CANCELLED"
+    order.save(update_fields=["status"])
+    variant = sprint5_setup["variant"]
+    if failure == "overflow":
+        InventoryBalance.objects.filter(variant=variant).update(available_quantity=MAX_QUANTITY)
+    elif failure == "legacy":
+        StockMovement.objects.create(
+            variant=variant,
+            sku=variant.sku,
+            type="CANCELLATION",
+            quantity=2,
+            previous_quantity=11,
+            resulting_quantity=13,
+            actor=user,
+            reason=f"Cancelación pedido {order.number}: anterior",
+        )
+    elif failure == "foreign":
+        user = sprint5_setup["other_user"]
+    else:
+        item = order.items.get()
+        item.quantity = 3
+        item.save(update_fields=["quantity"])
+    before = InventoryBalance.objects.get(variant=variant).available_quantity
+    count = StockMovement.objects.count()
+    with pytest.raises(CheckoutConflict):
+        restore_cancelled_order_inventory(user, order.number, "Prueba")
+    assert InventoryBalance.objects.get(variant=variant).available_quantity == before
+    assert StockMovement.objects.count() == count
 
-    order = make_order(user, qty=2)
-    # Available is 15 - 2 = 13
-    assert InventoryBalance.objects.get(variant=var).available_quantity == 13
 
-    client = APIClient()
-    client.force_authenticate(user=user)
+@pytest.mark.django_db(transaction=True)
+def test_concurrent_restitution_is_unique(sprint5_setup):
+    from concurrent.futures import ThreadPoolExecutor
 
-    # First cancellation succeeds
-    res1 = client.post(f"/api/v1/orders/{order.number}/cancel/", format="json")
-    assert res1.status_code == 200
-    assert InventoryBalance.objects.get(variant=var).available_quantity == 15
+    from django.db import close_old_connections, connections
 
-    # Second cancellation fails with 409 and does not restock again
-    res2 = client.post(f"/api/v1/orders/{order.number}/cancel/", format="json")
-    assert res2.status_code == 409
-    assert InventoryBalance.objects.get(variant=var).available_quantity == 15
+    from apps.orders.services import restore_cancelled_order_inventory
 
-    # Exactly one CANCELLATION movement
-    assert StockMovement.objects.filter(variant=var, type="CANCELLATION").count() == 1
-
-
-def test_non_owner_cannot_cancel_order(sprint5_setup):
     user = sprint5_setup["user"]
-    other_user = sprint5_setup["other_user"]
-    make_order = sprint5_setup["make_order"]
-
-    order = make_order(user, qty=2)
-
-    client = APIClient()
-    client.force_authenticate(user=other_user)
-
-    res = client.post(f"/api/v1/orders/{order.number}/cancel/", format="json")
-    assert res.status_code == 409 or res.status_code == 404
-
-
-def test_cannot_cancel_shipped_order(sprint5_setup):
-    user = sprint5_setup["user"]
-    make_order = sprint5_setup["make_order"]
-
-    order = make_order(user, qty=1)
-    order.status = "SHIPPED"
+    order = sprint5_setup["make_order"](user)
+    order.status = "CANCELLED"
     order.save(update_fields=["status"])
 
-    client = APIClient()
-    client.force_authenticate(user=user)
+    def restore():
+        close_old_connections()
+        try:
+            restore_cancelled_order_inventory(user, order.number, "Prueba concurrente")
+        finally:
+            connections.close_all()
 
-    res = client.post(f"/api/v1/orders/{order.number}/cancel/", format="json")
-    assert res.status_code == 409
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [pool.submit(restore) for _ in range(2)]
+        for future in futures:
+            future.result(timeout=30)
+    assert StockMovement.objects.filter(type="CANCELLATION").count() == 1
+    assert InventoryBalance.objects.get(variant=sprint5_setup["variant"]).available_quantity == 15
 
 
 # ==================== CO-59: HU-13 Instrucciones de pago externo ====================
@@ -233,6 +278,29 @@ def test_payment_instructions_unauthorized(sprint5_setup):
     other_cli.force_authenticate(user=other_user)
     res_other = other_cli.get(f"/api/v1/orders/{order.number}/payment-instructions/")
     assert res_other.status_code == 404
+
+
+def test_current_instructions_preserve_historical_deadline_and_total(sprint5_setup):
+    user = sprint5_setup["user"]
+    order = sprint5_setup["make_order"](user)
+    original_deadline = order.payment.report_deadline_at
+    original_total = order.total
+    StoreSetting.objects.filter(key="unpaid_order_timeout_hours").update(value=1)
+    StoreSetting.objects.filter(key="payment_instructions").update(
+        value="Synthetic instructions v2"
+    )
+    client = APIClient()
+    client.force_authenticate(user=user)
+    response = client.get(f"/api/v1/orders/{order.number}/payment-instructions/")
+    assert response.status_code == 200
+    assert response.data["instructions"] == "Synthetic instructions v2"
+    order.refresh_from_db()
+    order.payment.refresh_from_db()
+    assert order.total == original_total
+    assert order.payment.report_deadline_at == original_deadline
+    assert order.payment.status == "PENDING"
+    assert not order.payment.history.exists()
+    assert not order.history.exists()
 
 
 # ==================== CO-60: HU-14 Reportar pago ====================
