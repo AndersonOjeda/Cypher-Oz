@@ -39,6 +39,7 @@ urlpatterns = [
     path("api/v1/admin/delivery/settings/", AdminDeliverySettingsView.as_view()),
     path("api/v1/admin/inventory/", include("apps.inventory.urls")),
     path("api/v1/admin/promotions/", include("apps.promotions.urls")),
+    path("api/v1/assistant/", include("apps.assistant.urls")),
     path("api/v1/admin/", include("apps.catalog.urls")),
     path("health/", health),
     path("api/v1/auth/csrf/", CsrfView.as_view()),

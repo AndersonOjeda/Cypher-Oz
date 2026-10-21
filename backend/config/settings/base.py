@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "apps.inventory.apps.InventoryConfig",
     "apps.orders",
     "apps.promotions",
+    "apps.assistant",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -66,7 +67,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "EXCEPTION_HANDLER": "apps.core.errors.exception_handler",
-    "DEFAULT_THROTTLE_RATES": {"auth": "30/min", "password_reset": "5/hour"},
+    "DEFAULT_THROTTLE_RATES": {"auth": "30/min", "password_reset": "5/hour", "assistant": "15/min"},
 }
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),

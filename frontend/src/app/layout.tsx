@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { WhatsAppButton } from "@/components/whatsapp-button";
+import { AiAssistant } from "@/components/ai-assistant";
 import "./globals.css";
 export const metadata: Metadata = {
   title: "TTI · Tienda Tecnológica Inteligente",
@@ -55,6 +56,7 @@ export default function RootLayout({
           <span className="footer-note">Tienda Tecnológica Inteligente</span>
         </footer>
         <WhatsAppButton />
+        <AiAssistant />
       </body>
     </html>
   );
