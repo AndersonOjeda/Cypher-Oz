@@ -163,6 +163,9 @@ test("EN-01 y HU-30 configuración persistente y canal habilitable", async ({
   page,
 }, testInfo) => {
   await login(page);
+  await page
+    .getByText("Más herramientas de administración", { exact: true })
+    .click();
   await page.getByRole("link", { name: "Configuración", exact: true }).click();
   const hours = page.getByLabel("Plazo para reportar pago (horas)");
   await expect(hours).toHaveValue("12");

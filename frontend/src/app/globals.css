@@ -2,6 +2,7 @@
 @import "./catalog.css";
 @import "./purchase.css";
 @import "./public-catalog.css";
+@import "./admin-navigation.css";
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;

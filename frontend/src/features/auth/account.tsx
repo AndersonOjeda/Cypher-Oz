@@ -5,6 +5,7 @@ import { Pencil, Trash2, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Address, api, ApiError, User } from "@/services/api";
+import { AdminAccountMenu } from "@/components/admin-navigation";
 
 type AddressForm = Omit<Address, "id">;
 
@@ -568,28 +569,7 @@ export function Account() {
             </section>
           </div>
 
-          {user.role === "ADMIN" && (
-            <>
-              <Link className="button primary" href="/admin/catalogo">
-                Administrar catálogo
-              </Link>
-              <Link className="button subtle" href="/admin/configuracion">
-                Configuración
-              </Link>
-              <Link className="button subtle" href="/admin/inventario">
-                Inventario
-              </Link>
-              <Link className="button subtle" href="/admin/clientes">
-                Clientes
-              </Link>
-              <Link className="button subtle" href="/admin/pagos">
-                Verificación de pagos
-              </Link>
-              <Link className="button subtle" href="/admin/pedidos">
-                Gestión de pedidos
-              </Link>
-            </>
-          )}
+          {user.role === "ADMIN" && <AdminAccountMenu />}
           <Link className="button subtle" href="/pedidos">
             Mis pedidos
           </Link>
