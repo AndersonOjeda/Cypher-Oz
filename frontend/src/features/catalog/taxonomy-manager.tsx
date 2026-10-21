@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useEditorNavigation } from "./use-editor-navigation";
 import { api } from "@/services/api";
 import { errorText, Feedback, Pager, slugify, useResource } from "./shared";
 import type { Page, Taxonomy } from "./types";
@@ -13,6 +14,7 @@ export function TaxonomyManager({ kind }: { kind: "categories" | "brands" }) {
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
+  const { editorRef, showEditor } = useEditorNavigation();
   const [editing, setEditing] = useState<number>();
   const [form, setForm] = useState(blank);
   const [busy, setBusy] = useState(false);
@@ -27,6 +29,7 @@ export function TaxonomyManager({ kind }: { kind: "categories" | "brands" }) {
     setEditing(undefined);
     setForm(blank);
     setError("");
+    setMessage("");
   }
   async function save(event: FormEvent) {
     event.preventDefault();
@@ -121,6 +124,7 @@ export function TaxonomyManager({ kind }: { kind: "categories" | "brands" }) {
                       aria-label={`Editar ${item.name}`}
                       onClick={() => {
                         setEditing(item.id);
+                        showEditor();
                         setForm({
                           name: item.name,
                           slug: item.slug,
@@ -155,7 +159,7 @@ export function TaxonomyManager({ kind }: { kind: "categories" | "brands" }) {
         )}
       </section>
       <section className="catalog-panel">
-        <h2>
+        <h2 ref={editorRef} tabIndex={-1} className="catalog-editor-heading">
           {editing ? "Editar" : "Nueva"} {label}
         </h2>
         <p className="catalog-help">

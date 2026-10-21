@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
+import { useEditorNavigation } from "./use-editor-navigation";
 import { api } from "@/services/api";
 import {
   allTaxonomy,
@@ -12,6 +14,7 @@ import {
 } from "./shared";
 import { ImageManager } from "./image-manager";
 import { VariantManager } from "./variant-manager";
+import { ProductCreate } from "./product-create";
 import type { Limits, Page, Product, Taxonomy } from "./types";
 
 const blank = {
@@ -30,11 +33,13 @@ export function ProductManager() {
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("");
+  const { editorRef, showEditor } = useEditorNavigation();
   const [editing, setEditing] = useState<Product>();
   const [form, setForm] = useState(blank);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [createSession, setCreateSession] = useState(0);
   const [options, setOptions] = useState<{
     categories: Taxonomy[];
     brands: Taxonomy[];
@@ -63,9 +68,11 @@ export function ProductManager() {
   }, [revision]);
 
   function reset() {
+    setCreateSession((value) => value + 1);
     setEditing(undefined);
     setForm(blank);
     setError("");
+    setMessage("");
   }
   async function variantsChanged(productId: number) {
     setRevision((value) => value + 1);
@@ -74,7 +81,11 @@ export function ProductManager() {
       // Preserve the product form and image editor while updating availability.
       setEditing((current) =>
         current?.id === productId
-          ? { ...current, catalog_available: updated.catalog_available }
+          ? {
+              ...current,
+              catalog_available: updated.catalog_available,
+              total_stock: updated.total_stock,
+            }
           : current,
       );
     } catch (err) {
@@ -90,6 +101,7 @@ export function ProductManager() {
     try {
       const item = await api<Product>(`/admin/products/${id}/`);
       setEditing(item);
+      showEditor();
       setForm({
         name: item.name,
         slug: item.slug,
@@ -155,9 +167,20 @@ export function ProductManager() {
   }
   return (
     <>
-      <div className="catalog-columns">
-        <section className="catalog-panel">
+      <div className="catalog-columns product-workspace">
+        <section className="catalog-panel product-list-panel">
           <h2>Productos</h2>
+          <button
+            type="button"
+            className="primary"
+            disabled={busy}
+            onClick={() => {
+              reset();
+              showEditor();
+            }}
+          >
+            Registrar nuevo producto
+          </button>
           <form
             className="catalog-search"
             onSubmit={(e) => {
@@ -221,9 +244,13 @@ export function ProductManager() {
                       )}
                       {item.catalog_visible && (
                         <small>
-                          {item.catalog_available
-                            ? "Disponible en catálogo."
-                            : "No disponible: sin variantes activas."}
+                          {!item.catalog_available
+                            ? "No disponible: falta configurar el precio."
+                            : item.total_stock === undefined
+                              ? "Precio configurado."
+                              : item.total_stock > 0
+                                ? `Disponible: ${item.total_stock} unidades.`
+                                : "Agotado: sin existencias. Registra una entrada en Inventario."}
                         </small>
                       )}
                     </div>
@@ -256,9 +283,33 @@ export function ProductManager() {
             </>
           )}
         </section>
-        <section className="catalog-panel">
-          <h2>{editing ? "Editar producto" : "Nuevo producto"}</h2>
+        <section className="catalog-panel product-editor-panel">
+          <h2 ref={editorRef} tabIndex={-1} className="catalog-editor-heading">
+            {editing ? `Editar producto: ${editing.name}` : "Nuevo producto"}
+          </h2>
           <Feedback error={error} message={message} />
+          {editing && (
+            <div className="product-stock-summary">
+              <strong>Unidades disponibles para vender</strong>
+              <output aria-label="Unidades disponibles">
+                {editing.total_stock === undefined
+                  ? "No se pudo consultar la cantidad"
+                  : `${editing.total_stock} unidades`}
+              </output>
+              <p className="catalog-help">
+                {editing.total_stock === 0
+                  ? "Este producto está agotado. Registra una entrada para añadir unidades. "
+                  : "Total de las presentaciones activas del producto. "}
+                Guardar el nombre o el precio no modifica las existencias.
+              </p>
+              <div className="catalog-actions">
+                <Link href="/admin/inventario">
+                  Añadir o ajustar unidades →
+                </Link>
+                <a href="#variants-heading">Ver unidades por presentación ↓</a>
+              </div>
+            </div>
+          )}
           {!options && (
             <p role="status">
               Cargando categorías y marcas…{" "}
@@ -267,7 +318,8 @@ export function ProductManager() {
               </button>
             </p>
           )}
-          {options &&
+          {editing &&
+            options &&
             (!options.categories.some((item) => item.is_active) ||
               !options.brands.some((item) => item.is_active)) && (
               <p className="catalog-help">
@@ -275,135 +327,155 @@ export function ProductManager() {
                 producto.
               </p>
             )}
-          <form onSubmit={save}>
-            <fieldset disabled={busy || !options}>
-              <div className="field">
-                <label htmlFor="product-name">Nombre del producto</label>
-                <input
-                  id="product-name"
-                  required
-                  maxLength={180}
-                  value={form.name}
-                  onChange={(e) => {
-                    const name = e.target.value;
-                    setForm({
-                      ...form,
-                      name,
-                      slug:
-                        !editing && form.slug === slugify(form.name)
-                          ? slugify(name)
-                          : form.slug,
-                    });
-                  }}
-                />
-              </div>
-              <div className="field">
-                <label htmlFor="product-slug">Identificador del producto</label>
-                <input
-                  id="product-slug"
-                  required
-                  maxLength={200}
-                  pattern={"[a-z0-9_\\-]+"}
-                  value={form.slug}
-                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                />
-              </div>
-              <div className="catalog-form-row">
+          {!editing && options && (
+            <ProductCreate
+              key={createSession}
+              {...options}
+              onCreated={() => setRevision((value) => value + 1)}
+              onNew={() => {
+                reset();
+                showEditor();
+              }}
+              onFinish={(product) => {
+                void edit(product.id);
+              }}
+            />
+          )}
+          {editing && (
+            <form onSubmit={save}>
+              <fieldset disabled={busy || !options}>
                 <div className="field">
-                  <label htmlFor="product-category">Categoría</label>
-                  <select
-                    id="product-category"
+                  <label htmlFor="product-name">Nombre del producto</label>
+                  <input
+                    id="product-name"
                     required
-                    value={form.category}
-                    onChange={(e) =>
-                      setForm({ ...form, category: e.target.value })
-                    }
-                  >
-                    <option value="">Selecciona una categoría</option>
-                    {options?.categories.map((item) => (
-                      <option
-                        key={item.id}
-                        value={item.id}
-                        disabled={
-                          !item.is_active && item.id !== editing?.category
-                        }
-                      >
-                        {item.name}
-                        {item.is_active ? "" : " (inactiva)"}
-                      </option>
-                    ))}
-                  </select>
+                    maxLength={180}
+                    value={form.name}
+                    onChange={(e) => {
+                      const name = e.target.value;
+                      setForm({
+                        ...form,
+                        name,
+                        slug:
+                          !editing && form.slug === slugify(form.name)
+                            ? slugify(name)
+                            : form.slug,
+                      });
+                    }}
+                  />
                 </div>
                 <div className="field">
-                  <label htmlFor="product-brand">Marca</label>
-                  <select
-                    id="product-brand"
+                  <label htmlFor="product-slug">
+                    Identificador del producto
+                  </label>
+                  <input
+                    id="product-slug"
                     required
-                    value={form.brand}
-                    onChange={(e) =>
-                      setForm({ ...form, brand: e.target.value })
-                    }
-                  >
-                    <option value="">Selecciona una marca</option>
-                    {options?.brands.map((item) => (
-                      <option
-                        key={item.id}
-                        value={item.id}
-                        disabled={!item.is_active && item.id !== editing?.brand}
-                      >
-                        {item.name}
-                        {item.is_active ? "" : " (inactiva)"}
-                      </option>
-                    ))}
-                  </select>
+                    maxLength={200}
+                    pattern={"[a-z0-9_\\-]+"}
+                    value={form.slug}
+                    onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                  />
                 </div>
-              </div>
-              <div className="field">
-                <label htmlFor="product-description">
-                  Descripción del producto
+                <div className="catalog-form-row">
+                  <div className="field">
+                    <label htmlFor="product-category">Categoría</label>
+                    <select
+                      id="product-category"
+                      required
+                      value={form.category}
+                      onChange={(e) =>
+                        setForm({ ...form, category: e.target.value })
+                      }
+                    >
+                      <option value="">Selecciona una categoría</option>
+                      {options?.categories.map((item) => (
+                        <option
+                          key={item.id}
+                          value={item.id}
+                          disabled={
+                            !item.is_active && item.id !== editing?.category
+                          }
+                        >
+                          {item.name}
+                          {item.is_active ? "" : " (inactiva)"}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label htmlFor="product-brand">Marca</label>
+                    <select
+                      id="product-brand"
+                      required
+                      value={form.brand}
+                      onChange={(e) =>
+                        setForm({ ...form, brand: e.target.value })
+                      }
+                    >
+                      <option value="">Selecciona una marca</option>
+                      {options?.brands.map((item) => (
+                        <option
+                          key={item.id}
+                          value={item.id}
+                          disabled={
+                            !item.is_active && item.id !== editing?.brand
+                          }
+                        >
+                          {item.name}
+                          {item.is_active ? "" : " (inactiva)"}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="field">
+                  <label htmlFor="product-description">
+                    Descripción del producto
+                  </label>
+                  <textarea
+                    id="product-description"
+                    required
+                    maxLength={10000}
+                    rows={4}
+                    value={form.description}
+                    onChange={(e) =>
+                      setForm({ ...form, description: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="product-warranty">Garantía</label>
+                  <textarea
+                    id="product-warranty"
+                    maxLength={1000}
+                    value={form.warranty}
+                    onChange={(e) =>
+                      setForm({ ...form, warranty: e.target.value })
+                    }
+                  />
+                </div>
+                <label className="catalog-check">
+                  <input
+                    type="checkbox"
+                    checked={form.is_active}
+                    onChange={(e) =>
+                      setForm({ ...form, is_active: e.target.checked })
+                    }
+                  />
+                  Producto activo
                 </label>
-                <textarea
-                  id="product-description"
-                  required
-                  maxLength={10000}
-                  rows={4}
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm({ ...form, description: e.target.value })
-                  }
-                />
-              </div>
-              <div className="field">
-                <label htmlFor="product-warranty">Garantía</label>
-                <textarea
-                  id="product-warranty"
-                  maxLength={1000}
-                  value={form.warranty}
-                  onChange={(e) =>
-                    setForm({ ...form, warranty: e.target.value })
-                  }
-                />
-              </div>
-              <label className="catalog-check">
-                <input
-                  type="checkbox"
-                  checked={form.is_active}
-                  onChange={(e) =>
-                    setForm({ ...form, is_active: e.target.checked })
-                  }
-                />
-                Producto activo
-              </label>
-              <div className="catalog-actions">
-                <button className="button primary">
-                  {busy ? "Guardando…" : "Guardar producto"}
-                </button>
-                <button type="button" onClick={reset}>
-                  {editing ? "Nuevo producto" : "Limpiar"}
-                </button>
-              </div>
-            </fieldset>
-          </form>
+                <div className="catalog-actions">
+                  <button className="button primary">
+                    {busy ? "Guardando…" : "Guardar producto"}
+                  </button>
+                  <button type="button" onClick={reset}>
+                    {editing ? "Nuevo producto" : "Limpiar"}
+                  </button>
+                </div>
+              </fieldset>
+            </form>
+          )}
         </section>
       </div>
       {editing && (

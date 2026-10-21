@@ -21,6 +21,8 @@ export function errorText(error: unknown): string {
       warranty: "Garantía",
       sku: "SKU",
       price: "Precio",
+      initial_price: "Precio de venta",
+      initial_stock: "Unidades disponibles",
       attributes: "Atributos",
       code: "Código",
       is_active: "Estado",

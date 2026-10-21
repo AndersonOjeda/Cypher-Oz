@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
+import { useEditorNavigation } from "./use-editor-navigation";
 import { api } from "@/services/api";
 import { CategoryAttributes } from "./category-attributes";
 import { errorText, Feedback, Pager, useResource } from "./shared";
@@ -42,11 +44,14 @@ export function VariantManager({
   const [revision, setRevision] = useState(0);
   const [attributeRevision, setAttributeRevision] = useState(0);
   const [page, setPage] = useState(1);
+  const { editorRef, showEditor } = useEditorNavigation();
   const [editing, setEditing] = useState<Variant>();
   const [form, setForm] = useState(blank);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [initialStock, setInitialStock] = useState("");
+  const [editorOpen, setEditorOpen] = useState(false);
   const variants = useResource<Page<Variant>>(
     `/admin/products/${product.id}/variants/?page=${page}`,
     revision,
@@ -57,10 +62,12 @@ export function VariantManager({
   );
 
   function reset() {
+    setEditorOpen(true);
     setEditing(undefined);
     setForm(blank);
     setError("");
     setMessage("");
+    setInitialStock("");
   }
   async function edit(id: number) {
     setBusy(true);
@@ -69,6 +76,8 @@ export function VariantManager({
     try {
       const variant = await api<Variant>(`/admin/variants/${id}/`);
       setEditing(variant);
+      setEditorOpen(true);
+      showEditor();
       setForm(variantForm(variant));
     } catch (err) {
       setError(errorText(err));
@@ -90,7 +99,8 @@ export function VariantManager({
           method: editing ? "PATCH" : "POST",
           body: JSON.stringify({
             name: form.name,
-            sku: form.sku,
+            ...(form.sku.trim() ? { sku: form.sku.trim() } : {}),
+            ...(!editing ? { initial_stock: Number(initialStock) } : {}),
             price: form.price,
             is_active: form.is_active,
             attributes: (attributes.data ?? [])
@@ -106,7 +116,9 @@ export function VariantManager({
       setForm(variantForm(variant));
       setRevision((value) => value + 1);
       onChange(product.id);
-      setMessage("Variante guardada.");
+      setMessage(
+        "Presentación guardada. Puedes cambiar sus datos o añadir otra diferente.",
+      );
     } catch (err) {
       setError(errorText(err));
     } finally {
@@ -144,21 +156,53 @@ export function VariantManager({
       aria-labelledby="variants-heading"
     >
       <h2 id="variants-heading">Variantes del producto</h2>
-      <p className="catalog-help">
-        {product.name} · {product.category_name}. Cada variante tiene su propio
-        SKU y precio. Usa «Estándar» si el producto no tiene opciones.
-      </p>
-      <p
-        className={`catalog-availability ${product.catalog_available ? "available" : ""}`}
-        role="status"
-      >
-        {product.catalog_available
-          ? "Disponible en catálogo: tiene al menos una variante activa."
-          : "No disponible en catálogo: activa el producto, su categoría, su marca y al menos una variante."}
-      </p>
+      <div className="variant-guide">
+        <h3>¿Qué es una variante?</h3>
+        <p>
+          Es una presentación de <strong>{product.name}</strong> que el cliente
+          puede elegir, como un color, tamaño o capacidad. Cada presentación
+          tiene su propio precio y sus propias unidades.
+        </p>
+        <p>
+          <strong>¿Solo vendes una versión?</strong> Usa «Estándar». Pulsa
+          «Cambiar nombre o precio» para modificarla; no necesitas crear otra.
+        </p>
+        <p>
+          <strong>¿Vendes varias versiones?</strong> Añade una por cada
+          combinación. Por ejemplo: «Negro · 128 GB» y «Azul · 256 GB».
+        </p>
+      </div>
+      {!product.catalog_visible && (
+        <p className="catalog-availability" role="status">
+          Estas presentaciones se mostrarán cuando el producto, su categoría y
+          su marca estén activos.
+        </p>
+      )}
       <Feedback error={error} message={message} />
-      <div className="catalog-columns">
+      <div
+        className={
+          editorOpen || variants.data?.count === 0
+            ? "catalog-columns"
+            : undefined
+        }
+      >
         <div>
+          <h3 className="variant-subheading">Presentaciones guardadas</h3>
+          <p className="catalog-help">
+            Edita una existente o añade una diferente. Ocultarla conserva sus
+            datos y existencias.
+          </p>
+          <button
+            type="button"
+            className="primary"
+            disabled={busy}
+            onClick={() => {
+              reset();
+              showEditor();
+            }}
+          >
+            Añadir otra presentación
+          </button>
           {variants.loading && <p role="status">Cargando variantes…</p>}
           {variants.error && (
             <p role="alert" className="error-message">
@@ -175,15 +219,22 @@ export function VariantManager({
                   <li key={variant.id}>
                     <div>
                       <strong>{variant.name}</strong>
-                      <small>SKU: {variant.sku}</small>
+                      <small>Código interno: {variant.sku}</small>
                       <span className="catalog-price">
                         {money.format(Number(variant.price))}
                       </span>
                       <span
                         className={`catalog-badge ${variant.is_active ? "active" : ""}`}
                       >
-                        {variant.is_active ? "Activa" : "Inactiva"}
+                        {variant.is_active ? "Visible" : "Oculta"}
                       </span>
+                      <small>
+                        {variant.stock === undefined
+                          ? "Consulta las unidades en Inventario."
+                          : variant.stock > 0
+                            ? `${variant.stock} unidades disponibles`
+                            : "Agotada: sin unidades disponibles"}
+                      </small>
                       {variant.attributes.map((attribute) => (
                         <small key={attribute.attribute}>
                           {attribute.name}: {attribute.value}
@@ -193,17 +244,17 @@ export function VariantManager({
                     <div className="catalog-actions">
                       <button
                         disabled={busy}
-                        aria-label={`Editar variante ${variant.sku}`}
+                        aria-label={`Cambiar nombre o precio de ${variant.name}`}
                         onClick={() => edit(variant.id)}
                       >
-                        Editar variante
+                        Cambiar nombre o precio
                       </button>
                       <button
                         disabled={busy}
-                        aria-label={`${variant.is_active ? "Desactivar" : "Activar"} variante ${variant.sku}`}
+                        aria-label={`${variant.is_active ? "Ocultar" : "Mostrar"} presentación ${variant.name}`}
                         onClick={() => toggle(variant)}
                       >
-                        {variant.is_active ? "Desactivar" : "Activar"}
+                        {variant.is_active ? "Ocultar" : "Mostrar"}
                       </button>
                     </div>
                   </li>
@@ -211,103 +262,185 @@ export function VariantManager({
               </ul>
               {!variants.data.count && (
                 <p className="catalog-empty">
-                  Este producto aún no tiene variantes.
+                  Aún no hay presentaciones. Completa el formulario con
+                  «Estándar», su precio y las unidades que tienes para vender.
                 </p>
               )}
               <Pager page={page} data={variants.data} onChange={setPage} />
             </>
           )}
         </div>
-        <form onSubmit={save}>
-          <fieldset disabled={busy || attributes.loading || !attributes.data}>
-            <legend>{editing ? "Editar variante" : "Nueva variante"}</legend>
-            <div className="field">
-              <label htmlFor="variant-name">Nombre de la variante</label>
-              <input
-                id="variant-name"
-                required
-                maxLength={120}
-                value={form.name}
-                onChange={(event) =>
-                  setForm({ ...form, name: event.target.value })
-                }
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="variant-sku">SKU</label>
-              <input
-                id="variant-sku"
-                required
-                maxLength={80}
-                value={form.sku}
-                onChange={(event) =>
-                  setForm({ ...form, sku: event.target.value.toUpperCase() })
-                }
-                autoCapitalize="characters"
-                spellCheck={false}
-              />
-              <small>
-                Identificador único de la variante en todo el catálogo.
-              </small>
-            </div>
-            <div className="field">
-              <label htmlFor="variant-price">Precio (COP)</label>
-              <input
-                id="variant-price"
-                type="number"
-                inputMode="decimal"
-                min="0"
-                max="9999999999.99"
-                step="0.01"
-                required
-                value={form.price}
-                onChange={(event) =>
-                  setForm({ ...form, price: event.target.value })
-                }
-              />
-              <small>Pesos colombianos, hasta dos decimales.</small>
-            </div>
-            {attributes.data?.map((attribute) => (
-              <div className="field" key={attribute.id}>
-                <label htmlFor={`variant-attribute-${attribute.id}`}>
-                  {attribute.name} (opcional)
-                </label>
+        {(editorOpen || variants.data?.count === 0) && (
+          <form onSubmit={save}>
+            <fieldset disabled={busy || attributes.loading || !attributes.data}>
+              <legend>
+                <h3
+                  ref={editorRef}
+                  tabIndex={-1}
+                  className="catalog-editor-heading"
+                >
+                  {editing
+                    ? `Editar presentación: ${editing.name}`
+                    : "Añadir una presentación"}
+                </h3>
+              </legend>
+              <div className="field">
+                <label htmlFor="variant-name">Nombre de la presentación</label>
                 <input
-                  id={`variant-attribute-${attribute.id}`}
-                  maxLength={500}
-                  value={form.values[attribute.id] ?? ""}
+                  id="variant-name"
+                  required
+                  maxLength={120}
+                  placeholder="Ejemplo: Negro · 128 GB"
+                  aria-describedby="variant-name-help"
+                  value={form.name}
                   onChange={(event) =>
-                    setForm({
-                      ...form,
-                      values: {
-                        ...form.values,
-                        [attribute.id]: event.target.value,
-                      },
-                    })
+                    setForm({ ...form, name: event.target.value })
                   }
                 />
+                <small id="variant-name-help">
+                  Este nombre lo verá el cliente al comprar. Deja «Estándar» si
+                  solo hay una versión.
+                </small>
               </div>
-            ))}
-            <label className="catalog-check">
-              <input
-                type="checkbox"
-                checked={form.is_active}
-                onChange={(event) =>
-                  setForm({ ...form, is_active: event.target.checked })
-                }
-              />
-              Variante activa
-            </label>
-            <div className="catalog-actions">
-              <button className="primary">
-                {busy ? "Guardando variante…" : "Guardar variante"}
-              </button>
-              <button type="button" onClick={reset}>
-                {editing ? "Nueva variante" : "Limpiar variante"}
-              </button>
-            </div>
-          </fieldset>
-        </form>
+              <details className="product-extra">
+                <summary>Código interno (opcional)</summary>
+                <div className="field">
+                  <label htmlFor="variant-sku">SKU</label>
+                  <input
+                    id="variant-sku"
+                    maxLength={80}
+                    value={form.sku}
+                    onChange={(event) =>
+                      setForm({
+                        ...form,
+                        sku: event.target.value.toUpperCase(),
+                      })
+                    }
+                    autoCapitalize="characters"
+                    spellCheck={false}
+                  />
+                  <small>
+                    Se genera automáticamente si lo dejas vacío. Cámbialo solo
+                    si ya utilizas tus propios códigos de inventario.
+                  </small>
+                </div>
+              </details>
+              <div className="field">
+                <label htmlFor="variant-price">Precio de venta (COP)</label>
+                <input
+                  id="variant-price"
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  max="9999999999.99"
+                  step="0.01"
+                  required
+                  value={form.price}
+                  onChange={(event) =>
+                    setForm({ ...form, price: event.target.value })
+                  }
+                />
+                <small>
+                  Precio por unidad de esta presentación. Escribe pesos sin
+                  puntos de miles, por ejemplo: 150000.
+                </small>
+              </div>
+              {!editing ? (
+                <div className="field">
+                  <label htmlFor="variant-stock">Unidades disponibles</label>
+                  <input
+                    id="variant-stock"
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    max="2147483647"
+                    step="1"
+                    required
+                    value={initialStock}
+                    onChange={(event) => setInitialStock(event.target.value)}
+                    aria-describedby="variant-stock-help"
+                  />
+                  <small id="variant-stock-help">
+                    Unidades de esta presentación, no de todo el producto. Con 0
+                    aparecerá agotada.
+                  </small>
+                </div>
+              ) : (
+                <p className="catalog-help">
+                  {editing.stock !== undefined
+                    ? `Existencias actuales: ${editing.stock} unidades. `
+                    : ""}
+                  <Link href="/admin/inventario">
+                    Añadir o ajustar unidades en Inventario →
+                  </Link>
+                </p>
+              )}
+              {Boolean(attributes.data?.length) && (
+                <details className="product-extra">
+                  <summary>Características adicionales (opcional)</summary>
+                  <p className="catalog-help">
+                    Añade detalles para comparar presentaciones. Por ejemplo:
+                    Color = Negro. El nombre de arriba es suficiente para
+                    empezar.
+                  </p>
+                  {attributes.data?.map((attribute) => (
+                    <div className="field" key={attribute.id}>
+                      <label htmlFor={`variant-attribute-${attribute.id}`}>
+                        {attribute.name} (opcional)
+                      </label>
+                      <input
+                        id={`variant-attribute-${attribute.id}`}
+                        maxLength={500}
+                        value={form.values[attribute.id] ?? ""}
+                        onChange={(event) =>
+                          setForm({
+                            ...form,
+                            values: {
+                              ...form.values,
+                              [attribute.id]: event.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                  ))}
+                </details>
+              )}
+              <label className="catalog-check">
+                <input
+                  type="checkbox"
+                  checked={form.is_active}
+                  onChange={(event) =>
+                    setForm({ ...form, is_active: event.target.checked })
+                  }
+                />
+                Mostrar esta presentación al cliente
+              </label>
+              <p className="catalog-help">
+                Para poder comprarla, el producto debe estar activo y esta
+                presentación debe tener unidades disponibles.
+              </p>
+              <div className="catalog-actions">
+                <button className="primary">
+                  {busy
+                    ? "Guardando presentación…"
+                    : editing
+                      ? "Guardar cambios"
+                      : "Guardar presentación"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    reset();
+                    if (editing && variants.data?.count) setEditorOpen(false);
+                  }}
+                >
+                  {editing ? "Cancelar edición" : "Limpiar formulario"}
+                </button>
+              </div>
+            </fieldset>
+          </form>
+        )}
       </div>
       {attributes.loading && <p role="status">Cargando atributos…</p>}
       {attributes.error && (
@@ -318,6 +451,11 @@ export function VariantManager({
           </button>
         </p>
       )}
+      <p className="catalog-help">
+        Opciones avanzadas: la configuración de abajo define características
+        compartidas por toda la categoría. No necesitas modificarla para
+        registrar una presentación.
+      </p>
       <CategoryAttributes
         categoryId={product.category}
         attributes={attributes.data ?? []}

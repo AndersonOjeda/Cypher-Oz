@@ -77,18 +77,25 @@ test("variantes estándar, atributos, precio exacto y disponibilidad persisten",
   ).toBe(false);
   await productSlug.fill(product.slug);
   await expect(
-    page.getByLabel("Nombre de la variante", { exact: true }),
+    page.getByLabel("Nombre de la presentación", { exact: true }),
   ).toHaveValue("Estándar");
   const sku = `TTI-${suffix}`.toUpperCase();
+  await openDetails(page, "Código interno (opcional)");
+  await page
+    .getByRole("spinbutton", { name: "Unidades disponibles", exact: true })
+    .fill("5");
   await page.getByLabel("SKU", { exact: true }).fill(sku.toLowerCase());
-  await page.getByLabel("Precio (COP)", { exact: true }).fill("0");
+  await page.getByLabel("Precio de venta (COP)", { exact: true }).fill("0");
   const creation = page.waitForResponse(
     (r) =>
       r.url().endsWith(`/products/${product.id}/variants/`) &&
       r.request().method() === "POST",
   );
   await page
-    .getByRole("button", { name: "Guardar variante", exact: true })
+    .getByRole("button", {
+      name: /Guardar presentación|Guardar cambios/,
+      exact: true,
+    })
     .click();
   const created = await creation;
   expect(created.status()).toBe(201);
@@ -98,19 +105,24 @@ test("variantes estándar, atributos, precio exacto y disponibilidad persisten",
   expect(variant.attributes).toEqual([]);
   expect(variant.catalog_available).toBe(true);
   const edit = page.getByRole("button", {
-    name: `Editar variante ${sku}`,
+    name: "Cambiar nombre o precio de Estándar",
     exact: true,
   });
   await expect(edit).toBeVisible();
   await edit.click();
-  await page.getByLabel("Precio (COP)", { exact: true }).fill("12345.67");
+  await page
+    .getByLabel("Precio de venta (COP)", { exact: true })
+    .fill("12345.67");
   const priceChange = page.waitForResponse(
     (r) =>
       r.url().endsWith(`/variants/${variant.id}/`) &&
       r.request().method() === "PATCH",
   );
   await page
-    .getByRole("button", { name: "Guardar variante", exact: true })
+    .getByRole("button", {
+      name: /Guardar presentación|Guardar cambios/,
+      exact: true,
+    })
     .click();
   expect((await priceChange).status()).toBe(200);
   expect(
@@ -121,23 +133,30 @@ test("variantes estándar, atributos, precio exacto y disponibilidad persisten",
     ).price,
   ).toBe("12345.67");
   await page
-    .getByRole("button", { name: "Nueva variante", exact: true })
+    .getByRole("button", { name: "Añadir otra presentación", exact: true })
     .click();
+  await openDetails(page, "Código interno (opcional)");
+  await page
+    .getByRole("spinbutton", { name: "Unidades disponibles", exact: true })
+    .fill("0");
   await page.getByLabel("SKU", { exact: true }).fill(sku);
-  await page.getByLabel("Precio (COP)", { exact: true }).fill("19.99");
+  await page.getByLabel("Precio de venta (COP)", { exact: true }).fill("19.99");
   const duplicate = page.waitForResponse(
     (r) =>
       r.url().endsWith(`/products/${product.id}/variants/`) &&
       r.request().method() === "POST",
   );
   await page
-    .getByRole("button", { name: "Guardar variante", exact: true })
+    .getByRole("button", {
+      name: /Guardar presentación|Guardar cambios/,
+      exact: true,
+    })
     .click();
   expect((await duplicate).status()).toBe(409);
   await expect(page.getByRole("main").getByRole("alert")).toBeVisible();
-  await expect(page.getByLabel("Precio (COP)", { exact: true })).toHaveValue(
-    "19.99",
-  );
+  await expect(
+    page.getByLabel("Precio de venta (COP)", { exact: true }),
+  ).toHaveValue("19.99");
   expect(
     (
       await (
@@ -158,13 +177,19 @@ test("variantes estándar, atributos, precio exacto y disponibilidad persisten",
   await page
     .getByRole("button", { name: "Guardar atributo", exact: true })
     .click();
+  await openDetails(page, "Características adicionales (opcional)");
   await expect(
     page.getByLabel("Color (opcional)", { exact: true }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: `Editar variante ${sku}`, exact: true })
+    .getByRole("button", {
+      name: "Cambiar nombre o precio de Estándar",
+      exact: true,
+    })
     .click();
-  await page.getByLabel("Nombre de la variante", { exact: true }).fill("Azul");
+  await page
+    .getByLabel("Nombre de la presentación", { exact: true })
+    .fill("Azul");
   await page
     .getByLabel("Color (opcional)", { exact: true })
     .fill("Azul oscuro");
@@ -174,7 +199,10 @@ test("variantes estándar, atributos, precio exacto y disponibilidad persisten",
       r.request().method() === "PATCH",
   );
   await page
-    .getByRole("button", { name: "Guardar variante", exact: true })
+    .getByRole("button", {
+      name: /Guardar presentación|Guardar cambios/,
+      exact: true,
+    })
     .click();
   expect((await attributeChange).status()).toBe(200);
   await page.reload();
@@ -182,11 +210,15 @@ test("variantes estándar, atributos, precio exacto y disponibilidad persisten",
     .getByRole("button", { name: `Editar ${name}`, exact: true })
     .click();
   await page
-    .getByRole("button", { name: `Editar variante ${sku}`, exact: true })
+    .getByRole("button", {
+      name: "Cambiar nombre o precio de Azul",
+      exact: true,
+    })
     .click();
-  await expect(page.getByLabel("Precio (COP)", { exact: true })).toHaveValue(
-    "12345.67",
-  );
+  await openDetails(page, "Características adicionales (opcional)");
+  await expect(
+    page.getByLabel("Precio de venta (COP)", { exact: true }),
+  ).toHaveValue("12345.67");
   await expect(
     page.getByLabel("Color (opcional)", { exact: true }),
   ).toHaveValue("Azul oscuro");
@@ -203,10 +235,13 @@ test("variantes estándar, atributos, precio exacto y disponibilidad persisten",
     contentType: "image/png",
   });
   await page
-    .getByRole("button", { name: `Desactivar variante ${sku}`, exact: true })
+    .getByRole("button", { name: "Ocultar presentación Azul", exact: true })
     .click();
   await expect(
-    page.getByRole("button", { name: `Activar variante ${sku}`, exact: true }),
+    page.getByRole("button", {
+      name: "Mostrar presentación Azul",
+      exact: true,
+    }),
   ).toBeVisible();
   expect(
     (
@@ -223,11 +258,11 @@ test("variantes estándar, atributos, precio exacto y disponibilidad persisten",
     ).catalog_available,
   ).toBe(false);
   await page
-    .getByRole("button", { name: `Activar variante ${sku}`, exact: true })
+    .getByRole("button", { name: "Mostrar presentación Azul", exact: true })
     .click();
   await expect(
     page.getByRole("button", {
-      name: `Desactivar variante ${sku}`,
+      name: "Ocultar presentación Azul",
       exact: true,
     }),
   ).toBeVisible();
@@ -296,3 +331,13 @@ test("visitante y cliente no gestionan variantes, precios ni atributos", async (
     page.getByRole("button", { name: "Guardar variante" }),
   ).toHaveCount(0);
 });
+
+async function openDetails(page: Page, title: string) {
+  const summary = page.getByText(title, { exact: true });
+  if (
+    !(await summary.evaluate(
+      (element) => (element.parentElement as HTMLDetailsElement).open,
+    ))
+  )
+    await summary.click();
+}

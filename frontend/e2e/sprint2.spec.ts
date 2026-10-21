@@ -48,16 +48,21 @@ test("administrar catálogo completo con imágenes en almacenamiento real", asyn
     .getByLabel("Marca", { exact: true })
     .selectOption({ label: brand });
   await page
-    .getByLabel("Descripción del producto", { exact: true })
+    .getByLabel("Descripción", { exact: true })
     .fill("Teclado USB de prueba, distribución en español.");
+  await page.getByText("Añadir garantía (opcional)", { exact: true }).click();
   await page.getByLabel("Garantía", { exact: true }).fill("12 meses");
-  await page.getByLabel("Producto activo", { exact: true }).check();
+  await page
+    .getByLabel("Precio de venta (COP)", { exact: true })
+    .fill("150000");
+  await page.getByLabel("Unidades disponibles", { exact: true }).fill("5");
+  await page.getByLabel("Mostrar en el catálogo", { exact: true }).check();
   const created = page.waitForResponse(
     (r) =>
       r.url().endsWith("/admin/products/") && r.request().method() === "POST",
   );
   await page
-    .getByRole("button", { name: "Guardar producto", exact: true })
+    .getByRole("button", { name: "Guardar y continuar con fotos", exact: true })
     .click();
   const response = await created;
   expect(response.status()).toBe(201);
@@ -122,13 +127,11 @@ test("administrar catálogo completo con imágenes en almacenamiento real", asyn
     body: await page.screenshot({ fullPage: true }),
     contentType: "image/png",
   });
-  await page
-    .getByLabel("Archivo de imagen")
-    .setInputFiles({
-      name: "bad.png",
-      mimeType: "image/png",
-      buffer: Buffer.from("broken"),
-    });
+  await page.getByLabel("Archivo de imagen").setInputFiles({
+    name: "bad.png",
+    mimeType: "image/png",
+    buffer: Buffer.from("broken"),
+  });
   await page
     .getByLabel("Descripción de la nueva imagen")
     .fill("Archivo inválido");
@@ -186,7 +189,10 @@ test("administrar catálogo completo con imágenes en almacenamiento real", asyn
   await page
     .getByRole("button", { name: `Eliminar ${product}`, exact: true })
     .click();
-  await expect(page.getByText("Producto eliminado.")).toBeVisible();
+  // Registration now includes a priced presentation; preserve its inventory history.
+  await expect(page.getByRole("main").getByRole("alert")).toContainText(
+    "relaciones",
+  );
   for (const [tab, name] of [
     ["Categorías", category],
     ["Marcas", brand],
@@ -198,7 +204,9 @@ test("administrar catálogo completo con imágenes en almacenamiento real", asyn
     await page
       .getByRole("button", { name: `Eliminar ${name}`, exact: true })
       .click();
-    await expect(page.getByText("Registro eliminado.")).toBeVisible();
+    await expect(page.getByRole("main").getByRole("alert")).toContainText(
+      "relaciones",
+    );
   }
   expect(errors).toEqual([]);
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { api } from "@/services/api";
 import { errorText, Feedback } from "./shared";
 import type { Limits, ProductImage } from "./types";
@@ -10,15 +10,22 @@ export function ImageManager({
   productId,
   initialImages,
   limits,
+  defaultAlt = "",
+  onBusyChange,
 }: {
   productId: number;
   initialImages: ProductImage[];
   limits: Limits;
+  defaultAlt?: string;
+  onBusyChange?: (busy: boolean) => void;
 }) {
   const [images, setImages] = useState(initialImages);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  useEffect(() => {
+    onBusyChange?.(busy);
+  }, [busy, onBusyChange]);
   async function refresh() {
     setImages(
       await api<ProductImage[]>(`/admin/products/${productId}/images/`),
@@ -169,6 +176,7 @@ export function ImageManager({
               name="alt_text"
               required
               maxLength={200}
+              defaultValue={defaultAlt}
               placeholder="Ejemplo: vista frontal del teclado"
             />
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useEditorNavigation } from "./use-editor-navigation";
 import { api } from "@/services/api";
 import { errorText, Feedback, slugify } from "./shared";
 import type { CategoryAttribute } from "./types";
@@ -16,6 +17,7 @@ export function CategoryAttributes({
   loading: boolean;
   onChange: () => void;
 }) {
+  const { editorRef, showEditor } = useEditorNavigation();
   const [editing, setEditing] = useState<number>();
   const [form, setForm] = useState({ code: "", name: "" });
   const [busy, setBusy] = useState(false);
@@ -26,6 +28,7 @@ export function CategoryAttributes({
     setEditing(undefined);
     setForm({ code: "", name: "" });
     setError("");
+    setMessage("");
   }
   async function save(event: FormEvent) {
     event.preventDefault();
@@ -73,6 +76,7 @@ export function CategoryAttributes({
                   aria-label={`Editar atributo ${attribute.name}`}
                   onClick={() => {
                     setEditing(attribute.id);
+                    showEditor();
                     setForm({ name: attribute.name, code: attribute.code });
                     setError("");
                     setMessage("");
@@ -86,7 +90,15 @@ export function CategoryAttributes({
         </div>
         <form onSubmit={save}>
           <fieldset disabled={busy || loading}>
-            <legend>{editing ? "Editar atributo" : "Nuevo atributo"}</legend>
+            <legend>
+              <h3
+                ref={editorRef}
+                tabIndex={-1}
+                className="catalog-editor-heading"
+              >
+                {editing ? "Editar atributo" : "Nuevo atributo"}
+              </h3>
+            </legend>
             <div className="field">
               <label htmlFor="attribute-name">Nombre del atributo</label>
               <input

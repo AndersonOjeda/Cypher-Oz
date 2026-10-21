@@ -27,6 +27,7 @@ export type Product = {
   is_active: boolean;
   catalog_visible: boolean;
   catalog_available: boolean;
+  total_stock?: number;
   images: ProductImage[];
 };
 export type CategoryAttribute = {
@@ -36,6 +37,7 @@ export type CategoryAttribute = {
   name: string;
 };
 export type Variant = {
+  stock?: number;
   id: number;
   product: number;
   name: string;

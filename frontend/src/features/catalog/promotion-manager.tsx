@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { useEditorNavigation } from "./use-editor-navigation";
 import { api } from "@/services/api";
 import { errorText, Feedback, Pager, useResource } from "./shared";
 import type { Page, Promotion } from "./types";
@@ -40,13 +41,16 @@ export function PromotionManager() {
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
+  const { editorRef, showEditor } = useEditorNavigation();
   const [editing, setEditing] = useState<Promotion>();
   const [form, setForm] = useState(blank);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  const [availableVariants, setAvailableVariants] = useState<VariantOption[]>([]);
+  const [availableVariants, setAvailableVariants] = useState<VariantOption[]>(
+    [],
+  );
   const [selectedVariantId, setSelectedVariantId] = useState<number | "">("");
   const [promoPriceInput, setPromoPriceInput] = useState("");
 
@@ -80,6 +84,7 @@ export function PromotionManager() {
 
   function edit(item: Promotion) {
     setEditing(item);
+    showEditor();
     setError("");
     setMessage("");
     setForm({
@@ -217,7 +222,9 @@ export function PromotionManager() {
         {resource.error && (
           <p role="alert" className="error-message">
             {resource.error}{" "}
-            <button onClick={() => setRevision((v) => v + 1)}>Reintentar</button>
+            <button onClick={() => setRevision((v) => v + 1)}>
+              Reintentar
+            </button>
           </p>
         )}
 
@@ -246,7 +253,9 @@ export function PromotionManager() {
                         Inicio: {start.toLocaleString("es-CO")} · Fin:{" "}
                         {end.toLocaleString("es-CO")}
                       </small>
-                      <small>{item.prices.length} variante(s) con descuento</small>
+                      <small>
+                        {item.prices.length} variante(s) con descuento
+                      </small>
                     </div>
                     <div className="catalog-actions">
                       <button
@@ -278,7 +287,9 @@ export function PromotionManager() {
       </section>
 
       <section className="catalog-panel">
-        <h2>{editing ? "Editar promoción" : "Nueva promoción"}</h2>
+        <h2 ref={editorRef} tabIndex={-1} className="catalog-editor-heading">
+          {editing ? `Editar promoción: ${editing.name}` : "Nueva promoción"}
+        </h2>
         <Feedback error={error} message={message} />
         <form onSubmit={save}>
           <fieldset disabled={busy}>
@@ -337,11 +348,14 @@ export function PromotionManager() {
 
             <h3>Variantes en oferta</h3>
             <p className="catalog-help">
-              Selecciona variantes y define su precio de oferta (debe ser menor al
-              precio base).
+              Selecciona variantes y define su precio de oferta (debe ser menor
+              al precio base).
             </p>
 
-            <div className="catalog-form-row" style={{ alignItems: "flex-end" }}>
+            <div
+              className="catalog-form-row"
+              style={{ alignItems: "flex-end" }}
+            >
               <div className="field" style={{ flex: 2 }}>
                 <label htmlFor="promo-variant-select">Variante</label>
                 <select
@@ -393,7 +407,9 @@ export function PromotionManager() {
                   return (
                     <li key={p.variant}>
                       <div>
-                        <strong>{v?.product_name ?? `Variante #${p.variant}`}</strong>
+                        <strong>
+                          {v?.product_name ?? `Variante #${p.variant}`}
+                        </strong>
                         <small>
                           {v?.name} · SKU: {v?.sku}
                         </small>

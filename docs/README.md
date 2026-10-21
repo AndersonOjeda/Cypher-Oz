@@ -6,6 +6,7 @@ y fecha indicadas en cada informe; no deben sumarse entre ejecuciones.
 
 | Necesidad | Documento de referencia |
 |---|---|
+| Registro simplificado, existencias y variantes: aceptación y regresión | [Verificación de UI/UX de productos](product-registration-ux-verification.md) |
 | Cierre integrado de Sprint 4 y 5, CI y Jira | [Acta conjunta](sprints-4-5-verification.md) |
 | Alcance y correcciones de Sprint 4 | [Informe Sprint 4](sprint-4-report.md) |
 | Alcance, correcciones y restitución de Sprint 5 | [Informe Sprint 5](sprint-5-report.md) |
