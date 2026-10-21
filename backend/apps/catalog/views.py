@@ -152,6 +152,16 @@ class ProductViewSet(CatalogViewSet):
     queryset = Product.objects.select_related("category", "brand").prefetch_related("images")
     serializer_class = ProductSerializer
 
+    def perform_create(self, serializer):
+        try:
+            with transaction.atomic():
+                product = serializer.save()
+                audit(self.request, product, "create")
+                if "initial_price" in serializer.validated_data:
+                    audit(self.request, product.variants.get(), "create")
+        except IntegrityError as exc:
+            raise Conflict() from exc
+
 
 class UploadThrottle(UserRateThrottle):
     rate = "30/min"

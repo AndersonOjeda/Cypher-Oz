@@ -1,6 +1,10 @@
 from decimal import Decimal
+from uuid import uuid4
 
+from django.db import transaction
 from rest_framework import serializers
+
+from apps.inventory.models import MAX_QUANTITY
 
 from .models import CategoryAttribute, Variant, VariantAttributeValue
 from .serializers import StrictModelSerializer
@@ -66,7 +70,18 @@ class VariantAttributeSerializer(StrictModelSerializer):
 
 class VariantSerializer(StrictModelSerializer):
     name = TextField(max_length=120, required=False)
-    sku = TextField(max_length=80)
+    sku = TextField(max_length=80, required=False)
+    initial_stock = serializers.IntegerField(
+        min_value=0,
+        max_value=MAX_QUANTITY,
+        write_only=True,
+        required=False,
+    )
+    stock = serializers.IntegerField(
+        source="inventory_balance.available_quantity",
+        read_only=True,
+        default=0,
+    )
     price = PriceField(max_digits=12, decimal_places=2, min_value=Decimal("0"))
     is_active = BooleanField(required=False)
     attributes = VariantAttributeSerializer(source="attribute_values", many=True, required=False)
@@ -84,6 +99,8 @@ class VariantSerializer(StrictModelSerializer):
             "attributes",
             "catalog_available",
             "updated_at",
+            "initial_stock",
+            "stock",
         ]
         read_only_fields = ["id", "product", "updated_at"]
         validators = []
@@ -95,6 +112,10 @@ class VariantSerializer(StrictModelSerializer):
         return value
 
     def validate(self, attrs):
+        if self.instance and "initial_stock" in attrs:
+            raise serializers.ValidationError(
+                {"initial_stock": "Modifica las existencias desde Inventario."}
+            )
         values = attrs.get("attribute_values", [])
         selected = set()
         product = self.context["product"]
@@ -116,10 +137,24 @@ class VariantSerializer(StrictModelSerializer):
             [VariantAttributeValue(variant=instance, **entry) for entry in values]
         )
 
+    @transaction.atomic
     def create(self, validated_data):
         values = validated_data.pop("attribute_values", [])
+        stock = validated_data.pop("initial_stock", 0)
+        validated_data.setdefault("sku", f"TTI-{uuid4().hex.upper()}")
         instance = Variant.objects.create(product=self.context["product"], **validated_data)
         self.replace_attributes(instance, values)
+        if stock:
+            from apps.inventory.models import StockMovement
+            from apps.inventory.services import record_movement
+
+            record_movement(
+                variant_id=instance.pk,
+                quantity=stock,
+                reason="Existencias iniciales de la presentación",
+                actor=self.context["request"].user,
+                movement_type=StockMovement.Type.ENTRY,
+            )
         return instance
 
     def update(self, instance, validated_data):

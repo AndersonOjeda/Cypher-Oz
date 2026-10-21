@@ -144,10 +144,62 @@ def test_invalid_variant_payload_leaves_database_unchanged(admin, variant, paylo
     assert not CatalogChange.objects.exists()
 
 
-@pytest.mark.parametrize("payload", [{"sku": "NO-PRICE"}, {"price": "10.00"}, {}])
-def test_sku_and_price_are_required_without_generated_business_data(admin, product, payload):
+@pytest.mark.parametrize("payload", [{"sku": "NO-PRICE"}, {}])
+def test_price_is_required(admin, product, payload):
     assert admin.post(variant_url(product), payload, format="json").status_code == 400
     assert not Variant.objects.exists()
+
+
+def test_presentation_generates_code_and_records_initial_stock(admin, product):
+    from apps.inventory.models import StockMovement
+
+    result = admin.post(
+        variant_url(product),
+        {
+            "name": "Negro · 128 GB",
+            "price": "150000",
+            "initial_stock": 5,
+        },
+        format="json",
+    )
+    assert result.status_code == 201
+    assert result.data["sku"].startswith("TTI-")
+    assert result.data["stock"] == 5
+    saved = Variant.objects.get(pk=result.data["id"])
+    assert saved.inventory_balance.available_quantity == 5
+    assert StockMovement.objects.get(variant=saved).quantity == 5
+    assert admin.get(detail_url(saved)).data["stock"] == 5
+    assert admin.get(variant_url(product)).data["results"][0]["stock"] == 5
+    assert admin.patch(detail_url(saved), {"initial_stock": 10}, format="json").status_code == 400
+
+
+@pytest.mark.parametrize("stock", [-1, "1.5", 2147483648])
+def test_presentation_rejects_invalid_initial_stock(admin, product, stock):
+    result = admin.post(
+        variant_url(product),
+        {
+            "name": "Inválida",
+            "price": "100",
+            "initial_stock": stock,
+        },
+        format="json",
+    )
+    assert result.status_code == 400
+    assert not product.variants.exists()
+
+
+def test_presentation_stock_failure_rolls_back_creation(admin, product):
+    with patch("apps.inventory.services.record_movement", side_effect=IntegrityError("stock")):
+        result = admin.post(
+            variant_url(product),
+            {
+                "price": "100",
+                "initial_stock": 5,
+            },
+            format="json",
+        )
+    assert result.status_code == 409
+    assert not product.variants.exists()
 
 
 def test_sku_unique_across_products_and_case(admin, product, variant):

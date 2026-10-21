@@ -23,9 +23,9 @@ def audit_changes(before, after):
 
 
 def variant_query():
-    return Variant.objects.select_related("product__category", "product__brand").prefetch_related(
-        "attribute_values__attribute"
-    )
+    return Variant.objects.select_related(
+        "product__category", "product__brand", "inventory_balance"
+    ).prefetch_related("attribute_values__attribute")
 
 
 class ProductVariantsView(PrivateAdminMixin, APIView):
@@ -42,7 +42,9 @@ class ProductVariantsView(PrivateAdminMixin, APIView):
                     Product.objects.select_for_update(),
                     pk=product_id,
                 )
-                serializer = VariantSerializer(data=request.data, context={"product": product})
+                serializer = VariantSerializer(
+                    data=request.data, context={"product": product, "request": request}
+                )
                 serializer.is_valid(raise_exception=True)
                 instance = serializer.save()
                 audit(request, instance, "create", audit_changes({}, variant_snapshot(instance)))

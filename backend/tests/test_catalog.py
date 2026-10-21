@@ -18,6 +18,7 @@ from apps.catalog.models import (
     Product,
     ProductImage,
     StorageDeletion,
+    Variant,
 )
 from apps.catalog.storage import StorageUnavailable, cleanup_images, validate_image
 from apps.users.models import User
@@ -58,6 +59,172 @@ def picture(name="photo.png", mime="image/png", size=(100, 80)):
     output = io.BytesIO()
     Image.new("RGB", size, "blue").save(output, "PNG")
     return SimpleUploadedFile(name, output.getvalue(), content_type=mime)
+
+
+def test_quick_product_creation_saves_price_codes_and_audit(admin, product):
+    payload = {
+        "name": "Mouse rápido",
+        "description": "Mouse inalámbrico",
+        "category": product.category_id,
+        "brand": product.brand_id,
+        "initial_price": "125000.50",
+        "is_active": True,
+    }
+    for _ in range(2):
+        response = admin.post("/api/v1/admin/products/", payload, format="json")
+        assert response.status_code == 201
+        created = Product.objects.get(pk=response.data["id"])
+        variant = created.variants.get()
+        assert str(variant.price) == "125000.50"
+        assert variant.name == "Estándar"
+        assert variant.sku.startswith("TTI-")
+        assert response.data["catalog_available"] is True
+        assert CatalogChange.objects.filter(entity="variant", entity_id=variant.pk).exists()
+    assert Product.objects.filter(name="Mouse rápido").values("slug").distinct().count() == 2
+
+
+@pytest.mark.parametrize("price", ["-1", "NaN", "10000000000", "1.234", None])
+def test_invalid_initial_price_does_not_create_product(admin, product, price):
+    before = Product.objects.count()
+    response = admin.post(
+        "/api/v1/admin/products/",
+        {
+            "name": "Inválido",
+            "description": "Prueba",
+            "category": product.category_id,
+            "brand": product.brand_id,
+            "initial_price": price,
+        },
+        format="json",
+    )
+    assert response.status_code == 400
+    assert Product.objects.count() == before
+
+
+def test_quick_creation_rolls_back_if_price_save_fails(admin, product):
+    before = Product.objects.count()
+    with patch.object(Variant.objects, "create", side_effect=IntegrityError("conflict")):
+        response = admin.post(
+            "/api/v1/admin/products/",
+            {
+                "name": "Rollback",
+                "description": "Prueba",
+                "category": product.category_id,
+                "brand": product.brand_id,
+                "initial_price": "100",
+            },
+            format="json",
+        )
+    assert response.status_code == 409
+    assert Product.objects.count() == before
+
+
+def test_initial_price_is_create_only(admin, product):
+    response = admin.patch(
+        f"/api/v1/admin/products/{product.pk}/",
+        {
+            "initial_price": "100",
+        },
+        format="json",
+    )
+    assert response.status_code == 400
+    assert not product.variants.exists()
+
+
+@pytest.mark.parametrize("stock", [0, 10])
+def test_quick_creation_registers_stock_and_public_availability(admin, product, stock):
+    from apps.inventory.models import StockMovement
+
+    response = admin.post(
+        "/api/v1/admin/products/",
+        {
+            "name": "Producto con existencias",
+            "description": "Prueba",
+            "category": product.category_id,
+            "brand": product.brand_id,
+            "initial_price": "150000",
+            "initial_stock": stock,
+            "is_active": True,
+        },
+        format="json",
+    )
+    assert response.status_code == 201
+    created = Product.objects.get(pk=response.data["id"])
+    variant = created.variants.get()
+    assert variant.inventory_balance.available_quantity == stock
+    assert response.data["total_stock"] == stock
+    assert StockMovement.objects.filter(variant=variant).count() == (1 if stock else 0)
+    if stock:
+        movement = StockMovement.objects.get(variant=variant)
+        assert movement.type == "ENTRY"
+        assert movement.actor.role == "ADMIN"
+        assert movement.resulting_quantity == stock
+    from apps.catalog.public_views import serialize_product_summary
+
+    summary = serialize_product_summary(created, {})
+    assert summary["is_available"] is (stock > 0)
+    assert summary["total_stock"] == stock
+
+
+@pytest.mark.parametrize("stock", [-1, "1.5", 2147483648])
+def test_quick_creation_rejects_invalid_stock(admin, product, stock):
+    before = Product.objects.count()
+    response = admin.post(
+        "/api/v1/admin/products/",
+        {
+            "name": "Inválido",
+            "description": "Prueba",
+            "category": product.category_id,
+            "brand": product.brand_id,
+            "initial_price": "100",
+            "initial_stock": stock,
+        },
+        format="json",
+    )
+    assert response.status_code == 400
+    assert Product.objects.count() == before
+
+
+def test_initial_stock_cannot_be_silently_ignored_or_overwrite_inventory(admin, product):
+    payload = {
+        "name": "Prueba",
+        "description": "Prueba",
+        "category": product.category_id,
+        "brand": product.brand_id,
+        "initial_stock": 10,
+    }
+    assert admin.post("/api/v1/admin/products/", payload, format="json").status_code == 400
+    assert (
+        admin.patch(
+            f"/api/v1/admin/products/{product.pk}/",
+            {
+                "initial_stock": 10,
+            },
+            format="json",
+        ).status_code
+        == 400
+    )
+
+
+def test_initial_stock_failure_rolls_back_product_and_price(admin, product):
+    before = Product.objects.count()
+    variants_before = Variant.objects.count()
+    with patch("apps.inventory.services.record_movement", side_effect=IntegrityError("stock")):
+        response = admin.post(
+            "/api/v1/admin/products/",
+            {
+                "name": "Rollback stock",
+                "description": "Prueba",
+                "category": product.category_id,
+                "brand": product.brand_id,
+                "initial_price": "100",
+                "initial_stock": 5,
+            },
+            format="json",
+        )
+    assert response.status_code == 409
+    assert Product.objects.count() == before
+    assert Variant.objects.count() == variants_before
 
 
 @pytest.mark.parametrize("kind", ["categories", "brands", "products", "catalog/limits"])

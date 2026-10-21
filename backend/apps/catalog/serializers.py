@@ -1,6 +1,14 @@
+from decimal import Decimal
+from uuid import uuid4
+
+from django.db import transaction
+from django.db.models import Sum
+from django.utils.text import slugify
 from rest_framework import serializers
 
-from .models import Brand, Category, Product, ProductImage
+from apps.inventory.models import MAX_QUANTITY
+
+from .models import Brand, Category, Product, ProductImage, Variant
 from .storage import image_url
 
 
@@ -45,11 +53,33 @@ class ImageSerializer(StrictModelSerializer):
 
 
 class ProductSerializer(StrictModelSerializer):
+    initial_stock = serializers.IntegerField(
+        min_value=0,
+        max_value=MAX_QUANTITY,
+        write_only=True,
+        required=False,
+    )
+    initial_price = serializers.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        min_value=Decimal("0"),
+        write_only=True,
+        required=False,
+    )
     images = ImageSerializer(many=True, read_only=True)
     category_name = serializers.CharField(source="category.name", read_only=True)
     brand_name = serializers.CharField(source="brand.name", read_only=True)
     catalog_visible = serializers.BooleanField(read_only=True)
     catalog_available = serializers.BooleanField(read_only=True)
+    total_stock = serializers.SerializerMethodField()
+
+    def get_total_stock(self, obj):
+        return (
+            obj.variants.filter(is_active=True, price__gte=0).aggregate(
+                total=Sum("inventory_balance__available_quantity")
+            )["total"]
+            or 0
+        )
 
     class Meta:
         model = Product
@@ -66,12 +96,58 @@ class ProductSerializer(StrictModelSerializer):
             "is_active",
             "catalog_visible",
             "catalog_available",
+            "total_stock",
             "images",
             "updated_at",
+            "initial_price",
+            "initial_stock",
         ]
         read_only_fields = ["id", "updated_at"]
+        extra_kwargs = {"slug": {"required": False}}
+
+    @transaction.atomic
+    def create(self, validated_data):
+        price = validated_data.pop("initial_price", None)
+        stock = validated_data.pop("initial_stock", 0)
+        if "slug" not in validated_data:
+            base = slugify(validated_data["name"])[:160] or "producto"
+            validated_data["slug"] = f"{base}-{uuid4().hex}"
+        product = super().create(validated_data)
+        if price is not None:
+            variant = Variant.objects.create(
+                product=product,
+                name="Estándar",
+                price=price,
+                sku=f"TTI-{uuid4().hex.upper()}",
+                is_active=True,
+            )
+            if stock:
+                from apps.inventory.models import StockMovement
+                from apps.inventory.services import record_movement
+
+                record_movement(
+                    variant_id=variant.pk,
+                    quantity=stock,
+                    reason="Existencias iniciales al registrar el producto",
+                    actor=self.context["request"].user,
+                    movement_type=StockMovement.Type.ENTRY,
+                )
+        return product
 
     def validate(self, attrs):
+        if "initial_stock" in attrs:
+            if self.instance:
+                raise serializers.ValidationError(
+                    {"initial_stock": "Actualiza las existencias desde Inventario."}
+                )
+            if "initial_price" not in attrs:
+                raise serializers.ValidationError(
+                    {"initial_stock": "Indica también el precio inicial del producto."}
+                )
+        if self.instance and "initial_price" in attrs:
+            raise serializers.ValidationError(
+                {"initial_price": "Este precio solo se usa al registrar un producto."}
+            )
         category = attrs.get("category")
         if (
             self.instance
