@@ -231,9 +231,8 @@ def _extract_text(response: dict) -> str | None:
     """Extract the text reply from a Gemini response, if present."""
     try:
         parts = response["candidates"][0]["content"]["parts"]
-        for part in parts:
-            if "text" in part:
-                return part["text"]
+        text = "".join(part.get("text", "") for part in parts if not part.get("thought"))
+        return text or None
     except (KeyError, IndexError):
         pass
     return None
@@ -306,7 +305,7 @@ class AssistantChatView(APIView):
             response = _call_gemini(api_key, contents)
 
             # Bound upstream calls to fit within the web request timeout.
-            for _ in range(2):
+            for round_number in range(2):
                 fn_calls = _extract_function_calls(response)
                 if not fn_calls:
                     break
@@ -335,27 +334,9 @@ class AssistantChatView(APIView):
                     )
 
                 contents.append({"role": "user", "parts": function_parts})
-                response = _call_gemini(api_key, contents)
+                response = _call_gemini(api_key, contents, include_tools=round_number == 0)
 
             text = _extract_text(response)
-            if text:
-                return Response({"reply": text})
-
-            contents.append(
-                {
-                    "role": "user",
-                    "parts": [
-                        {
-                            "text": (
-                                "Por favor responde brevemente al cliente en español colombiano "
-                                "con base en los datos consultados."
-                            )
-                        }
-                    ],
-                }
-            )
-            summary_resp = _call_gemini(api_key, contents, include_tools=False)
-            text = _extract_text(summary_resp)
             if text:
                 return Response({"reply": text})
 

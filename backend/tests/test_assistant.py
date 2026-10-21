@@ -4,6 +4,7 @@ import pytest
 
 from apps.assistant.views import (
     _call_gemini,
+    _extract_text,
     _get_product_detail,
     _search_products,
 )
@@ -11,6 +12,58 @@ from apps.catalog.models import Brand, Category, Product, Variant
 from apps.inventory.models import InventoryBalance
 
 pytestmark = pytest.mark.django_db
+
+
+def test_extract_text_excludes_thoughts_and_combines_reply():
+    response = {
+        "candidates": [
+            {
+                "content": {
+                    "parts": [
+                        {"thought": True, "text": "Internal reasoning"},
+                        {"text": "Hola "},
+                        {"text": "cliente"},
+                    ]
+                }
+            }
+        ]
+    }
+    assert _extract_text(response) == "Hola cliente"
+
+
+def test_assistant_forces_text_within_three_upstream_calls(client, monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "fake-key")
+    tool_turn = {
+        "candidates": [
+            {
+                "content": {
+                    "role": "model",
+                    "parts": [
+                        {"functionCall": {"name": "search_products", "args": {"query": "missing"}}},
+                    ],
+                }
+            }
+        ]
+    }
+    reply = {"candidates": [{"content": {"parts": [{"text": "No encontré productos."}]}}]}
+    with patch(
+        "apps.assistant.views._call_gemini", side_effect=[tool_turn, tool_turn, reply]
+    ) as call:
+        response = client.post(
+            "/api/v1/assistant/chat/", {"message": "Busca productos"}, format="json"
+        )
+    assert response.status_code == 200
+    assert call.call_count == 3
+    assert call.call_args.kwargs == {"include_tools": False}
+
+
+def test_gemini_can_disable_tools_for_final_reply():
+    with patch("apps.assistant.views.urllib.request.urlopen") as upstream:
+        upstream.return_value.__enter__.return_value.read.return_value = b"{}"
+        _call_gemini("fake-key", [], include_tools=False)
+    import json
+
+    assert "tools" not in json.loads(upstream.call_args.args[0].data)
 
 
 def test_gemini_transport_uses_configured_model_and_secret_header(monkeypatch):
