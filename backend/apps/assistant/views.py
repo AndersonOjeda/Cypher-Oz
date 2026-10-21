@@ -208,10 +208,10 @@ def _build_contents(message: str, history: list[dict]) -> list[dict]:
 
 def _call_gemini(api_key: str, contents: list[dict]) -> dict:
     """Send a request to the Gemini API and return the parsed JSON response."""
-    model = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
+    model = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"{model}:generateContent?key={api_key}"
+        f"{model}:generateContent"
     )
     payload = {
         "system_instruction": {"parts": [{"text": SYSTEM_PROMPT}]},
@@ -223,10 +223,10 @@ def _call_gemini(api_key: str, contents: list[dict]) -> dict:
     req = urllib.request.Request(
         url,
         data=data,
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=25) as resp:
+    with urllib.request.urlopen(req, timeout=8) as resp:
         return json.loads(resp.read().decode())
 
 
