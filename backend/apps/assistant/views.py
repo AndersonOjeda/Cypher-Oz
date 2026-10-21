@@ -206,17 +206,14 @@ def _build_contents(message: str, history: list[dict]) -> list[dict]:
     return contents
 
 
-def _call_gemini(api_key: str, contents: list[dict]) -> dict:
+def _call_gemini(api_key: str, contents: list[dict], include_tools: bool = True) -> dict:
     """Send a request to the Gemini API and return the parsed JSON response."""
     model = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
-    url = (
-        f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"{model}:generateContent"
-    )
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     payload = {
         "system_instruction": {"parts": [{"text": SYSTEM_PROMPT}]},
         "contents": contents,
-        "tools": GEMINI_TOOLS,
+        **({"tools": GEMINI_TOOLS} if include_tools else {}),
         "generationConfig": {"maxOutputTokens": 768},
     }
     data = json.dumps(payload).encode()
@@ -341,6 +338,24 @@ class AssistantChatView(APIView):
                 response = _call_gemini(api_key, contents)
 
             text = _extract_text(response)
+            if text:
+                return Response({"reply": text})
+
+            contents.append(
+                {
+                    "role": "user",
+                    "parts": [
+                        {
+                            "text": (
+                                "Por favor responde brevemente al cliente en español colombiano "
+                                "con base en los datos consultados."
+                            )
+                        }
+                    ],
+                }
+            )
+            summary_resp = _call_gemini(api_key, contents, include_tools=False)
+            text = _extract_text(summary_resp)
             if text:
                 return Response({"reply": text})
 

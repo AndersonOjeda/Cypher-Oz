@@ -88,3 +88,30 @@ Seguimiento final: el comprobador cloud usa psycopg 3, no carga la base local y
 devuelve exit code 2 si hay verificaciones omitidas; seis regresiones aprueban estos
 limites. La bandeja muestra tambien el deadline T2 con hora de Bogota; la suite
 frontend de 114 casos, lint, tipos y build se repitieron y aprobaron ese ajuste.
+
+Revisión adicional de nube (20 de octubre): Vercel ejecuta `cb51759`; Render sigue
+LIVE en `1c48353`, con el mismo código backend de main. Se repitió el smoke:
+ocho HTTP aprobados y conexión directa a PostgreSQL omitida. DevTools comprobó
+catálogo y detalle por slug sin errores de consola antes de las pruebas negativas
+ni desbordamiento horizontal (viewport estrecho efectivo: 502 px). Las rutas de
+pedidos de cliente y administración, y pagos administrativos, devolvieron 401 sin
+sesión. El comparador rechazó duplicados y overflow de bigint con 400 y productos
+ausentes con 404. No hay errores de Render en la consulta desde el último deploy.
+El catálogo remoto contiene un solo producto de prueba, sin imagen; no acredita
+el escenario de 50 productos.
+
+Con la sesión administradora abierta por el usuario se completó una aceptación
+controlada en staging: dos productos temporales, cuenta cliente `example.invalid`,
+comparación visible en el navegador, creación de pedido y reporte de referencia
+simulada, rechazo con motivo y plazo de 24 horas, corrección, confirmación simulada
+sin dinero real y avance Preparar → Despachar → Entregar. Un segundo pedido se
+canceló y restituyó una unidad (stock inicial 2, final 1 tras la entrega del primero).
+La API devolvió 403 al confirmar sin CSRF y al consultar pagos administrativos como
+cliente; cancelaciones de un pedido entregado/pagado y de uno ya cancelado devolvieron
+409. El detalle administrativo abrió su modal sin errores de consola. Las mutaciones
+se comprobaron por API autenticada; esto no sustituye las 48 pruebas UI de CI.
+Se desactivaron productos, variantes, categoría y marca temporales; el catálogo público
+volvió a un producto. Se conservaron los dos pedidos y su historial identificado con
+`cloud-review-1792531043389` para trazabilidad. No se enviaron correos, cambiaron
+contraseñas de usuarios existentes ni crearon servicios. Los IDs y resultados están
+en `docs/evidence/sprint-7/verification.json`.
