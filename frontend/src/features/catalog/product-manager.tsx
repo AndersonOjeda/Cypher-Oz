@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useEditorNavigation } from "./use-editor-navigation";
 import { api } from "@/services/api";
@@ -94,29 +94,44 @@ export function ProductManager() {
       );
     }
   }
-  async function edit(id: number) {
-    setBusy(true);
-    setError("");
-    setMessage("");
-    try {
-      const item = await api<Product>(`/admin/products/${id}/`);
-      setEditing(item);
-      showEditor();
-      setForm({
-        name: item.name,
-        slug: item.slug,
-        description: item.description,
-        warranty: item.warranty,
-        category: String(item.category),
-        brand: String(item.brand),
-        is_active: item.is_active,
+  const edit = useCallback(
+    async (id: number) => {
+      setBusy(true);
+      setError("");
+      setMessage("");
+      try {
+        const item = await api<Product>(`/admin/products/${id}/`);
+        setEditing(item);
+        showEditor();
+        setForm({
+          name: item.name,
+          slug: item.slug,
+          description: item.description,
+          warranty: item.warranty,
+          category: String(item.category),
+          brand: String(item.brand),
+          is_active: item.is_active,
+        });
+      } catch (err) {
+        setError(errorText(err));
+      } finally {
+        setBusy(false);
+      }
+    },
+    [showEditor],
+  );
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("editar");
+    let active = true;
+    if (requested && /^[1-9]\d{0,14}$/.test(requested)) {
+      Promise.resolve().then(() => {
+        if (active) void edit(Number(requested));
       });
-    } catch (err) {
-      setError(errorText(err));
-    } finally {
-      setBusy(false);
     }
-  }
+    return () => {
+      active = false;
+    };
+  }, [edit]);
   async function save(event: FormEvent) {
     event.preventDefault();
     setBusy(true);

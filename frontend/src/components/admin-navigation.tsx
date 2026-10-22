@@ -10,10 +10,12 @@ import {
   Settings,
   ShoppingBag,
   Users,
+  Sparkles,
 } from "lucide-react";
 
 const sections = [
   { href: "/admin/catalogo", label: "Administrar catálogo", icon: Package },
+  { href: "/admin/secretaria", label: "Secretaria IA", icon: Sparkles },
   { href: "/admin/inventario", label: "Inventario", icon: Boxes },
   { href: "/admin/pedidos", label: "Gestión de pedidos", icon: ShoppingBag },
   { href: "/admin/pagos", label: "Verificación de pagos", icon: CreditCard },

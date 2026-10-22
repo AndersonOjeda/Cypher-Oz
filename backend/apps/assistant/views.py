@@ -285,6 +285,10 @@ class AssistantChatView(APIView):
     throttle_classes = [AssistantThrottle]
     authentication_classes = []
 
+    def get_throttles(self):
+        # Availability probes make no provider calls and must not consume chat quota.
+        return [] if self.request.method == "GET" else super().get_throttles()
+
     def get(self, request):
         return Response({"available": bool(os.getenv("GEMINI_API_KEY", "").strip())})
 

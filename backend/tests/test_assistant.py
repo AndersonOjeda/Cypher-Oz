@@ -123,6 +123,14 @@ def test_assistant_availability(client, monkeypatch):
     assert r.data == {"available": False}
 
 
+def test_availability_probes_do_not_consume_chat_quota(client, monkeypatch):
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    for _ in range(20):
+        assert client.get("/api/v1/assistant/chat/").status_code == 200
+    response = client.post("/api/v1/assistant/chat/", {"message": "Hola"}, format="json")
+    assert response.status_code == 503
+
+
 def test_assistant_missing_api_key(client, monkeypatch):
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     r = client.post(

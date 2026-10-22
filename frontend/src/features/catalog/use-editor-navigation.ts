@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Move to the editor after React has rendered the requested record. */
 export function useEditorNavigation() {
   const editorRef = useRef<HTMLHeadingElement>(null);
   const [request, setRequest] = useState(0);
+  const showEditor = useCallback(() => setRequest((value) => value + 1), []);
 
   useEffect(() => {
     if (!request) return;
@@ -22,6 +23,6 @@ export function useEditorNavigation() {
 
   return {
     editorRef,
-    showEditor: () => setRequest((value) => value + 1),
+    showEditor,
   };
 }
