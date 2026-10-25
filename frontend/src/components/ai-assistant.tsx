@@ -1,8 +1,14 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 
-type Message = { role: "user" | "assistant"; content: string };
+type ReferencedProduct = { name: string; slug: string; is_available: boolean };
+type Message = {
+  role: "user" | "assistant";
+  content: string;
+  products?: ReferencedProduct[];
+};
 
 const INITIAL_MESSAGES: Message[] = [
   {
@@ -85,6 +91,7 @@ export function AiAssistant() {
         {
           role: "assistant",
           content: data.reply || "No pude procesar tu solicitud.",
+          products: Array.isArray(data.products) ? data.products : [],
         },
       ]);
     } catch (error) {
@@ -187,6 +194,17 @@ export function AiAssistant() {
                   <span className="ai-avatar">🤖</span>
                 )}
                 <p>{msg.content}</p>
+                {msg.role === "assistant" && msg.products?.length ? (
+                  <div className="ai-product-links" aria-label="Productos mencionados">
+                    <span className="ai-product-links-label">Ver en el catálogo</span>
+                    {msg.products.map((product) => (
+                      <Link key={product.slug} href={`/catalogo/${encodeURIComponent(product.slug)}`}>
+                        {product.name}
+                        {!product.is_available && <span className="ai-product-unavailable"> · agotado</span>}
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             ))}
             {loading && (

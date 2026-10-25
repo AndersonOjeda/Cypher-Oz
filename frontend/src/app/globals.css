@@ -668,6 +668,19 @@ footer p span {
   color: white;
   border-bottom-right-radius: 4px;
 }
+.ai-product-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0 0 34px;
+  padding: 8px 10px;
+  border-left: 2px solid #c7d2fe;
+  font-size: 12px;
+}
+.ai-product-links-label { color: #64748b; font-weight: 600; }
+.ai-product-links a { color: #4338ca; text-decoration: underline; text-underline-offset: 2px; }
+.ai-product-links a:hover { color: #312e81; }
+.ai-product-unavailable { color: #9f1239; text-decoration: none; }
 .ai-avatar {
   font-size: 20px;
   flex-shrink: 0;

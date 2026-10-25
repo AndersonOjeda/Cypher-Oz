@@ -387,6 +387,29 @@
   text-decoration: underline;
 }
 
+.product-recommendation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 16px 0 24px;
+  padding: 12px 16px;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  background: #f8fbff;
+  color: #334155;
+  font-size: 13px;
+}
+.product-recommendation > div:first-child { display: grid; gap: 3px; }
+.product-recommendation-kicker { color: #2563eb; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.product-recommendation-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.product-recommendation-links a { color: #1d4ed8; font-weight: 600; text-decoration: none; }
+.product-recommendation-links a:hover { text-decoration: underline; }
+@media (max-width: 640px) {
+  .product-recommendation { align-items: flex-start; flex-direction: column; }
+  .product-recommendation-links { justify-content: flex-start; }
+}
+
 .detail-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);

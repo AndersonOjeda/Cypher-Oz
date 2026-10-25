@@ -307,6 +307,7 @@ class AssistantChatView(APIView):
 
         try:
             response = _call_gemini(api_key, contents)
+            referenced_products: dict[str, dict] = {}
 
             # Bound upstream calls to fit within the web request timeout.
             for round_number in range(2):
@@ -325,6 +326,20 @@ class AssistantChatView(APIView):
                     handler = TOOL_DISPATCH.get(fn_name)
                     if handler:
                         result = handler(**fn_args)
+                        if isinstance(result, list):
+                            for product in result:
+                                if isinstance(product, dict) and product.get("slug"):
+                                    referenced_products[product["slug"]] = {
+                                        "name": product.get("name", ""),
+                                        "slug": product["slug"],
+                                        "is_available": bool(product.get("is_available")),
+                                    }
+                        elif isinstance(result, dict) and result.get("slug"):
+                            referenced_products[result["slug"]] = {
+                                "name": result.get("name", ""),
+                                "slug": result["slug"],
+                                "is_available": bool(result.get("is_available")),
+                            }
                     else:
                         result = {"error": f"Función desconocida: {fn_name}"}
                     function_parts.append(
@@ -342,7 +357,7 @@ class AssistantChatView(APIView):
 
             text = _extract_text(response)
             if text:
-                return Response({"reply": text})
+                return Response({"reply": text, "products": list(referenced_products.values())})
 
             return Response({"reply": FALLBACK_REPLY}, status=503)
 

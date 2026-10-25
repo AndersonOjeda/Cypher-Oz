@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -16,6 +16,8 @@ import { cop } from "@/features/orders/types";
 import { useResource } from "./shared";
 import type { PublicProductDetail, PublicVariant } from "./types";
 import { CompareButton } from "./product-comparator";
+import { api } from "@/services/api";
+import type { Page, PublicProductSummary } from "./types";
 
 export function ProductDetail({ slug }: { slug: string }) {
   const [revision, setRevision] = useState(0);
@@ -34,6 +36,24 @@ export function ProductDetail({ slug }: { slug: string }) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [addedNotice, setAddedNotice] = useState(false);
+  const [recommendations, setRecommendations] = useState<PublicProductSummary[]>([]);
+
+  useEffect(() => {
+    if (!product?.category.slug) return;
+    let active = true;
+    api<Page<PublicProductSummary>>(
+      `/products/?category=${encodeURIComponent(product.category.slug)}&page_size=4&ordering=name`,
+    )
+      .then((result) => {
+        if (active) setRecommendations(result.results.filter((item) => item.slug !== product.slug).slice(0, 3));
+      })
+      .catch(() => {
+        if (active) setRecommendations([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [product]);
 
   const [selectionKey, setSelectionKey] = useState(`${slug}:${revision}`);
   if (selectionKey !== `${slug}:${revision}`) {
@@ -135,6 +155,22 @@ export function ProductDetail({ slug }: { slug: string }) {
         <span>/</span>
         <span aria-current="page">{product.name}</span>
       </nav>
+
+      {recommendations.length > 0 && (
+        <aside className="product-recommendation" aria-label="Sugerencias de productos">
+          <div>
+            <span className="product-recommendation-kicker">Sugerencia para ti</span>
+            <strong>También puedes revisar estos productos similares</strong>
+          </div>
+          <div className="product-recommendation-links">
+            {recommendations.map((item) => (
+              <Link key={item.id} href={`/catalogo/${encodeURIComponent(item.slug)}`}>
+                {item.name}
+              </Link>
+            ))}
+          </div>
+        </aside>
+      )}
 
       <div className="detail-layout">
         {/* Left Column: Image Gallery */}
