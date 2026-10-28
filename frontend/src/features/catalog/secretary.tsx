@@ -224,9 +224,22 @@ function ProductIntake() {
           is_active: false,
         }),
       });
+      let imageAttached = false;
+      if (file && drafts.length === 1) {
+        const imageBody = new FormData();
+        imageBody.set("file", file);
+        imageBody.set("alt_text", draft.name);
+        await api(`/admin/products/${product.id}/images/`, {
+          method: "POST",
+          body: imageBody,
+        });
+        imageAttached = true;
+      }
       update(index, { saved: product });
       setNotice(
-        `${product.name} guardado sin publicar, con su precio y unidades. Puedes añadir sus fotos y publicarlo desde Administrar catálogo.`,
+        imageAttached
+          ? `${product.name} guardado sin publicar con sus unidades y foto de referencia. Revisa la imagen y publícalo desde Administrar catálogo.`
+          : `${product.name} guardado sin publicar, con su precio y unidades. Puedes añadir sus fotos y publicarlo desde Administrar catálogo.`,
       );
     } catch (err) {
       setError(errorText(err));
@@ -275,8 +288,8 @@ function ProductIntake() {
           />
         </label>
         <p className="catalog-help">
-          JPEG, PNG o WebP, hasta 5 MB. Se envía a Gemini para leerla; no se
-          publica como foto del producto.
+          JPEG, PNG o WebP, hasta 5 MB. Si la foto contiene un solo producto,
+          también se conservará como imagen de su borrador al guardarlo.
         </p>
         <button
           className="button primary"
