@@ -27,6 +27,8 @@ class User(AbstractBaseUser):
     name = models.CharField(max_length=150)
     role = models.CharField(max_length=6, choices=Role, default=Role.CLIENT)
     is_active = models.BooleanField(default=True)
+    # Existing accounts stay usable; new registrations are explicitly verified.
+    email_verified = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     objects = UserManager()
     USERNAME_FIELD = "email"
@@ -95,4 +97,16 @@ class PasswordResetToken(models.Model):
 
     class Meta:
         db_table = "password_reset_tokens"
+        indexes = [models.Index(fields=["token_hash", "expires_at"])]
+
+
+class EmailVerificationToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="email_verification_tokens")
+    token_hash = models.CharField(max_length=64, unique=True)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "email_verification_tokens"
         indexes = [models.Index(fields=["token_hash", "expires_at"])]

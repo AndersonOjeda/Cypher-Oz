@@ -83,7 +83,7 @@ export function AuthForm({
         </div>
         <h1>Tu cuenta está lista</h1>
         <p role="status">
-          Te registraste correctamente. Inicia sesión para acceder a tu cuenta.
+          Te enviamos un enlace de verificación. Confirma tu correo antes de iniciar sesión.
         </p>
         <Link
           className="button primary"

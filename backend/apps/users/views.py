@@ -1,6 +1,6 @@
 import hashlib
 import secrets
-from datetime import datetime
+from datetime import datetime, timedelta
 from datetime import timezone as datetime_timezone
 
 from django.conf import settings
@@ -20,8 +20,8 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .authentication import enforce_csrf
-from .email import EmailDeliveryError, send_password_reset_email
-from .models import AuthSession, PasswordResetToken, User
+from .email import EmailDeliveryError, send_password_reset_email, send_verification_email
+from .models import AuthSession, EmailVerificationToken, PasswordResetToken, User
 from .serializers import (
     AddressSerializer,
     LoginSerializer,
@@ -92,6 +92,20 @@ class RegisterView(PublicAuthView):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        token = secrets.token_urlsafe(48)
+        verification = EmailVerificationToken.objects.create(
+            user=user,
+            token_hash=reset_token_hash(token),
+            expires_at=timezone.now() + timedelta(hours=24),
+        )
+        try:
+            send_verification_email(
+                user.email, f"{settings.FRONTEND_URL}/verificar-cuenta?token={token}"
+            )
+        except EmailDeliveryError:
+            verification.delete()
+            user.delete()
+            raise EmailServiceUnavailable
         return private_response(UserSerializer(user).data, status=201)
 
 
@@ -106,6 +120,8 @@ class LoginView(PublicAuthView):
         )
         if user is None:
             raise AuthenticationFailed("Correo o contraseña incorrectos.")
+        if not user.email_verified:
+            raise AuthenticationFailed("Confirma tu correo antes de iniciar sesión.")
         refresh = RefreshToken.for_user(user)
         session = AuthSession.objects.create(
             user=user,
@@ -183,6 +199,48 @@ class LogoutView(PublicAuthView):
 
 def reset_token_hash(token):
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+class VerifyEmailView(PublicAuthView):
+    throttle_classes = [PasswordResetThrottle]
+
+    def post(self, request):
+        token = str(request.data.get("token", ""))
+        with transaction.atomic():
+            verification = (
+                EmailVerificationToken.objects.select_for_update()
+                .select_related("user")
+                .filter(token_hash=reset_token_hash(token), used_at__isnull=True)
+                .first()
+            )
+            if not token or len(token) > 128 or verification is None or verification.expires_at <= timezone.now():
+                return private_response({"code": "INVALID_VERIFICATION_TOKEN", "message": "El enlace no es válido o ya venció."}, status=400)
+            verification.user.email_verified = True
+            verification.user.save(update_fields=["email_verified"])
+            verification.used_at = timezone.now()
+            verification.save(update_fields=["used_at"])
+        return private_response({"message": "Correo confirmado. Ya puedes iniciar sesión."})
+
+
+class ResendVerificationView(PublicAuthView):
+    throttle_classes = [PasswordResetThrottle]
+
+    def post(self, request):
+        email = str(request.data.get("email", "")).strip().lower()
+        user = User.objects.filter(email__iexact=email, is_active=True, email_verified=False).first()
+        if user:
+            token = secrets.token_urlsafe(48)
+            EmailVerificationToken.objects.filter(user=user, used_at__isnull=True).update(used_at=timezone.now())
+            EmailVerificationToken.objects.create(
+                user=user,
+                token_hash=reset_token_hash(token),
+                expires_at=timezone.now() + timedelta(hours=24),
+            )
+            try:
+                send_verification_email(user.email, f"{settings.FRONTEND_URL}/verificar-cuenta?token={token}")
+            except EmailDeliveryError:
+                raise EmailServiceUnavailable
+        return private_response({"message": "Si la cuenta necesita verificación, enviaremos un nuevo enlace."})
 
 
 class PasswordResetRequestView(PublicAuthView):

@@ -23,8 +23,10 @@ from apps.users.views import (
     MeView,
     PasswordResetConfirmView,
     PasswordResetRequestView,
+    ResendVerificationView,
     RefreshView,
     RegisterView,
+    VerifyEmailView,
 )
 
 urlpatterns = [
@@ -45,6 +47,8 @@ urlpatterns = [
     path("health/", health),
     path("api/v1/auth/csrf/", CsrfView.as_view()),
     path("api/v1/auth/register/", RegisterView.as_view()),
+    path("api/v1/auth/verify-email/", VerifyEmailView.as_view()),
+    path("api/v1/auth/resend-verification/", ResendVerificationView.as_view()),
     path("api/v1/auth/login/", LoginView.as_view()),
     path("api/v1/auth/refresh/", RefreshView.as_view()),
     path("api/v1/auth/logout/", LogoutView.as_view()),

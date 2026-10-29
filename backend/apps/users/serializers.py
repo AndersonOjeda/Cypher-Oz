@@ -120,7 +120,7 @@ class RegisterSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         password = validated_data.pop("password")
-        user = User(**validated_data, role=User.Role.CLIENT)
+        user = User(**validated_data, role=User.Role.CLIENT, email_verified=False)
         user.set_password(password)
         try:
             with transaction.atomic():
