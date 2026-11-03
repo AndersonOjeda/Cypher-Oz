@@ -65,4 +65,3 @@ def _send_transactional_email(recipient, subject, text):
             return json.loads(response.read().decode("utf-8"))
     except (HTTPError, URLError, TimeoutError) as exc:
         raise EmailDeliveryError from exc
-

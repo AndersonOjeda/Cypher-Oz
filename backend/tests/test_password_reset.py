@@ -192,4 +192,3 @@ def test_invalid_expired_and_mismatched_password_are_rejected(client, user):
         format="json",
     )
     assert mismatch.status_code == 400
-
