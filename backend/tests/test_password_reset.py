@@ -58,6 +58,8 @@ def test_request_uses_brevo_transactional_email_api(urlopen, client, user):
     assert payload["sender"] == {"name": "Cypher Oz", "email": "no-reply@example.com"}
     assert payload["to"] == [{"email": user.email}]
     assert "token=" in payload["textContent"]
+    assert "Crear nueva contraseña" in payload["htmlContent"]
+    assert "token=" in payload["htmlContent"]
 
 
 @override_settings(
@@ -77,6 +79,8 @@ def test_verification_uses_brevo_transactional_email_api(urlopen):
     assert request.full_url == "https://api.brevo.com/v3/smtp/email"
     assert payload["to"] == [{"email": "client@example.com"}]
     assert "token=t1" in payload["textContent"]
+    assert "Verificar mi correo" in payload["htmlContent"]
+    assert "token=t1" in payload["htmlContent"]
 
 
 @pytest.mark.django_db
@@ -107,8 +111,8 @@ def test_request_returns_503_and_discards_token_without_brevo_sender(urlopen, cl
 
 @pytest.mark.django_db
 @override_settings(BREVO_API_KEY="")
-@patch("apps.users.email.send_mail", side_effect=OSError("blocked"))
-def test_request_returns_503_when_smtp_is_unavailable(send_mail, client, user):
+@patch("apps.users.email.EmailMultiAlternatives.send", side_effect=OSError("blocked"))
+def test_request_returns_503_when_smtp_is_unavailable(send, client, user):
     response = client.post(REQUEST, {"email": user.email}, format="json")
 
     assert response.status_code == 503
