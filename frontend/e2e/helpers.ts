@@ -5,7 +5,7 @@ export async function verifyRegisteredEmail(
   email: string,
 ) {
   const linkResponse = await request.get(
-    `/__e2e__/verification-token/?email=${encodeURIComponent(email)}`,
+    `http://127.0.0.1:8001/__e2e__/verification-token/?email=${encodeURIComponent(email)}`,
   );
   expect(linkResponse.status(), await linkResponse.text()).toBe(200);
   const { token } = await linkResponse.json();
