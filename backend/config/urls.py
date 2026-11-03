@@ -24,9 +24,9 @@ from apps.users.views import (
     MeView,
     PasswordResetConfirmView,
     PasswordResetRequestView,
-    ResendVerificationView,
     RefreshView,
     RegisterView,
+    ResendVerificationView,
     VerifyEmailView,
 )
 

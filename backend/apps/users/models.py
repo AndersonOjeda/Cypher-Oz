@@ -101,7 +101,9 @@ class PasswordResetToken(models.Model):
 
 
 class EmailVerificationToken(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="email_verification_tokens")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="email_verification_tokens"
+    )
     token_hash = models.CharField(max_length=64, unique=True)
     expires_at = models.DateTimeField()
     used_at = models.DateTimeField(null=True, blank=True)
