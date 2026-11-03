@@ -1,7 +1,7 @@
 # Sprint 8 — Implementación y evidencia local
 
 Fecha de revisión: 2026-11-03\
-Jira: épica [CO-183](https://cypher-oz.atlassian.net/browse/CO-183), historias CO-184–CO-187, subtareas CO-188–CO-199. Sprint 78, tablero 2.
+Jira: épica [CO-183](https://cypher-oz.atlassian.net/browse/CO-183), historias CO-184–CO-187, subtareas CO-188–CO-199. Sprint 8, tablero 2.
 
 ## Entrega implementada
 
@@ -32,7 +32,7 @@ Las pruebas Django se ejecutaron con `DATABASE_URL=sqlite:///:memory:` porque el
 - Ejecutar recorrido E2E integrado con API: pedido entregado/pagado → reseña → consulta pública → reporte → moderación; recoger capturas reales.
 - Revisar manualmente móvil/escritorio, teclado y estados de carga/error/vacío.
 - Completar las 48 actividades y adjuntar resultados/capturas/CI a sus issues; revisión y aceptación del responsable del producto.
-- Acordar fechas e iniciar/planificar el Sprint 78: Jira todavía lo reporta futuro.
+- Iniciar/planificar el Sprint 8: Jira todavía lo reporta futuro y sus fechas quedan pendientes por decisión del usuario.
 
 **Decisión de estado:** las historias y tareas QA no deben marcarse `Listo` mientras falten PostgreSQL, E2E y evidencias de revisión. El código y la verificación local sí están respaldados por los resultados arriba.
 
@@ -47,6 +47,16 @@ incluye `frontend/src/app/admin/resenas`; los cambios revisados de Sprint 8
 siguen sin commit. Por tanto, la implementación no se ha integrado ni se puede
 considerar publicada. No se modificó el deployment de producción.
 
-Jira conserva Sprint 78 en Futuro y sin fechas, según decisión del usuario.
+Jira conserva Sprint 8 en Futuro y sin fechas, según decisión del usuario.
 CO-183 y CO-184–CO-199 siguen abiertos hasta integrar el código, ejecutar CI y
 cerrar los pendientes de PostgreSQL, E2E, responsive/accesibilidad y aceptación.
+
+## Actualización de entrega — 03/11/2026
+
+- PR draft [#23](https://github.com/AndersonOjeda/Cypher-Oz/pull/23), rama `feature/sprint-8-trust-delivery`, último commit evaluado `077875d2`.
+- El preview de Vercel para ese commit está `READY`; `/admin/resenas` responde HTTP 200 y muestra la pantalla de moderación.
+- El mismo preview consulta el backend actual de Render. `/api/v1/settings/commercial/` y `/api/v1/products/test/reviews/` responden HTTP 404 (`x-render-origin-server: gunicorn`), por lo que la integración del backend aún no está desplegada.
+- CI `TTI validation`, ejecución 141, llegó a PostgreSQL: 398 pruebas pasaron y 3 pruebas de `tests/test_reviews.py` fallaron porque `select_for_update()` intentaba bloquear una relación de pago nullable (`FOR UPDATE cannot be applied to the nullable side of an outer join`). La consulta se corrigió con `select_for_update(of=("self",))`; falta CI posterior para acreditar la corrección.
+- El PR sigue draft y abierto. No se integró en `main` ni se alteró producción. Las fechas del Sprint 8 siguen pendientes.
+
+La evidencia anterior sobre cambios sin commit corresponde al estado previo del PR; esta actualización registra el estado posterior.

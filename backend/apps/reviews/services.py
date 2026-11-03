@@ -146,7 +146,7 @@ def create_verified_review(user, validated_data):
         Product.objects.select_for_update().get(pk=product_id)
 
         existing = (
-            ProductReview.objects.select_for_update()
+            ProductReview.objects.select_for_update(of=("self",))
             .select_related("user", "order_item__order__payment")
             .filter(user=user, product_id=product_id)
             .first()
@@ -183,7 +183,7 @@ def update_own_review(user, review_id: int, validated_data):
     with transaction.atomic():
         User.objects.select_for_update().get(pk=user.pk)
         review = (
-            ProductReview.objects.select_for_update()
+            ProductReview.objects.select_for_update(of=("self",))
             .select_related("user", "product", "order_item__order__payment")
             .filter(pk=review_id)
             .first()
@@ -262,7 +262,7 @@ def report_review(user, review_id: int, reason: str):
 def moderate_review(admin_user, review_id: int, action: str, reason: str):
     with transaction.atomic():
         review = (
-            ProductReview.objects.select_for_update()
+            ProductReview.objects.select_for_update(of=("self",))
             .select_related("user", "product", "order_item__order__payment")
             .filter(pk=review_id)
             .first()
