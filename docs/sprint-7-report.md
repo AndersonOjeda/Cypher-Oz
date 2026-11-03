@@ -115,3 +115,21 @@ volvió a un producto. Se conservaron los dos pedidos y su historial identificad
 `cloud-review-1792531043389` para trazabilidad. No se enviaron correos, cambiaron
 contraseñas de usuarios existentes ni crearon servicios. Los IDs y resultados están
 en `docs/evidence/sprint-7/verification.json`.
+
+## Estado de entrega — 03/11/2026
+
+La comprobacion de Render del workspace AnderOz encontro la API de staging LIVE
+en `15ae3e63` (29/10) y PostgreSQL disponible con plan gratuito que vence
+13/11/2026. No se encontro ningun servicio cron; por ello el scheduler remoto
+T1/T2 sigue sin acreditarse. El usuario confirma Vercel como frontend oficial:
+el alias de produccion `cypher-oz.vercel.app` esta `READY`, pero su deployment
+mas reciente fue creado desde CLI sin SHA Git. El deploy anterior ligado a
+`main`/`15ae3e63` tambien esta `READY` y tiene check Vercel verde. No se obtuvo
+una nueva ejecucion de GitHub Actions para ese commit. El frontend de Render
+antiguo no se toma como destino de entrega.
+
+Sprint 7 permanece con CO-45, CO-46 y CO-47 En curso. No se cierran hasta
+comprobar regresion y criterios finales, scheduler/respaldo/recuperacion y
+trazabilidad/aceptacion con evidencia actual. La evidencia remota previa del
+20/10 no sustituye esos controles faltantes. El detalle esta en el
+[informe de auditoria del proyecto](evidence/project-audit-2026-11-03.md).

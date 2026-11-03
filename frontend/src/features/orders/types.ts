@@ -18,6 +18,27 @@ export type QuoteLine = {
   unit_price: string;
   discount: string;
   total: string;
+  id?: number;
+  order_item_id?: number;
+  product_id?: number;
+  product_slug?: string;
+  review_eligibility?: {
+    can_review: boolean;
+    existing_review: CustomerReview | null;
+  };
+};
+export type CustomerReview = {
+  id: number;
+  product_id: number;
+  rating: number;
+  comment: string;
+  author_name: string;
+  verified_purchase: boolean;
+  verified_label: string;
+  visibility?: "VISIBLE" | "HIDDEN";
+  is_edited: boolean;
+  edited_at: string | null;
+  created_at: string;
 };
 export type Quote = {
   items: QuoteLine[];

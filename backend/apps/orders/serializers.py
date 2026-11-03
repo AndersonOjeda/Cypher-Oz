@@ -68,10 +68,42 @@ class CreateOrderSerializer(CheckoutSerializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    product_id = serializers.IntegerField(source="variant.product_id", read_only=True)
+    product_slug = serializers.CharField(source="variant.product.slug", read_only=True)
+    review_eligibility = serializers.SerializerMethodField()
+
+    def get_review_eligibility(self, obj):
+        from apps.reviews.models import ProductReview
+        from apps.reviews.serializers import serialize_customer_review
+
+        order = obj.order
+        payment = getattr(order, "payment", None)
+        can_review = bool(
+            order.status == "DELIVERED" and payment is not None and payment.status == "CONFIRMED"
+        )
+        reviews_map = getattr(order, "_reviews_by_product", None)
+        if reviews_map is None:
+            product_ids = [item.variant.product_id for item in order.items.all()]
+            reviews_map = {
+                r.product_id: r
+                for r in ProductReview.objects.filter(
+                    user_id=order.user_id, product_id__in=product_ids
+                ).select_related("user", "order_item__order__payment")
+            }
+            order._reviews_by_product = reviews_map
+        existing = reviews_map.get(obj.variant.product_id)
+        return {
+            "can_review": can_review,
+            "existing_review": serialize_customer_review(existing) if existing else None,
+        }
+
     class Meta:
         model = OrderItem
         fields = [
+            "id",
             "variant_id",
+            "product_id",
+            "product_slug",
             "product_name",
             "variant_name",
             "sku",
@@ -80,6 +112,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "discount",
             "total",
             "promotion",
+            "review_eligibility",
         ]
 
 

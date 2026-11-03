@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "apps.orders",
     "apps.promotions",
     "apps.assistant",
+    "apps.reviews",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -85,8 +86,9 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").lower() == "true"
 EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "10"))
-RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
-RESEND_FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL", "Cypher Oz <onboarding@resend.dev>")
+BREVO_API_KEY = os.getenv("BREVO_API_KEY", "").strip()
+BREVO_FROM_EMAIL = os.getenv("BREVO_FROM_EMAIL", "").strip()
+BREVO_FROM_NAME = os.getenv("BREVO_FROM_NAME", "Cypher Oz").strip()
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 

@@ -1,4 +1,5 @@
 import { test, expect, Page } from "@playwright/test";
+import { verifyRegisteredEmail } from "./helpers";
 
 async function signInAdmin(page: Page) {
   await page.goto("/login");
@@ -307,6 +308,7 @@ test("visitante y cliente no gestionan variantes, precios ni atributos", async (
       })
     ).status(),
   ).toBe(201);
+  await verifyRegisteredEmail(page.request, email);
   const login = await page.request.post("/api/v1/auth/login/", {
     headers: { "X-CSRFToken": csrf },
     data: { email, password },

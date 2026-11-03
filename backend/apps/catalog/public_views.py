@@ -1,6 +1,6 @@
 from decimal import Decimal, InvalidOperation
 
-from django.db.models import Exists, OuterRef, Prefetch, Q, Subquery
+from django.db.models import Avg, Count, Exists, OuterRef, Prefetch, Q, Subquery
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny
@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.promotions.services import get_active_promotions_for_variants
+from apps.reviews.services import format_rating_one_decimal
 
 from .models import CategoryAttribute, Product, Variant, VariantAttributeValue
 from .storage import StorageUnavailable, image_url
@@ -55,6 +56,9 @@ def serialize_product_summary(product, promo_offers):
     images = list(product.images.all())
     main_image = images[0] if images else None
     active_variants = [v for v in product.variants.all() if v.is_active and v.price >= 0]
+    review_average, review_average_display = format_rating_one_decimal(
+        getattr(product, "reviews_average", None)
+    )
 
     base_prices = [v.price for v in active_variants]
     min_price = min(base_prices) if base_prices else Decimal("0")
@@ -99,6 +103,11 @@ def serialize_product_summary(product, promo_offers):
         "total_stock": total_stock,
         "is_available": total_stock > 0 and len(active_variants) > 0,
         "variants_count": len(active_variants),
+        "reviews_summary": {
+            "average_rating": review_average,
+            "average_rating_display": review_average_display,
+            "review_count": getattr(product, "reviews_count", 0),
+        },
     }
 
 
@@ -117,6 +126,14 @@ class PublicProductsView(APIView):
         queryset = (
             Product.objects.visible()
             .select_related("category", "brand")
+            .annotate(
+                reviews_average=Avg("reviews__rating", filter=Q(reviews__visibility="VISIBLE")),
+                reviews_count=Count(
+                    "reviews",
+                    filter=Q(reviews__visibility="VISIBLE"),
+                    distinct=True,
+                ),
+            )
             .prefetch_related(
                 "images",
                 Prefetch(
@@ -236,7 +253,6 @@ class PublicProductsView(APIView):
             all_variant_ids.extend([v.pk for v in p.variants.all() if v.is_active])
 
         promo_offers = get_active_promotions_for_variants(all_variant_ids)
-
         data = [serialize_product_summary(p, promo_offers) for p in page]
         response = paginator.get_paginated_response(data)
         response["Cache-Control"] = "no-store"
@@ -252,6 +268,39 @@ class PublicProductDetailView(APIView):
             Product.objects.visible()
             .filter(slug=slug)
             .select_related("category", "brand")
+            .annotate(
+                reviews_average=Avg("reviews__rating", filter=Q(reviews__visibility="VISIBLE")),
+                reviews_count=Count(
+                    "reviews",
+                    filter=Q(reviews__visibility="VISIBLE"),
+                    distinct=True,
+                ),
+                reviews_5=Count(
+                    "reviews",
+                    filter=Q(reviews__visibility="VISIBLE", reviews__rating=5),
+                    distinct=True,
+                ),
+                reviews_4=Count(
+                    "reviews",
+                    filter=Q(reviews__visibility="VISIBLE", reviews__rating=4),
+                    distinct=True,
+                ),
+                reviews_3=Count(
+                    "reviews",
+                    filter=Q(reviews__visibility="VISIBLE", reviews__rating=3),
+                    distinct=True,
+                ),
+                reviews_2=Count(
+                    "reviews",
+                    filter=Q(reviews__visibility="VISIBLE", reviews__rating=2),
+                    distinct=True,
+                ),
+                reviews_1=Count(
+                    "reviews",
+                    filter=Q(reviews__visibility="VISIBLE", reviews__rating=1),
+                    distinct=True,
+                ),
+            )
             .prefetch_related(
                 "images",
                 Prefetch(
@@ -294,6 +343,8 @@ class PublicProductDetailView(APIView):
         ]
 
         total_stock = sum(v["stock"] for v in serialized_variants)
+        review_average, review_average_display = format_rating_one_decimal(product.reviews_average)
+        review_count = product.reviews_count
 
         data = {
             "id": product.pk,
@@ -315,6 +366,19 @@ class PublicProductDetailView(APIView):
             "variants": serialized_variants,
             "total_stock": total_stock,
             "is_available": total_stock > 0 and len(active_variants) > 0,
+            "reviews_summary": {
+                "average_rating": review_average,
+                "average_rating_display": review_average_display,
+                "review_count": review_count,
+                "empty_message": (None if review_count else "Este producto aún no tiene reseñas"),
+                "distribution": {
+                    "5": product.reviews_5,
+                    "4": product.reviews_4,
+                    "3": product.reviews_3,
+                    "2": product.reviews_2,
+                    "1": product.reviews_1,
+                },
+            },
         }
 
         response = Response(data)

@@ -18,6 +18,7 @@ import {
 import { clearCart, loadCart, saveCart } from "./cart-storage";
 import { CartValidator, type RevalidationResponse } from "./cart-validator";
 import { DeliverySelector, type DeliveryModeKey } from "./delivery-selector";
+import { CommercialInfo } from "@/features/reviews/reviews";
 
 type Variant = {
   id: number;
@@ -238,6 +239,7 @@ export function Purchase() {
           {error}
         </p>
       )}
+      <CommercialInfo />
       <div className="purchase-layout">
         <section aria-labelledby="products-title">
           <h2 id="products-title">Productos</h2>

@@ -213,8 +213,19 @@ class VerifyEmailView(PublicAuthView):
                 .filter(token_hash=reset_token_hash(token), used_at__isnull=True)
                 .first()
             )
-            if not token or len(token) > 128 or verification is None or verification.expires_at <= timezone.now():
-                return private_response({"code": "INVALID_VERIFICATION_TOKEN", "message": "El enlace no es válido o ya venció."}, status=400)
+            if (
+                not token
+                or len(token) > 128
+                or verification is None
+                or verification.expires_at <= timezone.now()
+            ):
+                return private_response(
+                    {
+                        "code": "INVALID_VERIFICATION_TOKEN",
+                        "message": "El enlace no es válido o ya venció.",
+                    },
+                    status=400,
+                )
             verification.user.email_verified = True
             verification.user.save(update_fields=["email_verified"])
             verification.used_at = timezone.now()
@@ -227,20 +238,28 @@ class ResendVerificationView(PublicAuthView):
 
     def post(self, request):
         email = str(request.data.get("email", "")).strip().lower()
-        user = User.objects.filter(email__iexact=email, is_active=True, email_verified=False).first()
+        user = User.objects.filter(
+            email__iexact=email, is_active=True, email_verified=False
+        ).first()
         if user:
             token = secrets.token_urlsafe(48)
-            EmailVerificationToken.objects.filter(user=user, used_at__isnull=True).update(used_at=timezone.now())
+            EmailVerificationToken.objects.filter(user=user, used_at__isnull=True).update(
+                used_at=timezone.now()
+            )
             EmailVerificationToken.objects.create(
                 user=user,
                 token_hash=reset_token_hash(token),
                 expires_at=timezone.now() + timedelta(hours=24),
             )
             try:
-                send_verification_email(user.email, f"{settings.FRONTEND_URL}/verificar-cuenta?token={token}")
+                send_verification_email(
+                    user.email, f"{settings.FRONTEND_URL}/verificar-cuenta?token={token}"
+                )
             except EmailDeliveryError:
                 raise EmailServiceUnavailable
-        return private_response({"message": "Si la cuenta necesita verificación, enviaremos un nuevo enlace."})
+        return private_response(
+            {"message": "Si la cuenta necesita verificación, enviaremos un nuevo enlace."}
+        )
 
 
 class PasswordResetRequestView(PublicAuthView):

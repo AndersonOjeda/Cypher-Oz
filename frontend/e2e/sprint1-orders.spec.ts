@@ -1,4 +1,5 @@
 import { test, expect, type APIRequestContext } from "@playwright/test";
+import { verifyRegisteredEmail } from "./helpers";
 
 const password = "Purchase-Only!Pass8472";
 
@@ -69,6 +70,7 @@ test("checkout relee dirección y pedido conserva snapshot; reintento no duplica
       data: { name: "Cliente Checkout", email, password },
     });
     expect(register.status()).toBe(201);
+    await verifyRegisteredEmail(page.request, email);
     await page.goto("/comprar");
     await page.getByLabel("Buscar productos").fill(product.name);
     await page.getByRole("button", { name: "Agregar", exact: true }).click();

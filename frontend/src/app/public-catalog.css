@@ -680,3 +680,53 @@
   font-weight: 500;
 }
 
+.review-section,
+.commercial-info {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #dbe3ec;
+  border-radius: 10px;
+  background: #fff;
+}
+.review-section h2,
+.commercial-info h2 { margin: 0 0 12px; color: #0f172a; font-size: 20px; font-weight: 700; }
+.review-average { color: #334155; }
+.review-average strong { color: #b45309; font-size: 24px; }
+.review-list { display: grid; gap: 12px; padding: 0; list-style: none; }
+.review-card,
+.review-moderation-card { padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
+.review-card-heading,
+.review-heading,
+.review-moderation-card header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.review-card-heading span { color: #b45309; letter-spacing: 1px; }
+.review-meta { color: #64748b; font-size: 13px; }
+.review-pager,
+.review-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 14px; }
+.review-section button,
+.review-form button,
+.review-moderation button,
+.review-report button { min-height: 40px; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; color: #1e3a8a; font-weight: 600; cursor: pointer; }
+.review-section button:disabled,
+.review-form button:disabled,
+.review-moderation button:disabled { opacity: .5; cursor: not-allowed; }
+.review-form { display: grid; gap: 10px; width: 100%; padding: 12px; border-radius: 8px; background: #f8fafc; }
+.review-form label,
+.review-report label,
+.review-moderation-card label { display: grid; gap: 5px; color: #334155; font-size: 14px; font-weight: 600; }
+.review-form select,
+.review-form textarea,
+.review-report textarea,
+.review-moderation-card textarea { width: 100%; min-height: 40px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; }
+.review-report form { display: grid; gap: 8px; margin-top: 8px; }
+.review-moderation { max-width: 960px; margin: 0 auto; padding: 24px; }
+.review-moderation h1 { margin: 0; font-size: 28px; font-weight: 700; }
+.review-moderation-card { display: grid; gap: 12px; margin: 16px 0; }
+.review-moderation-card details { padding: 8px; background: white; }
+.commercial-info { color: #334155; font-size: 14px; line-height: 1.6; }
+.commercial-info ul { padding-left: 20px; }
+@media (max-width: 600px) {
+  .review-card-heading,
+  .review-moderation-card header { flex-direction: column; }
+  .review-moderation { padding: 16px; }
+}
+

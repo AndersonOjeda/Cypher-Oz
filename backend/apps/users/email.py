@@ -17,34 +17,7 @@ def send_password_reset_email(recipient, reset_url):
         f"Abre este enlace para establecer una nueva contraseña: {reset_url}\n\n"
         "El enlace es temporal y solo puede utilizarse una vez."
     )
-    if not settings.RESEND_API_KEY:
-        try:
-            return send_mail(subject, text, settings.DEFAULT_FROM_EMAIL, [recipient])
-        except (OSError, SMTPException) as exc:
-            raise EmailDeliveryError from exc
-
-    request = Request(
-        "https://api.resend.com/emails",
-        data=json.dumps(
-            {
-                "from": settings.RESEND_FROM_EMAIL,
-                "to": [recipient],
-                "subject": subject,
-                "text": text,
-            }
-        ).encode("utf-8"),
-        headers={
-            "Authorization": f"Bearer {settings.RESEND_API_KEY}",
-            "Content-Type": "application/json",
-            "User-Agent": "CypherOz/1.0",
-        },
-        method="POST",
-    )
-    try:
-        with urlopen(request, timeout=settings.EMAIL_TIMEOUT) as response:
-            return json.loads(response.read())
-    except (HTTPError, URLError, TimeoutError) as exc:
-        raise EmailDeliveryError from exc
+    return _send_transactional_email(recipient, subject, text)
 
 
 def send_verification_email(recipient, verification_url):
@@ -53,21 +26,35 @@ def send_verification_email(recipient, verification_url):
         f"Hola, confirma tu cuenta abriendo este enlace: {verification_url}\n\n"
         "El enlace es temporal y solo puede utilizarse una vez."
     )
-    if not settings.RESEND_API_KEY:
+    return _send_transactional_email(recipient, subject, text)
+
+
+def _send_transactional_email(recipient, subject, text):
+    if not settings.BREVO_API_KEY:
         try:
             return send_mail(subject, text, settings.DEFAULT_FROM_EMAIL, [recipient])
         except (OSError, SMTPException) as exc:
             raise EmailDeliveryError from exc
+
+    if not settings.BREVO_FROM_EMAIL:
+        raise EmailDeliveryError("BREVO_FROM_EMAIL must be configured when Brevo is enabled")
+
     request = Request(
-        "https://api.resend.com/emails",
-        data=json.dumps({
-            "from": settings.RESEND_FROM_EMAIL,
-            "to": [recipient],
-            "subject": subject,
-            "text": text,
-        }).encode("utf-8"),
+        "https://api.brevo.com/v3/smtp/email",
+        data=json.dumps(
+            {
+                "sender": {
+                    "name": settings.BREVO_FROM_NAME,
+                    "email": settings.BREVO_FROM_EMAIL,
+                },
+                "to": [{"email": recipient}],
+                "subject": subject,
+                "textContent": text,
+            }
+        ).encode("utf-8"),
         headers={
-            "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+            "api-key": settings.BREVO_API_KEY,
+            "Accept": "application/json",
             "Content-Type": "application/json",
             "User-Agent": "CypherOz/1.0",
         },
@@ -75,6 +62,6 @@ def send_verification_email(recipient, verification_url):
     )
     try:
         with urlopen(request, timeout=settings.EMAIL_TIMEOUT) as response:
-            return json.loads(response.read().decode())
+            return json.loads(response.read().decode("utf-8"))
     except (HTTPError, URLError, TimeoutError) as exc:
         raise EmailDeliveryError from exc

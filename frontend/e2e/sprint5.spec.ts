@@ -1,4 +1,5 @@
 import { expect, test, type APIRequestContext } from "@playwright/test";
+import { verifyRegisteredEmail } from "./helpers";
 
 async function csrf(context: APIRequestContext) {
   return (await (await context.get("/api/v1/auth/csrf/")).json()).csrfToken;
@@ -84,6 +85,7 @@ test("Sprint 5: instructions, persistent deadline, report and unique SALE", asyn
         })
       ).status(),
     ).toBe(201);
+    await verifyRegisteredEmail(page.request, email);
     expect(
       (
         await page.request.post("/api/v1/auth/login/", {

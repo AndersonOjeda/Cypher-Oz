@@ -8,6 +8,7 @@ import type { Page } from "@/features/catalog/types";
 import { OrderWhatsAppButton } from "@/components/whatsapp-button";
 import { api } from "@/services/api";
 import { cop, type Order } from "./types";
+import { OrderReviewForm } from "@/features/reviews/reviews";
 
 const status: Record<string, string> = {
   PENDING: "Pendiente",
@@ -192,7 +193,7 @@ export function OrderDetail({ number }: { number: string }) {
             <h2 className="text-base font-semibold text-gray-900">Productos comprados</h2>
             <ul className="order-items divide-y text-sm">
               {order.items.map((line) => (
-                <li key={line.variant_id} className="py-3 flex justify-between items-start gap-4">
+                <li key={line.id ?? line.variant_id} className="py-3 flex justify-between items-start gap-4 flex-wrap">
                   <div>
                     <h3 className="font-semibold text-gray-900">{line.product_name}</h3>
                     <p className="text-xs text-gray-500">
@@ -203,6 +204,13 @@ export function OrderDetail({ number }: { number: string }) {
                     </p>
                   </div>
                   <strong className="text-sm font-semibold text-gray-900">{cop(line.total)}</strong>
+                  {line.id && line.review_eligibility?.can_review && (
+                    <OrderReviewForm
+                      orderItemId={line.order_item_id ?? line.id}
+                      existing={line.review_eligibility.existing_review}
+                      onSaved={() => setRevision((n) => n + 1)}
+                    />
+                  )}
                 </li>
               ))}
             </ul>

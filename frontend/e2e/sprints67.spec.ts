@@ -1,4 +1,5 @@
 import { test, expect, type APIRequestContext } from "@playwright/test";
+import { verifyRegisteredEmail } from "./helpers";
 
 async function csrf(api: APIRequestContext) {
   return (await (await api.get("/api/v1/auth/csrf/")).json()).csrfToken;
@@ -35,6 +36,7 @@ test("Sprints 6/7: rejection correction, funds review, delivery, cancellation an
     const email = `complete-${stamp}@example.com`;
     const password = "Completion-Only!Pass8472";
     expect((await page.request.post("/api/v1/auth/register/", { headers: { "X-CSRFToken": await csrf(page.request) }, data: { name: `Complete ${stamp}`, email, password } })).status()).toBe(201);
+    await verifyRegisteredEmail(page.request, email);
     expect((await page.request.post("/api/v1/auth/login/", { headers: { "X-CSRFToken": await csrf(page.request) }, data: { email, password } })).status()).toBe(200);
     async function order(suffix: string) {
       const headers = { "X-CSRFToken": await csrf(page.request) };
