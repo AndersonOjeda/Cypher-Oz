@@ -91,7 +91,7 @@ def orders_for(user):
     return (
         Order.objects.filter(user=user)
         .select_related("delivery", "payment")
-        .prefetch_related("items", "history__actor", "payment__history__actor")
+        .prefetch_related("items__variant__product", "history__actor", "payment__history__actor")
     )
 
 

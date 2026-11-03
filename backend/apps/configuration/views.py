@@ -1,6 +1,7 @@
 import re
 
 from django.db import transaction
+from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
@@ -70,6 +71,108 @@ class PublicSettingsView(APIView):
         )
 
 
+
+class PublicCommercialInfoView(APIView):
+    """CO-197 HU-36-T01: Consolidated public commercial information from live settings."""
+
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        from decimal import Decimal
+
+        data = all_settings()
+        urban_rate = int(data.get("urban_flat_shipping_rate", 5000))
+        threshold = int(data.get("free_shipping_threshold", 100000))
+        unpaid_timeout = int(data.get("unpaid_order_timeout_hours", 24))
+        reported_timeout = int(data.get("reported_payment_timeout_hours", 24))
+        whatsapp_enabled = data.get("whatsapp_enabled") is True
+        whatsapp_number = str(data.get("whatsapp_number", "") or "").strip()
+        whatsapp_message = str(data.get("whatsapp_message", "") or "").strip()
+        contact_configured = bool(
+            whatsapp_enabled and re.fullmatch(r"[1-9][0-9]{7,14}", whatsapp_number)
+        )
+        payment_instructions_configured = bool(
+            str(data.get("payment_instructions", "") or "").strip()
+        )
+
+        return private_response(
+            {
+                "payment": {
+                    "mode": "EXTERNAL_MANUAL",
+                    "payment_instructions_configured": payment_instructions_configured,
+                    "unpaid_order_timeout_hours": unpaid_timeout,
+                    "reported_payment_timeout_hours": reported_timeout,
+                    "reported_meaning": (
+                        "Pago reportado: el comprador registró la referencia de transferencia, "
+                        "pero el pago aún no está confirmado."
+                    ),
+                    "confirmed_meaning": (
+                        "Pago confirmado: un administrador verificó manualmente el ingreso real "
+                        "de los fondos y autorizó el alistamiento del pedido."
+                    ),
+                    "manual_verification_notice": (
+                        "El pago externo requiere verificación manual administrativa. Enviar la "
+                        "referencia o escribir por WhatsApp no confirma el pago automáticamente."
+                    ),
+                },
+                "delivery": {
+                    "urban_flat_shipping_rate": format(Decimal(str(urban_rate)), ".2f"),
+                    "free_shipping_threshold": format(Decimal(str(threshold)), ".2f"),
+                    "pickup_cost": "0.00",
+                    "modes": [
+                        {
+                            "mode": "PICKUP",
+                            "label": "Recogida en tienda (Pasto)",
+                            "cost": "0.00",
+                            "can_confirm": True,
+                            "summary": "Retiro presencial en tienda sin costo de envío.",
+                        },
+                        {
+                            "mode": "URBAN",
+                            "label": "Envío urbano en Pasto",
+                            "cost": format(Decimal(str(urban_rate)), ".2f"),
+                            "free_shipping_threshold": format(Decimal(str(threshold)), ".2f"),
+                            "can_confirm": True,
+                            "summary": (
+                                f"Tarifa urbana de $ {urban_rate:,} COP; envío gratuito "
+                                f"en compras desde $ {threshold:,} COP."
+                            ),
+                        },
+                        {
+                            "mode": "SPECIAL",
+                            "label": "Envío a zona especial",
+                            "cost": None,
+                            "can_confirm": False,
+                            "summary": (
+                                "La cobertura y tarifa requieren cotización antes de confirmar."
+                            ),
+                        },
+                    ],
+                },
+                "warranty": {
+                    "source": "PRODUCT_APPROVED_FIELD",
+                    "policy_summary": (
+                        "La garantía aplicable corresponde exclusivamente a la informada y "
+                        "aprobada en la ficha de cada producto."
+                    ),
+                    "missing_warranty_notice": (
+                        "Condición comercial de garantía pendiente de definición en este producto. "
+                        "Consulta por el canal de atención antes de confirmar tu compra."
+                    ),
+                },
+                "contact": {
+                    "configured": contact_configured,
+                    "whatsapp_enabled": whatsapp_enabled,
+                    "whatsapp_number": whatsapp_number if contact_configured else "",
+                    "whatsapp_message": whatsapp_message,
+                    "unavailable_notice": None
+                    if contact_configured
+                    else "Atención por WhatsApp no disponible temporalmente.",
+                },
+                "updated_at": timezone.now().isoformat(),
+            }
+        )
 class AdminSettingsView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
 

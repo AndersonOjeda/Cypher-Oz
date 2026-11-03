@@ -17,6 +17,7 @@ import { useResource } from "./shared";
 import type { PublicProductDetail, PublicVariant } from "./types";
 import { CompareButton } from "./product-comparator";
 import { api } from "@/services/api";
+import { CommercialInfo, ProductReviews } from "@/features/reviews/reviews";
 import type { Page, PublicProductSummary } from "./types";
 
 export function ProductDetail({ slug }: { slug: string }) {
@@ -406,6 +407,10 @@ export function ProductDetail({ slug }: { slug: string }) {
               </span>
             </div>
           )}
+
+          <ProductReviews slug={product.slug} summary={product.reviews_summary} />
+          {!product.warranty && <p className="review-meta">La condición de garantía está pendiente de definición para este producto.</p>}
+          <CommercialInfo />
 
           {/* Description */}
           {product.description && (

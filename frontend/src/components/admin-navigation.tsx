@@ -21,6 +21,7 @@ const sections = [
   { href: "/admin/pagos", label: "Verificación de pagos", icon: CreditCard },
   { href: "/admin/clientes", label: "Clientes", icon: Users },
   { href: "/admin/configuracion", label: "Configuración", icon: Settings },
+  { href: "/admin/resenas", label: "Reseñas", icon: Sparkles },
 ];
 
 export function AdminNavigation({ pathname }: { pathname: string }) {

@@ -10,6 +10,7 @@ from apps.configuration.views import (
     AdminDeliverySettingsView,
     AdminSettingsView,
     DeliveryQuoteView,
+    PublicCommercialInfoView,
     PublicSettingsView,
 )
 from apps.core.views import health
@@ -31,6 +32,7 @@ from apps.users.views import (
 
 urlpatterns = [
     path("api/v1/", include("apps.orders.urls")),
+    path("api/v1/", include("apps.reviews.urls")),
     path("api/v1/delivery/quote/", DeliveryQuoteView.as_view()),
     path("api/v1/products/", PublicProductsView.as_view()),
     path("api/v1/products/compare/", ProductCompareView.as_view()),
@@ -58,5 +60,6 @@ urlpatterns = [
     path("api/v1/users/me/addresses/", AddressListView.as_view()),
     path("api/v1/users/me/addresses/<int:pk>/", AddressDetailView.as_view()),
     path("api/v1/settings/public/", PublicSettingsView.as_view()),
+    path("api/v1/settings/commercial/", PublicCommercialInfoView.as_view()),
     path("api/v1/admin/settings/", AdminSettingsView.as_view()),
 ]

@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "apps.orders",
     "apps.promotions",
     "apps.assistant",
+    "apps.reviews",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

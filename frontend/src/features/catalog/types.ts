@@ -134,4 +134,10 @@ export type PublicProductDetail = {
   variants: PublicVariant[];
   total_stock: number;
   is_available: boolean;
+  reviews_summary?: {
+    average_rating: number | null;
+    average_rating_display: string | null;
+    review_count: number;
+    empty_message?: string | null;
+  };
 };
