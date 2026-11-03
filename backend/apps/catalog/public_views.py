@@ -127,9 +127,7 @@ class PublicProductsView(APIView):
             Product.objects.visible()
             .select_related("category", "brand")
             .annotate(
-                reviews_average=Avg(
-                    "reviews__rating", filter=Q(reviews__visibility="VISIBLE")
-                ),
+                reviews_average=Avg("reviews__rating", filter=Q(reviews__visibility="VISIBLE")),
                 reviews_count=Count(
                     "reviews",
                     filter=Q(reviews__visibility="VISIBLE"),
@@ -271,9 +269,7 @@ class PublicProductDetailView(APIView):
             .filter(slug=slug)
             .select_related("category", "brand")
             .annotate(
-                reviews_average=Avg(
-                    "reviews__rating", filter=Q(reviews__visibility="VISIBLE")
-                ),
+                reviews_average=Avg("reviews__rating", filter=Q(reviews__visibility="VISIBLE")),
                 reviews_count=Count(
                     "reviews",
                     filter=Q(reviews__visibility="VISIBLE"),
@@ -347,9 +343,7 @@ class PublicProductDetailView(APIView):
         ]
 
         total_stock = sum(v["stock"] for v in serialized_variants)
-        review_average, review_average_display = format_rating_one_decimal(
-            product.reviews_average
-        )
+        review_average, review_average_display = format_rating_one_decimal(product.reviews_average)
         review_count = product.reviews_count
 
         data = {
@@ -376,9 +370,7 @@ class PublicProductDetailView(APIView):
                 "average_rating": review_average,
                 "average_rating_display": review_average_display,
                 "review_count": review_count,
-                "empty_message": (
-                    None if review_count else "Este producto aún no tiene reseñas"
-                ),
+                "empty_message": (None if review_count else "Este producto aún no tiene reseñas"),
                 "distribution": {
                     "5": product.reviews_5,
                     "4": product.reviews_4,

@@ -79,9 +79,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
         order = obj.order
         payment = getattr(order, "payment", None)
         can_review = bool(
-            order.status == "DELIVERED"
-            and payment is not None
-            and payment.status == "CONFIRMED"
+            order.status == "DELIVERED" and payment is not None and payment.status == "CONFIRMED"
         )
         reviews_map = getattr(order, "_reviews_by_product", None)
         if reviews_map is None:

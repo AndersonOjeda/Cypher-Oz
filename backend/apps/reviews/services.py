@@ -39,9 +39,7 @@ def format_rating_one_decimal(avg_val):
 
 
 def get_product_reviews_summary(product_id: int) -> dict:
-    agg = ProductReview.objects.filter(
-        product_id=product_id, visibility="VISIBLE"
-    ).aggregate(
+    agg = ProductReview.objects.filter(product_id=product_id, visibility="VISIBLE").aggregate(
         review_count=Count("id"),
         average_rating=Avg("rating"),
         stars_5=Count("id", filter=Q(rating=5)),
@@ -131,9 +129,7 @@ def create_verified_review(user, validated_data):
             )
 
         if order_item is None or order_item.order.user_id != user.id:
-            raise PermissionDenied(
-                "El pedido o producto indicado no pertenece a tus compras."
-            )
+            raise PermissionDenied("El pedido o producto indicado no pertenece a tus compras.")
 
         payment = getattr(order_item.order, "payment", None)
         if (
@@ -178,9 +174,9 @@ def create_verified_review(user, validated_data):
         except IntegrityError as exc:
             raise ReviewAlreadyExistsConflict() from exc
 
-        return ProductReview.objects.select_related(
-            "user", "order_item__order__payment"
-        ).get(pk=review.pk)
+        return ProductReview.objects.select_related("user", "order_item__order__payment").get(
+            pk=review.pk
+        )
 
 
 def update_own_review(user, review_id: int, validated_data):
@@ -374,9 +370,7 @@ def moderate_review(admin_user, review_id: int, action: str, reason: str):
             )
 
         return (
-            ProductReview.objects.select_related(
-                "user", "product", "order_item__order__payment"
-            )
+            ProductReview.objects.select_related("user", "product", "order_item__order__payment")
             .prefetch_related(
                 "reports__reporter",
                 "reports__resolved_by",

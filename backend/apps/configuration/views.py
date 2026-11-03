@@ -71,7 +71,6 @@ class PublicSettingsView(APIView):
         )
 
 
-
 class PublicCommercialInfoView(APIView):
     """CO-197 HU-36-T01: Consolidated public commercial information from live settings."""
 
@@ -173,6 +172,8 @@ class PublicCommercialInfoView(APIView):
                 "updated_at": timezone.now().isoformat(),
             }
         )
+
+
 class AdminSettingsView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
 

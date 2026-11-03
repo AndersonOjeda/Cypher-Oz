@@ -14,9 +14,7 @@ def clean_plain_text(value: str, min_len: int, max_len: int, field_label: str) -
             f"{field_label} debe tener al menos {min_len} caracteres."
         )
     if len(normalized) > max_len:
-        raise serializers.ValidationError(
-            f"{field_label} no puede superar {max_len} caracteres."
-        )
+        raise serializers.ValidationError(f"{field_label} no puede superar {max_len} caracteres.")
     if any(not (ch.isprintable() or ch in ("\n", "\t")) for ch in normalized):
         raise serializers.ValidationError(
             f"{field_label} contiene caracteres de control no permitidos."
@@ -40,9 +38,7 @@ class ReviewCreateSerializer(StrictSerializer):
     order_number = serializers.UUIDField(required=False)
     variant_id = IntegerField(min_value=1, required=False)
     rating = IntegerField(min_value=1, max_value=5)
-    comment = serializers.CharField(
-        max_length=2000, trim_whitespace=False, allow_blank=True
-    )
+    comment = serializers.CharField(max_length=2000, trim_whitespace=False, allow_blank=True)
 
     def validate_comment(self, value):
         return clean_plain_text(value, 1, 1000, "El comentario")
@@ -54,11 +50,7 @@ class ReviewCreateSerializer(StrictSerializer):
         )
         if not has_item_id and not has_order_variant:
             raise serializers.ValidationError(
-                {
-                    "order_item_id": [
-                        "Debes indicar el ítem del pedido elegible para reseñar."
-                    ]
-                }
+                {"order_item_id": ["Debes indicar el ítem del pedido elegible para reseñar."]}
             )
         return attrs
 
@@ -81,21 +73,15 @@ class ReviewUpdateSerializer(StrictSerializer):
 
 
 class ReviewReportCreateSerializer(StrictSerializer):
-    reason = serializers.CharField(
-        max_length=500, trim_whitespace=False, allow_blank=True
-    )
+    reason = serializers.CharField(max_length=500, trim_whitespace=False, allow_blank=True)
 
     def validate_reason(self, value):
         return clean_plain_text(value, 3, 300, "El motivo del reporte")
 
 
 class ReviewModerateSerializer(StrictSerializer):
-    action = serializers.ChoiceField(
-        choices=["HIDE", "RESTORE", "DISMISS_REPORTS"]
-    )
-    reason = serializers.CharField(
-        max_length=500, trim_whitespace=False, allow_blank=True
-    )
+    action = serializers.ChoiceField(choices=["HIDE", "RESTORE", "DISMISS_REPORTS"])
+    reason = serializers.CharField(max_length=500, trim_whitespace=False, allow_blank=True)
 
     def validate_reason(self, value):
         return clean_plain_text(value, 3, 300, "El motivo de moderación")

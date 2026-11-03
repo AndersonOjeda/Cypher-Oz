@@ -113,13 +113,9 @@ class AdminReviewListView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request):
-        open_reports_subquery = ReviewReport.objects.filter(
-            review_id=OuterRef("pk"), status="OPEN"
-        )
+        open_reports_subquery = ReviewReport.objects.filter(review_id=OuterRef("pk"), status="OPEN")
         qs = (
-            ProductReview.objects.select_related(
-                "user", "product", "order_item__order__payment"
-            )
+            ProductReview.objects.select_related("user", "product", "order_item__order__payment")
             .prefetch_related(
                 "reports__reporter",
                 "reports__resolved_by",
@@ -132,17 +128,13 @@ class AdminReviewListView(APIView):
         visibility = request.query_params.get("visibility", "").strip().upper()
         if visibility:
             if visibility not in {"VISIBLE", "HIDDEN"}:
-                raise serializers.ValidationError(
-                    {"visibility": "Usa VISIBLE o HIDDEN."}
-                )
+                raise serializers.ValidationError({"visibility": "Usa VISIBLE o HIDDEN."})
             qs = qs.filter(visibility=visibility)
 
         has_open_param = request.query_params.get("has_open_reports", "").strip().lower()
         if has_open_param:
             if has_open_param not in {"true", "false"}:
-                raise serializers.ValidationError(
-                    {"has_open_reports": "Usa true o false."}
-                )
+                raise serializers.ValidationError({"has_open_reports": "Usa true o false."})
             qs = qs.filter(has_open=(has_open_param == "true"))
 
         rating_param = request.query_params.get("rating", "").strip()
@@ -163,9 +155,7 @@ class AdminReviewListView(APIView):
 
         pager = CatalogPagination()
         page = pager.paginate_queryset(qs, request)
-        response = pager.get_paginated_response(
-            [serialize_admin_review(review) for review in page]
-        )
+        response = pager.get_paginated_response([serialize_admin_review(review) for review in page])
         response.data["moderation_policy"] = MODERATION_POLICY_NOTICE
         response["Cache-Control"] = "no-store"
         return response
@@ -207,8 +197,6 @@ class AdminReviewReportListView(APIView):
 
         pager = CatalogPagination()
         page = pager.paginate_queryset(qs, request)
-        response = pager.get_paginated_response(
-            [serialize_admin_report(report) for report in page]
-        )
+        response = pager.get_paginated_response([serialize_admin_report(report) for report in page])
         response["Cache-Control"] = "no-store"
         return response

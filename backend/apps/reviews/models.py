@@ -6,9 +6,7 @@ class ProductReview(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="product_reviews"
     )
-    product = models.ForeignKey(
-        "catalog.Product", on_delete=models.PROTECT, related_name="reviews"
-    )
+    product = models.ForeignKey("catalog.Product", on_delete=models.PROTECT, related_name="reviews")
     order_item = models.ForeignKey(
         "orders.OrderItem", on_delete=models.PROTECT, related_name="reviews"
     )
@@ -24,9 +22,7 @@ class ProductReview(models.Model):
         db_table = "product_reviews"
         ordering = ["-created_at", "-id"]
         constraints = [
-            models.UniqueConstraint(
-                fields=["user", "product"], name="review_user_product_unique"
-            ),
+            models.UniqueConstraint(fields=["user", "product"], name="review_user_product_unique"),
             models.CheckConstraint(
                 condition=models.Q(rating__gte=1, rating__lte=5),
                 name="review_rating_valid_range",
@@ -48,9 +44,7 @@ class ProductReview(models.Model):
 
 
 class ReviewEditHistory(models.Model):
-    review = models.ForeignKey(
-        ProductReview, on_delete=models.PROTECT, related_name="edit_history"
-    )
+    review = models.ForeignKey(ProductReview, on_delete=models.PROTECT, related_name="edit_history")
     actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     previous_rating = models.PositiveSmallIntegerField()
     new_rating = models.PositiveSmallIntegerField()
@@ -64,9 +58,7 @@ class ReviewEditHistory(models.Model):
 
 
 class ReviewReport(models.Model):
-    review = models.ForeignKey(
-        ProductReview, on_delete=models.PROTECT, related_name="reports"
-    )
+    review = models.ForeignKey(ProductReview, on_delete=models.PROTECT, related_name="reports")
     reporter = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="review_reports"
     )

@@ -60,12 +60,14 @@ def send_verification_email(recipient, verification_url):
             raise EmailDeliveryError from exc
     request = Request(
         "https://api.resend.com/emails",
-        data=json.dumps({
-            "from": settings.RESEND_FROM_EMAIL,
-            "to": [recipient],
-            "subject": subject,
-            "text": text,
-        }).encode("utf-8"),
+        data=json.dumps(
+            {
+                "from": settings.RESEND_FROM_EMAIL,
+                "to": [recipient],
+                "subject": subject,
+                "text": text,
+            }
+        ).encode("utf-8"),
         headers={
             "Authorization": f"Bearer {settings.RESEND_API_KEY}",
             "Content-Type": "application/json",
