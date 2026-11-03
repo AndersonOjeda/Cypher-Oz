@@ -60,3 +60,12 @@ cerrar los pendientes de PostgreSQL, E2E, responsive/accesibilidad y aceptación
 - El PR sigue draft y abierto. No se integró en `main` ni se alteró producción. Las fechas del Sprint 8 siguen pendientes.
 
 La evidencia anterior sobre cambios sin commit corresponde al estado previo del PR; esta actualización registra el estado posterior.
+
+## Resultado CI 143 — 03/11/2026
+
+- Ruff, migraciones y suite backend PostgreSQL: aprobados; 401 pruebas pasaron.
+- Almacenamiento aislado y verificaciones frontend (lint, tipos, 141 pruebas y build): aprobados.
+- Regresión Playwright: falló con 21 casos (7 escenarios en móvil, tablet y escritorio). Los escenarios heredados de autenticación registran HTTP 401 al intentar entrar con usuarios que acaban de registrarse pero aún no verificaron el correo; hay además fallos de navegación/elementos derivados en los mismos recorridos. Incluye `sprints67.spec.ts` y escenarios anteriores de Sprint 1, 3, 4 y 5.
+- CI global: fallido por Browser regression; evidencia y capturas disponibles como artefacto del run [41696182061](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/41696182061).
+
+La suite frontend aprobada no sustituye una regresión integrada correcta. Ajustar los recorridos de E2E para verificar el correo (sin rebajar el requisito de producción) y volver a correr navegador sigue pendiente.
