@@ -1,3 +1,4 @@
+import json
 import re
 from datetime import timedelta
 from unittest.mock import patch
@@ -8,6 +9,7 @@ from django.core import mail
 from django.test import override_settings
 from django.utils import timezone
 
+from apps.users.email import send_verification_email
 from apps.users.models import AuthSession, PasswordResetToken
 
 REQUEST = "/api/v1/auth/password-reset/request/"
@@ -37,27 +39,53 @@ def test_request_is_generic_and_stores_only_hash(client, user):
 
 @pytest.mark.django_db
 @override_settings(
-    RESEND_API_KEY="re_test",
-    RESEND_FROM_EMAIL="Cypher Oz <onboarding@resend.dev>",
+    BREVO_API_KEY="xkeysib_test",
+    BREVO_FROM_EMAIL="no-reply@example.com",
+    BREVO_FROM_NAME="Cypher Oz",
 )
 @patch("apps.users.email.urlopen")
-def test_request_uses_resend_http_api(urlopen, client, user):
-    urlopen.return_value.__enter__.return_value.read.return_value = b'{"id":"email_1"}'
+def test_request_uses_brevo_transactional_email_api(urlopen, client, user):
+    urlopen.return_value.__enter__.return_value.read.return_value = b'{"messageId":"email_1"}'
 
     response = client.post(REQUEST, {"email": user.email}, format="json")
 
     assert response.status_code == 200
     request = urlopen.call_args.args[0]
-    assert request.full_url == "https://api.resend.com/emails"
-    assert request.headers["Authorization"] == "Bearer re_test"
+    assert request.full_url == "https://api.brevo.com/v3/smtp/email"
+    assert request.headers["Api-key"] == "xkeysib_test"
     assert request.headers["User-agent"] == "CypherOz/1.0"
-    assert user.email in request.data.decode("utf-8")
+    payload = json.loads(request.data.decode("utf-8"))
+    assert payload["sender"] == {"name": "Cypher Oz", "email": "no-reply@example.com"}
+    assert payload["to"] == [{"email": user.email}]
+    assert "token=" in payload["textContent"]
+
+
+@override_settings(
+    BREVO_API_KEY="xkeysib_test",
+    BREVO_FROM_EMAIL="no-reply@example.com",
+    BREVO_FROM_NAME="Cypher Oz",
+)
+@patch("apps.users.email.urlopen")
+def test_verification_uses_brevo_transactional_email_api(urlopen):
+    urlopen.return_value.__enter__.return_value.read.return_value = b'{"messageId":"email_2"}'
+
+    result = send_verification_email("client@example.com", "https://example.com/verify?token=t1")
+
+    assert result == {"messageId": "email_2"}
+    request = urlopen.call_args.args[0]
+    payload = json.loads(request.data.decode("utf-8"))
+    assert request.full_url == "https://api.brevo.com/v3/smtp/email"
+    assert payload["to"] == [{"email": "client@example.com"}]
+    assert "token=t1" in payload["textContent"]
 
 
 @pytest.mark.django_db
-@override_settings(RESEND_API_KEY="re_test")
+@override_settings(
+    BREVO_API_KEY="xkeysib_test",
+    BREVO_FROM_EMAIL="no-reply@example.com",
+)
 @patch("apps.users.email.urlopen", side_effect=URLError("unavailable"))
-def test_request_returns_503_and_discards_token_when_resend_fails(urlopen, client, user):
+def test_request_returns_503_and_discards_token_when_brevo_fails(urlopen, client, user):
     response = client.post(REQUEST, {"email": user.email}, format="json")
 
     assert response.status_code == 503
@@ -66,7 +94,19 @@ def test_request_returns_503_and_discards_token_when_resend_fails(urlopen, clien
 
 
 @pytest.mark.django_db
-@override_settings(RESEND_API_KEY="")
+@override_settings(BREVO_API_KEY="xkeysib_test", BREVO_FROM_EMAIL="")
+@patch("apps.users.email.urlopen")
+def test_request_returns_503_and_discards_token_without_brevo_sender(urlopen, client, user):
+    response = client.post(REQUEST, {"email": user.email}, format="json")
+
+    assert response.status_code == 503
+    assert response.data["code"] == "email_service_unavailable"
+    assert not PasswordResetToken.objects.filter(user=user).exists()
+    urlopen.assert_not_called()
+
+
+@pytest.mark.django_db
+@override_settings(BREVO_API_KEY="")
 @patch("apps.users.email.send_mail", side_effect=OSError("blocked"))
 def test_request_returns_503_when_smtp_is_unavailable(send_mail, client, user):
     response = client.post(REQUEST, {"email": user.email}, format="json")
@@ -152,3 +192,4 @@ def test_invalid_expired_and_mismatched_password_are_rejected(client, user):
         format="json",
     )
     assert mismatch.status_code == 400
+

@@ -48,10 +48,12 @@ services:
         value: "true"
       - key: DEFAULT_FROM_EMAIL
         sync: false
-      - key: RESEND_API_KEY
+      - key: BREVO_API_KEY
         sync: false
-      - key: RESEND_FROM_EMAIL
-        value: Cypher Oz <onboarding@resend.dev>
+      - key: BREVO_FROM_EMAIL
+        sync: false
+      - key: BREVO_FROM_NAME
+        value: Cypher Oz
       - key: EMAIL_TIMEOUT
         value: "10"
       - key: CATALOG_S3_ENDPOINT
@@ -85,3 +87,4 @@ services:
         value: production
       - key: DJANGO_URL
         value: https://tti-staging-api.onrender.com
+

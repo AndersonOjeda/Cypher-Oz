@@ -45,6 +45,21 @@ Cada despliegue debe identificar su commit. Una vista previa de Vercel lista no
 demuestra que Render ejecute el backend correspondiente. Ver el informe de Sprint 7
 para las versiones verificadas y los pendientes del entorno remoto.
 
+## Correo transaccional Brevo
+
+Registro/verificación y recuperación de contraseña comparten el envío transaccional
+por HTTPS a Brevo. Configurar en backend local o Render:
+
+- `BREVO_API_KEY`: clave API guardada como variable secreta.
+- `BREVO_FROM_EMAIL`: dirección de remitente habilitada en Brevo.
+- `BREVO_FROM_NAME`: nombre visible; por defecto `Cypher Oz`.
+
+Brevo requiere un remitente y dominio de envío válidos antes de entregar mensajes.
+No guardar la clave en el repositorio, logs ni Jira. Sin `BREVO_API_KEY`, el backend
+usa el `EMAIL_BACKEND` configurado (consola en desarrollo, SMTP donde esté habilitado).
+Antes de retirar una credencial previa, desplegar y probar ambos flujos en staging.
+Referencia: [API de correo transaccional de Brevo](https://developers.brevo.com/reference/send-transac-email).
+
 ## Publicación
 
 1. Aprobar CI: lint, formato, migraciones, backend, frontend, build y E2E.
@@ -103,3 +118,4 @@ Antes de operación real quedan por acreditar: backup y restauración del Postgr
 remoto, recuperación de objetos, scheduler remoto y alertas de fallo. La base
 gratuita Render tenía vencimiento registrado para 13/11/2026; revisar su continuidad
 en el panel antes de esa fecha.
+
