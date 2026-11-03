@@ -1,4 +1,5 @@
 import { expect, test, type APIRequestContext } from "@playwright/test";
+import { verifyRegisteredEmail } from "./helpers";
 
 async function csrf(context: APIRequestContext) {
   return (await (await context.get("/api/v1/auth/csrf/")).json()).csrfToken;
@@ -80,6 +81,7 @@ test("Sprint 4: carrito real, autenticación tardía, cambios, entrega y privaci
         })
       ).status(),
     ).toBe(201);
+    await verifyRegisteredEmail(page.request, email);
     await page.goto(`/catalogo/${product.slug}`);
     await page
       .getByRole("button", { name: "Añadir al carrito", exact: true })

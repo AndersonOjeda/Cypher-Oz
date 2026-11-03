@@ -1,4 +1,5 @@
 import { test, expect, Page } from "@playwright/test";
+import { verifyRegisteredEmail } from "./helpers";
 
 const password = "Una-clave!Distinta8472";
 async function login(page: Page, email: string, pass = password) {
@@ -54,6 +55,7 @@ test("registro, duplicado, credenciales, sesión persistente, permisos y logout"
   await expect(page.getByRole("main").getByRole("alert")).toContainText(
     "Ya existe una cuenta",
   );
+  await verifyRegisteredEmail(page.request, email);
   await login(page, email, "Contraseña-incorrecta!");
   await expect(page.getByRole("main").getByRole("alert")).toContainText(
     "Correo o contraseña incorrectos",

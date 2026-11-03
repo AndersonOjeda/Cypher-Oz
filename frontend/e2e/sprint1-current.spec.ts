@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { verifyRegisteredEmail } from "./helpers";
 
 async function login(
   page: Page,
@@ -29,6 +30,7 @@ test("HU-03 perfil y direcciones persisten, cambian principal y confirman elimin
   await expect(
     page.getByRole("heading", { name: "Tu cuenta está lista" }),
   ).toBeVisible();
+  await verifyRegisteredEmail(page.request, email);
   await login(page, email, "Perfil-Only!TestPassword8472");
   await expect(
     page.getByText("No tienes direcciones guardadas."),

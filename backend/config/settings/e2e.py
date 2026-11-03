@@ -6,6 +6,9 @@ FRONTEND_URL = "http://localhost:3001"
 CORS_ALLOWED_ORIGINS = [FRONTEND_URL]
 CSRF_TRUSTED_ORIGINS = [FRONTEND_URL]
 CATALOG_S3_BUCKET = "tti-catalog-e2e"
+EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+E2E_TESTING = True
+ROOT_URLCONF = "config.urls_e2e"
 # The isolated browser suite deliberately exercises many logins from one IP.
 REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"].update(  # noqa: F405
     {"auth": "1000/min", "password_reset": "1000/hour"}
