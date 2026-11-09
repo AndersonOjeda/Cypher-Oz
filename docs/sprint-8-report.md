@@ -44,6 +44,10 @@ el smoke confirma disponibilidad HTTP, sin certificar por sí solo una compra re
 
 ## Trazabilidad de casos
 
+La [matriz RF-01–RF-51](requirements-traceability.md) contrasta el documento maestro
+con las historias/épicas vigentes de Jira y sus superficies UI/API/persistencia/pruebas.
+Se conserva explícita la diferencia entre los 16 sprints originales y la replanificación de ocho en Jira.
+
 | Casos | Evidencia principal |
 |---|---|
 | CP-REV-01/02/03 | `test_verified_review_public_summary_and_private_fields`, elegibilidad negativa, límites de puntuación/comentario e inyección de campos; E2E de pedido entregado y pagado. |

@@ -6,6 +6,7 @@ y fecha indicadas en cada informe; no deben sumarse entre ejecuciones.
 
 | Necesidad | Documento de referencia |
 |---|---|
+| RF-01–RF-51 → épicas/HU de Jira → UI/API/modelos → casos y evidencias | [Matriz de trazabilidad](requirements-traceability.md) |
 | Estado vigente de Sprint 8, pruebas, Jira y límites de aceptación | [Informe Sprint 8](sprint-8-report.md) |
 | Presentación académica del 10/11/2026, demo aislada y límites operativos | [Guía de presentación](presentacion-2026-11-10.md) |
 | Registro simplificado, existencias y variantes: aceptación y regresión | [Verificación de UI/UX de productos](product-registration-ux-verification.md) |
