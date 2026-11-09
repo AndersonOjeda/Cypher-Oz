@@ -17,7 +17,7 @@
     },
     {
       "file": "deadlines-dry-run-2026-11-09.json",
-      "sha256": "a7dae78adef85f70dce8b959bd93f2f13104a82c50f499c1196526b2adc3aba2"
+      "sha256": "beac3d8d450b5bccb9e5f315e7e6c8e8fadc429fb65a6eb73057ca53a6a9bded"
     },
     {
       "file": "e2e-2026-11-09.xml",
@@ -51,7 +51,7 @@
     },
     {
       "file": "local-recovery-2026-11-09.json",
-      "sha256": "822a1dfba6fc0fcc30533fb038b91d9cf93c0aa63ed9d798e5cc043a3756e934"
+      "sha256": "f356b128412b0d82e7ac3b35c1ff56d768903390d2bbfd2848b956b143702ad2"
     },
     {
       "file": "reviews-postgres-2026-11-09.xml",
@@ -77,11 +77,31 @@
     },
     {
       "file": "demo-smoke-2026-11-09.json",
-      "sha256": "17cfd24bda3366ff18428841a3a288f24b46aa941fd193c5bfb8779ea479cc70"
+      "sha256": "2e929e523fb41b3f6555c7a53988ac6637e041a7568efa97a96800e893004447"
     },
     {
       "file": "ci-159.json",
       "sha256": "4847bf7a265a2f788069b633d82978e5bb3cbe2b0d128b8de7033eaafea9f6a6"
+    },
+    {
+      "file": "publication-2026-11-09.json",
+      "sha256": "8f59172a715e3f3ddc8705caad42550a4af7de4b017a5d89de66b92e808de177"
+    },
+    {
+      "file": "post-merge-cloud-smoke-2026-11-09.json",
+      "sha256": "49d11385ef38a1f1f13f5354312b2819feb691fe1cd7fd6cb6ae9355eb27404f"
+    },
+    {
+      "file": "email-verification-mobile.png",
+      "sha256": "7e46b8162bd84f81028bfe294b48f47f6253d3fa893660ef700775f58300f4a0"
+    },
+    {
+      "file": "email-reset-mobile.png",
+      "sha256": "a3c7f5151414aaa472d74e60d2100714fd4c7115c7b2ea64c176567e435180ab"
+    },
+    {
+      "file": "security-smoke-2026-11-09.json",
+      "sha256": "accca45b7d03972fba4bd1e059848092cfd3ef1f5fc99ceef516540994105d9b"
     }
   ]
 }

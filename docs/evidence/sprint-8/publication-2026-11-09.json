@@ -1,0 +1,27 @@
+{
+  "pull_request": "https://github.com/AndersonOjeda/Cypher-Oz/pull/24",
+  "merged": true,
+  "release_commit": "e91f29ed5bad70b4cbaa1cc6e8a523b8fb049b86",
+  "approved_head": "05b9f59f227c46ca61413c083c81323554e38aeb",
+  "approved_ci": "https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/42650806499",
+  "approved_ci_conclusion": "success",
+  "vercel": {
+    "deployment_id": "dpl_6KPkx3W1qnx7Qyb8qYf3QwtpVAvK",
+    "state": "READY",
+    "url": "https://cypher-oz.vercel.app",
+    "commit": "e91f29ed5bad70b4cbaa1cc6e8a523b8fb049b86"
+  },
+  "render": {
+    "service_id": "srv-db7dsktg1s2s73a5jmhg",
+    "deployment_id": "dep-dbovbahsrm7s73d78tgg",
+    "state": "live",
+    "url": "https://tti-staging-api.onrender.com",
+    "commit": "e91f29ed5bad70b4cbaa1cc6e8a523b8fb049b86",
+    "trigger": "api",
+    "finished_at": "2026-11-09T16:33:51.661197Z",
+    "automatic_deploy_observation": "Auto deploy configured yes/on-commit, but no deploy or event followed the merge. Confirmed no running/queued deploy before triggering the approved release once."
+  },
+  "http_smoke": "8/8 passed; direct remote SQL not requested",
+  "new_recurring_services_or_plan_changes": false,
+  "academic_acceptance": "pending responsible/professor review"
+}

@@ -1,0 +1,14 @@
+{
+  "scope": "read-only public cookie/header/debug checks; excludes authenticated session testing",
+  "checks": {
+    "csrf_cookie_present": true,
+    "csrf_cookie_secure": true,
+    "csrf_cookie_httponly": true,
+    "content_type_nosniff": true,
+    "frame_denied": true,
+    "hsts_present": true,
+    "not_found_404": true,
+    "debug_urlconf_not_disclosed": true
+  },
+  "result": "PASS"
+}

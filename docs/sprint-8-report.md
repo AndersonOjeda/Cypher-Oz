@@ -29,8 +29,24 @@ terminó **aprobada** para el commit de código `98b1a535`: **423 backend, 143 f
 66 E2E y 28 wireframes**, además de lint, migraciones, tipos, build y almacenamiento
 aislado. [Registro resumido](evidence/sprint-8/ci-159.json). Los commits posteriores
 a `98b1a535` actualizan únicamente documentación/evidencias; no se atribuye a CI 159
-un SHA distinto. El PR de entrega es [#24](https://github.com/AndersonOjeda/Cypher-Oz/pull/24),
-listo para revisión e integración; no se ha integrado en `main` ni desplegado esta rama.
+un SHA distinto. El [PR #24](https://github.com/AndersonOjeda/Cypher-Oz/pull/24)
+quedó **integrado en main**, por autorización de Anderson, en
+`e91f29ed5bad70b4cbaa1cc6e8a523b8fb049b86`. La [CI 165](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/42650806499)
+también aprobó el head final del PR `05b9f59`. Frontend Vercel READY y API Render Live
+se verificaron en el commit de integración. [Registro de publicación](evidence/sprint-8/publication-2026-11-09.json).
+
+Render no generó eventos ni un deploy automático después del merge, pese a mostrar
+auto deploy activo; se comprobó que no había despliegues pendientes y se disparó
+una sola publicación del commit aprobado. Terminó Live en
+`dep-dbovbahsrm7s73d78tgg`. El [smoke posterior al merge](evidence/sprint-8/post-merge-cloud-smoke-2026-11-09.json)
+aprobó 8/8 HTTP; el SQL directo remoto sigue sin comprobarse.
+La [comprobación pública de seguridad](evidence/sprint-8/security-smoke-2026-11-09.json)
+también pasó: CSRF Secure/HttpOnly, HSTS, nosniff, DENY y ausencia de página DEBUG.
+
+Las plantillas de correo se renderizaron con enlaces inertes de ejemplo y se
+revisaron visualmente en móvil, sin desbordamiento: [verificación](evidence/sprint-8/email-verification-mobile.png)
+y [recuperación](evidence/sprint-8/email-reset-mobile.png). Estas capturas no acreditan
+recepción real ni compatibilidad visual en todos los clientes de correo.
 
 | Verificación | Resultado y evidencia |
 |---|---|
@@ -75,14 +91,23 @@ cada issue. Las historias CO-184–CO-187 y épica CO-183 requieren además demo
 el resultado al responsable de producto. CO-197 requiere resolver contenido
 comercial aprobado; la demo señala expresamente sus datos ficticios.
 
-CO-45 dispone de regresión y matriz de casos, pero sus criterios de salida incluyen
-aceptación de historias y recuperación antes de operación real. CO-46 mantiene
-pendientes scheduler y recuperación remotos. CO-47 debe enlazar el commit/PR de
-esta entrega y conservar separadas la aceptación académica y la operación real.
+CO-45 quedó Listo por cierre de QA técnica de la entrega académica. También están
+Listo las once subtareas CO-188–CO-196, CO-198 y CO-199: actividades, evidencias,
+revisión técnica e integración verificadas. CO-197 conserva pendiente la aprobación
+del contenido comercial. CO-46 mantiene pendientes scheduler y recuperación remotos.
+CO-47 tiene trazabilidad y guías completas y conserva el cierre condicionado a
+CO-46 y aceptación final; la aceptación académica se distingue de operación real.
 CO-200 dispone de integración y pruebas simuladas; la revisión de Brevo encontró
 un remitente activo y ningún dominio propio autenticado en la cuenta conectada.
-La revisión visual/recepción real y la rotación de credenciales expuestas siguen
-requiriendo evidencia propia; no se enviaron correos reales en esta sesión.
+La revisión visual local se completó; la recepción real y la rotación de credenciales
+expuestas siguen requiriendo evidencia propia. No se enviaron correos reales en esta sesión.
+
+La consulta posterior al cierre técnico deja nueve issues abiertos: CO-46, CO-47,
+CO-183–CO-187, CO-197 y CO-200. No se declara el proyecto al 100% mientras falten
+esas aceptaciones y condiciones. Se solicitó al usuario confirmar el alcance de demo
+académica y un destinatario autorizado para las pruebas reales de correo. La web
+remota informa instrucciones de pago sin configurar y WhatsApp deshabilitado;
+no se inventaron cuentas de cobro, contactos ni condiciones comerciales.
 
 ## Decisión de alcance del usuario
 

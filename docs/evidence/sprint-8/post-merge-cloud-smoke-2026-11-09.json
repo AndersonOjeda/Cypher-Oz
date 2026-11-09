@@ -1,0 +1,15 @@
+{
+  "scope": "read-only smoke, not commercial E2E",
+  "checks": {
+    "backend_health": "PASS",
+    "backend_catalog": "PASS",
+    "backend_comparator_validation": "PASS",
+    "private_orders_unauthenticated": "PASS",
+    "frontend_catalog": "PASS",
+    "frontend_comparator": "PASS",
+    "frontend_api_proxy": "PASS",
+    "frontend_csrf": "PASS",
+    "direct_remote_database": "SKIP"
+  },
+  "result": "INCOMPLETE"
+}

@@ -45,6 +45,13 @@ Cada despliegue debe identificar su commit. Una vista previa de Vercel lista no
 demuestra que Render ejecute el backend correspondiente. Ver el informe de Sprint 7
 para las versiones verificadas y los pendientes del entorno remoto.
 
+Publicación del 09/11/2026: PR #24 integrado, frontend oficial Vercel READY y API
+Render Live en `e91f29ed5bad70b4cbaa1cc6e8a523b8fb049b86`; smoke HTTP 8/8.
+El autodespliegue de Render mostraba activo pero no produjo ejecución tras el merge:
+se verificó ausencia de jobs pendientes y se publicó una vez por API. No asumir
+que futuros merges queden publicados sin consultar el SHA real del deploy.
+Ver el [informe vigente](sprint-8-report.md) y su registro de publicación.
+
 ## Correo transaccional Brevo
 
 Registro/verificación y recuperación de contraseña comparten el envío transaccional
