@@ -110,6 +110,10 @@
     {
       "file": "demo-approval-2026-11-09.json",
       "sha256": "3397e607248dba29dba95a6b01a33d0f9ea270231ab544416f54b0fa83f82bfd"
+    },
+    {
+      "file": "academic-acceptance-2026-11-09.json",
+      "sha256": "8ce6cc6645b78129b16d6036090403e86cc4d0344160248dcf12c7f5ceda24e6"
     }
   ]
 }

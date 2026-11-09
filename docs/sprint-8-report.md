@@ -86,8 +86,10 @@ Se conserva explícita la diferencia entre los 16 sprints originales y la replan
 ## Jira y aceptación
 
 Sprint 8 conserva su planificación sin fechas; no se reescribe su historial.
-Las historias CO-184–CO-187 y la épica CO-183 conservan pendiente la revisión
-de la demostración por el responsable. La aceptación del profesor es independiente.
+Anderson aceptó expresamente la entrega académica de HU-33 a HU-36 tras recibir
+la versión publicada y sus evidencias. Las historias CO-184–CO-187 y la épica
+CO-183 quedaron Listo. Registro: `academic-acceptance-2026-11-09.json`.
+La aceptación del profesor es independiente y no se afirma realizada.
 
 CO-45 quedó Listo por cierre de QA técnica de la entrega académica. Están Listo
 las doce subtareas CO-188–CO-199: las once técnicas ya cerradas y CO-197,
@@ -106,9 +108,9 @@ nuevo; no se afirma una nueva prueba completa de alta y activación. No se cambi
 contraseña ni se almacenaron tokens válidos. La rotación/revocación de credenciales
 expuestas sigue sin acreditarse. Registro: `email-requests-2026-11-09.json`.
 
-Tras cerrar CO-197 quedan ocho issues abiertos: CO-46, CO-47, CO-183–CO-187
-y CO-200. No se declara el proyecto al 100% mientras falten esas aceptaciones
-y condiciones. Anderson aprobó la demo sin cobros reales, envío urbano COP 5.000,
+Tras registrar la aceptación académica quedan tres issues abiertos: CO-46,
+CO-47 y CO-200. No se declara el proyecto al 100% mientras falten sus criterios
+de cierre. Anderson aprobó la demo sin cobros reales, envío urbano COP 5.000,
 gratis desde COP 100.000, zonas especiales por cotizar y garantía según ficha.
 Pago real y WhatsApp siguen sin configurar y su indisponibilidad se informa.
 Se acepta esa limitación para la demo. Aprobación registrada en

@@ -87,6 +87,11 @@ como ejemplo auxiliar; no presentarla como una integración funcional con TTI.
 
 ## Condiciones aprobadas de la demo
 
+Anderson aceptó expresamente la entrega académica de HU-33 a HU-36 el 09/11.
+Las cuatro historias y la épica de confianza quedaron Listo en Jira; la evaluación
+del profesor continúa siendo independiente. Permanecen abiertos CO-46, CO-47 y
+CO-200 por sus criterios operativos, documentales y de credenciales pendientes.
+
 Anderson aprobó el 09/11 una demo académica sin cobros reales: envío urbano
 COP 5.000, gratis desde COP 100.000, zonas especiales por cotizar y garantía
 según cada ficha. Pago real y WhatsApp siguen sin configurar y se informa

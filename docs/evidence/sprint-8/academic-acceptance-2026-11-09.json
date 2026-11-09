@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-09",
+  "source": "Explicit user response after receiving published application and evidence report links",
+  "responsible": "Anderson, project owner",
+  "acceptance": "Acepto la entrega académica de HU-33 a HU-36",
+  "scope": "Academic demo: verified reviews, public opinions, moderation and purchase information",
+  "jira_closed": ["CO-184", "CO-185", "CO-186", "CO-187", "CO-183"],
+  "jira_status": "Listo",
+  "technical_basis": {
+    "pull_request": "https://github.com/AndersonOjeda/Cypher-Oz/pull/24",
+    "release_commit": "e91f29ed5bad70b4cbaa1cc6e8a523b8fb049b86",
+    "ci": "https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/42650806499",
+    "report": "docs/sprint-8-report.md"
+  },
+  "remaining_open": ["CO-46", "CO-47", "CO-200"],
+  "professor_acceptance": false,
+  "commercial_operations_certified": false,
+  "sprint_dates_changed": false
+}
