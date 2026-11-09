@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-11-09T18:50:11.744240+00:00",
+  "scope": "Published API requests; HTTP 200 alone does not prove delivery or account existence",
+  "recipient": "existing configured owner Gmail (redacted)",
+  "requests": [
+    {
+      "endpoint": "resend-verification",
+      "status": 200
+    },
+    {
+      "endpoint": "password-reset/request",
+      "status": 200
+    }
+  ],
+  "password_changed": false,
+  "tokens_recorded": false,
+  "verification_template_transport": {
+    "timestamp": "2026-11-09T18:50:59.532071+00:00",
+    "source": "Current backend apps.users.email.send_verification_email, existing configuration",
+    "provider_accepted": true,
+    "link": "Inert demo marker, no valid account token",
+    "scope": "Transport/template delivery only; does not prove published signup or account activation"
+  },
+  "gmail_receipts": [
+    {
+      "id": "1a1c1a63c9f36704",
+      "subject": "Confirma tu correo electrónico en TTI",
+      "labels": [
+        "UNREAD",
+        "IMPORTANT",
+        "CATEGORY_UPDATES",
+        "INBOX"
+      ],
+      "email_ts": "2026-11-09T18:50:59+00:00",
+      "recipient_match": true,
+      "multipart_alternative": true,
+      "text_plain": true,
+      "text_html": true,
+      "action_path_present": true
+    },
+    {
+      "id": "1a1c1a583316be99",
+      "subject": "Restablece tu contraseña de TTI",
+      "labels": [
+        "UNREAD",
+        "IMPORTANT",
+        "CATEGORY_PERSONAL",
+        "INBOX"
+      ],
+      "email_ts": "2026-11-09T18:50:11+00:00",
+      "recipient_match": true,
+      "multipart_alternative": true,
+      "text_plain": true,
+      "text_html": true,
+      "action_path_present": true
+    }
+  ],
+  "limits": [
+    "Verification resend HTTP 200 does not prove a message was sent",
+    "Verification template used an inert link; no account activation was attempted",
+    "No password was changed",
+    "Credential revocation/rotation is not verified",
+    "MIME checks do not certify visual compatibility in every email client"
+  ]
+}

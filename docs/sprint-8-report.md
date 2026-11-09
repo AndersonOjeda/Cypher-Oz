@@ -85,29 +85,34 @@ Se conserva explícita la diferencia entre los 16 sprints originales y la replan
 
 ## Jira y aceptación
 
-Sprint 8 conserva su planificación sin fechas; no se reescribe el historial de
-sprints. El estado de las actividades debe reflejar las evidencias enlazadas en
-cada issue. Las historias CO-184–CO-187 y épica CO-183 requieren además demostrar
-el resultado al responsable de producto. CO-197 requiere resolver contenido
-comercial aprobado; la demo señala expresamente sus datos ficticios.
+Sprint 8 conserva su planificación sin fechas; no se reescribe su historial.
+Las historias CO-184–CO-187 y la épica CO-183 conservan pendiente la revisión
+de la demostración por el responsable. La aceptación del profesor es independiente.
 
-CO-45 quedó Listo por cierre de QA técnica de la entrega académica. También están
-Listo las once subtareas CO-188–CO-196, CO-198 y CO-199: actividades, evidencias,
-revisión técnica e integración verificadas. CO-197 conserva pendiente la aprobación
-del contenido comercial. CO-46 mantiene pendientes scheduler y recuperación remotos.
-CO-47 tiene trazabilidad y guías completas y conserva el cierre condicionado a
-CO-46 y aceptación final; la aceptación académica se distingue de operación real.
-CO-200 dispone de integración y pruebas simuladas; la revisión de Brevo encontró
+CO-45 quedó Listo por cierre de QA técnica de la entrega académica. Están Listo
+las doce subtareas CO-188–CO-199: las once técnicas ya cerradas y CO-197,
+cerrada tras la aprobación expresa del contenido de demo. CO-46 mantiene pendientes
+scheduler y recuperación remotos. CO-47 conserva el cierre condicionado a CO-46
+y aceptación final; se distingue la entrega académica de la operación real.
+
+CO-200 dispone de integración y pruebas simuladas. La revisión de Brevo encontró
 un remitente activo y ningún dominio propio autenticado en la cuenta conectada.
-La revisión visual local se completó; la recepción real y la rotación de credenciales
-expuestas siguen requiriendo evidencia propia. No se enviaron correos reales en esta sesión.
+El 09/11 se enviaron las dos pruebas autorizadas al Gmail principal configurado
+y se confirmó recepción en INBOX: recuperación desde la API publicada (18:50:11 UTC)
+y plantilla de verificación desde la función actual del backend (18:50:59 UTC),
+esta última con enlace inerte. Ambas incluyen MIME multipart/alternative, texto
+y HTML. El reenvío público de verificación respondió 200, pero no produjo correo
+nuevo; no se afirma una nueva prueba completa de alta y activación. No se cambió
+contraseña ni se almacenaron tokens válidos. La rotación/revocación de credenciales
+expuestas sigue sin acreditarse. Registro: `email-requests-2026-11-09.json`.
 
-La consulta posterior al cierre técnico deja nueve issues abiertos: CO-46, CO-47,
-CO-183–CO-187, CO-197 y CO-200. No se declara el proyecto al 100% mientras falten
-esas aceptaciones y condiciones. Se solicitó al usuario confirmar el alcance de demo
-académica y un destinatario autorizado para las pruebas reales de correo. La web
-remota informa instrucciones de pago sin configurar y WhatsApp deshabilitado;
-no se inventaron cuentas de cobro, contactos ni condiciones comerciales.
+Tras cerrar CO-197 quedan ocho issues abiertos: CO-46, CO-47, CO-183–CO-187
+y CO-200. No se declara el proyecto al 100% mientras falten esas aceptaciones
+y condiciones. Anderson aprobó la demo sin cobros reales, envío urbano COP 5.000,
+gratis desde COP 100.000, zonas especiales por cotizar y garantía según ficha.
+Pago real y WhatsApp siguen sin configurar y su indisponibilidad se informa.
+Se acepta esa limitación para la demo. Aprobación registrada en
+`demo-approval-2026-11-09.json` y en CO-197/CO-187.
 
 ## Decisión de alcance del usuario
 

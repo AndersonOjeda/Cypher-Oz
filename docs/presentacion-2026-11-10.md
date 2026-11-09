@@ -84,3 +84,15 @@ de imágenes ni los datos de Render. Evidencias públicas: `docs/evidence/sprint
 se publicó ni se instaló automáticamente. El generador incluyó dependencias con
 avisos de seguridad que `npm audit fix` sin cambios mayores no resolvió. Mantenerla
 como ejemplo auxiliar; no presentarla como una integración funcional con TTI.
+
+## Condiciones aprobadas de la demo
+
+Anderson aprobó el 09/11 una demo académica sin cobros reales: envío urbano
+COP 5.000, gratis desde COP 100.000, zonas especiales por cotizar y garantía
+según cada ficha. Pago real y WhatsApp siguen sin configurar y se informa
+su indisponibilidad. No solicitar transferencias reales durante la presentación.
+
+Se confirmó la recepción real de recuperación en el Gmail configurado desde
+la API publicada. La plantilla de verificación también llegó, en una prueba
+de transporte con enlace inerte; no activa ninguna cuenta. La demo local
+continúa usando correo a consola. No se modificó la contraseña del usuario.

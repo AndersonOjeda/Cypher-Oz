@@ -102,6 +102,14 @@
     {
       "file": "security-smoke-2026-11-09.json",
       "sha256": "accca45b7d03972fba4bd1e059848092cfd3ef1f5fc99ceef516540994105d9b"
+    },
+    {
+      "file": "email-requests-2026-11-09.json",
+      "sha256": "6367fb779e60eb31239d5a45a5afed2f53c7ba03bc94806f7b9e149a54c55341"
+    },
+    {
+      "file": "demo-approval-2026-11-09.json",
+      "sha256": "3397e607248dba29dba95a6b01a33d0f9ea270231ab544416f54b0fa83f82bfd"
     }
   ]
 }

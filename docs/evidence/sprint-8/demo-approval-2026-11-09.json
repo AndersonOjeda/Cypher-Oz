@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-09",
+  "source": "Explicit user response in the project conversation",
+  "approval": "Sí, aprobar esos datos para la demo académica",
+  "scope": "Academic demonstration; no real payments",
+  "urban_shipping_cop": 5000,
+  "free_shipping_from_cop": 100000,
+  "special_zones": "Quotation required",
+  "warranty": "According to each product sheet",
+  "real_payment_instructions": "Not configured; accepted for this demo",
+  "whatsapp": "Not configured; unavailability is disclosed",
+  "jira_closed": ["CO-197"],
+  "professor_acceptance": false
+}
