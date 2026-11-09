@@ -35,6 +35,7 @@ se registran cuando ocurran; las pruebas automáticas no sustituyen esa aceptaci
 | Smoke remoto | 8/8 HTTP aprobados; [JSON](evidence/sprint-8/cloud-smoke-2026-11-09.json). El resultado global es INCOMPLETE porque no se solicitó SQL directo remoto. |
 | Backup/restauración local | [JSON](evidence/sprint-8/local-recovery-2026-11-09.json): 36 tablas, 34 migraciones, 91 pedidos, 91 pagos y 3 reseñas. Restauración aislada; no cubre Render ni objetos de catálogo. |
 | Comando de plazos en demo | [Dry-run](evidence/sprint-8/deadlines-dry-run-2026-11-09.json), sin fallos y sin candidatos. No acredita ejecución periódica remota. |
+| Demo de presentación | [Smoke local](evidence/sprint-8/demo-smoke-2026-11-09.json): acceso ADMIN/CLIENT con sus roles, health, catálogo, producto y reseñas públicos aprobados. |
 | Capturas | [Móvil](evidence/sprint-8/reviews-mobile.png), [tablet](evidence/sprint-8/reviews-tablet.png), [escritorio](evidence/sprint-8/reviews-desktop.png). Revisión visual de legibilidad y ausencia de desbordamiento, con datos sintéticos identificados. |
 
 La última CI remota histórica documentada es [CI 149](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/41701949709),

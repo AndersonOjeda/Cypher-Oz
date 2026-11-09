@@ -1,0 +1,14 @@
+{
+  "scope": "isolated classroom demo, no real email or purchases",
+  "checks": {
+    "ADMIN_login": true,
+    "ADMIN_role": true,
+    "CLIENT_login": true,
+    "CLIENT_role": true,
+    "health": true,
+    "catalog": true,
+    "product": true,
+    "reviews": true
+  },
+  "result": "PASS"
+}

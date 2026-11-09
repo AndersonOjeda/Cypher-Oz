@@ -74,6 +74,10 @@
     {
       "file": "reviews-tablet.png",
       "sha256": "49ab4593d4d56c83aa1bc8ea015271815ad9cdf96d3504e42fac98aa5d14ecc2"
+    },
+    {
+      "file": "demo-smoke-2026-11-09.json",
+      "sha256": "17cfd24bda3366ff18428841a3a288f24b46aa941fd193c5bfb8779ea479cc70"
     }
   ]
 }
