@@ -13,6 +13,13 @@ def seed():
     if settings.DATABASES["default"]["NAME"] != "tti_sprint1_demo":
         raise RuntimeError("Demo checkout seed requires tti_sprint1_demo.")
     admin = User.objects.get(email="admin@sprint1.example", role="ADMIN")
+    customer, created = User.objects.get_or_create(
+        email="cliente@demo.example",
+        defaults={"name": "Cliente de demostración", "role": "CLIENT", "email_verified": True},
+    )
+    if created:
+        customer.set_password("Demo-Cliente!Clase8472")
+        customer.save()
     category, _ = Category.objects.get_or_create(
         slug="demo-sprint1", defaults={"name": "Demostración Sprint 1"}
     )

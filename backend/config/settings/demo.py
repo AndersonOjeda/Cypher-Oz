@@ -8,3 +8,7 @@ DATABASES["default"]["CONN_MAX_AGE"] = 0  # noqa: F405
 FRONTEND_URL = "http://localhost:3002"
 CORS_ALLOWED_ORIGINS = [FRONTEND_URL]
 CSRF_TRUSTED_ORIGINS = [FRONTEND_URL]
+
+# Classroom accounts and reset links stay local, even with live Brevo in .env.
+BREVO_API_KEY = ""
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

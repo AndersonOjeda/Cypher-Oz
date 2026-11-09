@@ -1,5 +1,8 @@
 # Sprint 8 — Implementación y evidencia local
 
+Este documento conserva el historial del 03/11/2026. Para el estado posterior,
+consultar el [informe vigente del 09/11](../../sprint-8-report.md).
+
 Fecha de revisión: 2026-11-03\
 Jira: épica [CO-183](https://cypher-oz.atlassian.net/browse/CO-183), historias CO-184–CO-187, subtareas CO-188–CO-199. Sprint 8, tablero 2.
 

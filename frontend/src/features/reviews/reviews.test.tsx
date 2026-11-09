@@ -9,6 +9,31 @@ const apiMock = vi.mocked(api);
 describe("Sprint 8 review UI", () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
+  it("renders executable-looking comments as inert text", async () => {
+    const comment = '<script>alert("xss")</script>';
+    apiMock.mockResolvedValue({
+      count: 1, next: null, previous: null,
+      results: [{ id: 7, rating: 5, comment, author_name: "Ana P.",
+        verified_label: "Compra verificada", created_at: "2026-11-01T12:00:00Z" }],
+    } as never);
+    const { container } = render(<ProductReviews slug="audifonos" />);
+    expect(await screen.findByText(comment)).toBeInTheDocument();
+    expect(container.querySelector("script")).toBeNull();
+  });
+
+  it("recovers public opinions after a failed request", async () => {
+    apiMock.mockRejectedValueOnce(new Error("Error de conexión")).mockResolvedValueOnce({
+      count: 0, next: null, previous: null, results: [],
+      summary: { average_rating: null, average_rating_display: null, review_count: 0 },
+    } as never);
+    render(<ProductReviews slug="audifonos" />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Error de conexión");
+    fireEvent.click(screen.getByRole("button", { name: "Reintentar" }));
+    await waitFor(() => expect(apiMock).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole("status")).not.toBeInTheDocument());
+  });
+
   it("renders public ratings and a privacy-minimal verified review", async () => {
     apiMock.mockResolvedValue({
       count: 1, next: null, previous: null,

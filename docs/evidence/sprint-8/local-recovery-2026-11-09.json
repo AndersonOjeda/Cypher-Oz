@@ -1,0 +1,14 @@
+{
+  "scope": "synthetic local PostgreSQL; excludes remote data and object storage",
+  "created_at_utc": "2026-11-09T15:37:49.811339+00:00",
+  "source": "tti_e2e",
+  "restored_counts": {
+    "migrations": "34",
+    "orders": "91",
+    "payments": "91",
+    "reviews": "3",
+    "tables": "36"
+  },
+  "dump_sha256": "c44626dc91e921fed3a494cd7f56be32874fe9e4c21e784a2b9dfa6862dad879",
+  "result": "PASS"
+}

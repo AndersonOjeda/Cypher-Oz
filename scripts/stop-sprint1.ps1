@@ -7,6 +7,9 @@ foreach ($record in $records) {
     $demoProcess = Get-Process -Id $record.pid -ErrorAction SilentlyContinue
     if ($demoProcess -and $demoProcess.StartTime.ToUniversalTime().ToString('o') -eq $record.started_at) {
         taskkill.exe /PID $demoProcess.Id /T /F | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "No se pudo detener el proceso de demo $($demoProcess.Id)."
+        }
     }
 }
 Write-Output 'Demo detenida. Los datos de PostgreSQL se conservan.'

@@ -83,6 +83,7 @@ jobs:
             frontend/playwright-report/
             frontend/test-results/completion-*.png
             docs/evidence/sprint-7/
+            docs/evidence/sprint-8/
             docs/evidence/sprint-4/
             docs/evidence/sprint-5/
             docs/evidence/sprint-1-current/*-mobile.png
