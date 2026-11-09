@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { api, ApiError } from "@/services/api";
 import type { CustomerReview } from "@/features/orders/types";
 
@@ -14,20 +14,24 @@ export function ProductReviews({ slug, summary }: { slug: string; summary?: Revi
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [pageNumber, setPageNumber] = useState(1);
+  const [refreshKey, setRefreshKey] = useState(0);
   useEffect(() => {
     let current = true;
     Promise.resolve()
-      .then(() => api<Page<CustomerReview>>(`/products/${encodeURIComponent(slug)}/reviews/?page=${pageNumber}`))
+      .then(() => {
+        if (current) { setLoading(true); setError(""); setPage(null); }
+        return api<Page<CustomerReview>>(`/products/${encodeURIComponent(slug)}/reviews/?page=${pageNumber}`);
+      })
       .then((result) => { if (current) { if (!result || !Array.isArray(result.results)) { setError("No pudimos cargar las opiniones."); return; } setPage(result); setError(""); } })
       .catch((cause: unknown) => { if (current) setError(cause instanceof Error ? cause.message : "No pudimos cargar las opiniones."); })
       .finally(() => { if (current) setLoading(false); });
     return () => { current = false; };
-  }, [slug, pageNumber]);
+  }, [slug, pageNumber, refreshKey]);
   const rating = page?.summary ?? summary;
   return <section className="review-section" aria-labelledby="product-reviews-title">
     <h2 id="product-reviews-title">Opiniones de compradores</h2>
     {rating?.review_count ? <p className="review-average"><strong>{rating.average_rating_display}</strong> de 5 · {rating.review_count} {rating.review_count === 1 ? "reseña" : "reseñas"}</p> : <p>{rating?.empty_message ?? "Este producto aún no tiene reseñas"}</p>}
-    {error && <p role="alert">{error} <button type="button" onClick={() => { setError(""); setLoading(true); setPage(null); }}>Reintentar</button></p>}
+    {error && <p role="alert">{error} <button type="button" onClick={() => setRefreshKey((key) => key + 1)}>Reintentar</button></p>}
     {loading && <p role="status">Cargando opiniones…</p>}
     {page && page.results.length > 0 && <ul className="review-list">{page.results.map((review) => <li key={review.id} className="review-card">
       <div className="review-card-heading"><strong>{review.author_name}</strong><span aria-label={`${review.rating} de 5 estrellas`}>{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</span></div>
@@ -40,17 +44,20 @@ export function ProductReviews({ slug, summary }: { slug: string; summary?: Revi
 }
 
 export function OrderReviewForm({ orderItemId, existing, onSaved }: { orderItemId: number; existing: CustomerReview | null; onSaved: (review: CustomerReview) => void }) {
+  const fieldId = useId();
   const [rating, setRating] = useState(existing?.rating ?? 5);
   const [comment, setComment] = useState(existing?.comment ?? "");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
   async function submit(event: React.FormEvent) {
-    event.preventDefault(); setBusy(true); setError("");
+    event.preventDefault(); setBusy(true); setError(""); setSaved(false);
     try {
       const review = existing
         ? await api<CustomerReview>(`/reviews/${existing.id}/`, { method: "PATCH", body: JSON.stringify({ rating, comment }) })
         : await api<CustomerReview>("/reviews/", { method: "POST", body: JSON.stringify({ order_item_id: orderItemId, rating, comment }) });
       onSaved(review);
+      setSaved(true);
     } catch (cause) {
       if (cause instanceof ApiError && cause.status === 409 && typeof cause.details.review_id === "number") setError("Ya tienes una reseña para este producto. Recarga el pedido para editarla.");
       else setError(cause instanceof Error ? cause.message : "No pudimos guardar la reseña.");
@@ -58,8 +65,10 @@ export function OrderReviewForm({ orderItemId, existing, onSaved }: { orderItemI
   }
   return <form className="review-form" onSubmit={submit}>
     <label>Calificación <select value={rating} onChange={(event) => setRating(Number(event.target.value))}>{[5, 4, 3, 2, 1].map((n) => <option value={n} key={n}>{n} {n === 1 ? "estrella" : "estrellas"}</option>)}</select></label>
-    <label>Tu opinión <textarea required minLength={1} maxLength={1000} rows={3} value={comment} onChange={(event) => setComment(event.target.value)} /></label>
-    {error && <p role="alert">{error}</p>}<button type="submit" disabled={busy}>{busy ? "Guardando…" : existing ? "Guardar cambios" : "Publicar reseña"}</button>
+    <label>Tu opinión <textarea required minLength={1} maxLength={1000} rows={3} value={comment} aria-invalid={Boolean(error)} aria-describedby={`${fieldId}-count${error ? ` ${fieldId}-error` : ""}`} onChange={(event) => { setComment(event.target.value); setSaved(false); }} /></label>
+    <p id={`${fieldId}-count`}>{comment.length}/1000 caracteres</p>
+    {saved && <p role="status">Reseña guardada.</p>}
+    {error && <p id={`${fieldId}-error`} role="alert">{error}</p>}<button type="submit" disabled={busy}>{busy ? "Guardando…" : existing ? "Guardar cambios" : "Publicar reseña"}</button>
   </form>;
 }
 

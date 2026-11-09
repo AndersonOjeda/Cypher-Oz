@@ -1,0 +1,87 @@
+{
+  "scope": "local evidence; suites overlap; do not add counts",
+  "files": [
+    {
+      "file": "backend-2026-11-09.xml",
+      "sha256": "19f06c6579b4741cc1bcdc8fcf5e2bd32232feb6eff29ca49e2956dd46afdc0f",
+      "results": {
+        "tests": 403,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "file": "cloud-smoke-2026-11-09.json",
+      "sha256": "49d11385ef38a1f1f13f5354312b2819feb691fe1cd7fd6cb6ae9355eb27404f"
+    },
+    {
+      "file": "deadlines-dry-run-2026-11-09.json",
+      "sha256": "a7dae78adef85f70dce8b959bd93f2f13104a82c50f499c1196526b2adc3aba2"
+    },
+    {
+      "file": "e2e-2026-11-09.xml",
+      "sha256": "88fe04f6dd0ef100f650c7f9e443959f059ff0833a12e2a7bfa07c9a8a7b48b1",
+      "results": {
+        "tests": 66,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "file": "e2e-sprint8-2026-11-09.xml",
+      "sha256": "fad2cdbc413b3d4a187195783342e41d26167b34713ca1b91ded7606fd94d8a1",
+      "results": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "file": "frontend-2026-11-09.xml",
+      "sha256": "84dcde7462842ce57ea02be9785b3ec8d45eb3e36e8b8c5d294eea4b01e5b335",
+      "results": {
+        "tests": 143,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "file": "local-recovery-2026-11-09.json",
+      "sha256": "822a1dfba6fc0fcc30533fb038b91d9cf93c0aa63ed9d798e5cc043a3756e934"
+    },
+    {
+      "file": "reviews-postgres-2026-11-09.xml",
+      "sha256": "8518c3f344f68d92fa1b4407c837abbbcaa37cdf51189b3c0906891ab3789fb4",
+      "results": {
+        "tests": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "file": "reviews-desktop.png",
+      "sha256": "71a8012d8261d8995c8b5d5bc4614ba46b361f688813deafbf7cbb23d74a85c0"
+    },
+    {
+      "file": "reviews-mobile.png",
+      "sha256": "ff4c4188e0039673c9d372c8099a3caa580f0e99911f5cd9857ee92d2919c0f6"
+    },
+    {
+      "file": "reviews-tablet.png",
+      "sha256": "49ab4593d4d56c83aa1bc8ea015271815ad9cdf96d3504e42fac98aa5d14ecc2"
+    },
+    {
+      "file": "demo-smoke-2026-11-09.json",
+      "sha256": "17cfd24bda3366ff18428841a3a288f24b46aa941fd193c5bfb8779ea479cc70"
+    },
+    {
+      "file": "ci-159.json",
+      "sha256": "4847bf7a265a2f788069b633d82978e5bb3cbe2b0d128b8de7033eaafea9f6a6"
+    }
+  ]
+}

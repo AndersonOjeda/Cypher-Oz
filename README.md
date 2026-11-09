@@ -2,7 +2,9 @@
 
 Monorepo de TTI: Next.js + TypeScript + Tailwind, Django/DRF y PostgreSQL.
 Fuente de verdad: `TTI_Documento_Maestro_Ingenieria_Software_v3.0_COMPLETO.docx`.
-Planificación: siete sprints en Jira. La entrega de Antigravity y sus correcciones
+Entrega académica del 10/11/2026: [preparación y recorrido de presentación](docs/presentacion-2026-11-10.md).
+Planificación: ocho sprints en Jira. Estado de entrega académica y evidencias:
+[informe vigente de Sprint 8](docs/sprint-8-report.md). La entrega de Antigravity y sus correcciones
 se verifican en el [informe vigente de Sprint 7](docs/sprint-7-report.md), junto con
 los pendientes reales del entorno remoto. [Sprint 6](docs/sprint-6-report.md) y
 [cierre integrado de Sprint 4/5](docs/sprints-4-5-verification.md) conservan su alcance.

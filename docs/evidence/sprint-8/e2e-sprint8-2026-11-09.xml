@@ -1,0 +1,14 @@
+<testsuites id="" name="" tests="3" failures="0" skipped="0" errors="0" time="61.25979399999999">
+<testsuite name="sprint8-reviews.spec.ts" timestamp="2026-11-09T15:39:53.819Z" hostname="mobile" tests="1" failures="0" skipped="0" time="15.147" errors="0">
+<testcase name="Sprint 8: compra verificada, reseña pública, reporte y moderación" classname="sprint8-reviews.spec.ts" time="15.147">
+</testcase>
+</testsuite>
+<testsuite name="sprint8-reviews.spec.ts" timestamp="2026-11-09T15:39:53.819Z" hostname="tablet" tests="1" failures="0" skipped="0" time="11.335" errors="0">
+<testcase name="Sprint 8: compra verificada, reseña pública, reporte y moderación" classname="sprint8-reviews.spec.ts" time="11.335">
+</testcase>
+</testsuite>
+<testsuite name="sprint8-reviews.spec.ts" timestamp="2026-11-09T15:39:53.819Z" hostname="desktop" tests="1" failures="0" skipped="0" time="11.948" errors="0">
+<testcase name="Sprint 8: compra verificada, reseña pública, reporte y moderación" classname="sprint8-reviews.spec.ts" time="11.948">
+</testcase>
+</testsuite>
+</testsuites>

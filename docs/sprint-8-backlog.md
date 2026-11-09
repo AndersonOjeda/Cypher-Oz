@@ -1,5 +1,8 @@
 # Sprint 8 — Backlog
 
+Las tablas de estado siguientes conservan la planificación inicial. La verificación
+posterior y los criterios todavía pendientes están en el [informe vigente](sprint-8-report.md).
+
 > **Sprint 8 | Sprint 08 | Confianza (Jira ID: 78)**\
 > **Épica**: `CO-183` — EP-14 | Confianza y reputación\
 > **Velocidad objetivo**: 13 SP iniciales (puntos solo en historias)\

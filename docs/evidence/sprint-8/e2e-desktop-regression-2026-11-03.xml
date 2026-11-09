@@ -1,0 +1,74 @@
+<testsuites id="" name="" tests="22" failures="0" skipped="0" errors="0" time="104.003015">
+<testsuite name="admin-navigation.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="1" failures="0" skipped="0" time="3.02" errors="0">
+<testcase name="admin changes sections using responsive navigation; visitors do not see the menu" classname="admin-navigation.spec.ts" time="3.02">
+</testcase>
+</testsuite>
+<testsuite name="ai-assistant.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="2" failures="0" skipped="0" time="1.729" errors="0">
+<testcase name="assistant handles a conversation, errors and keyboard access" classname="ai-assistant.spec.ts" time="1.145">
+</testcase>
+<testcase name="assistant stays hidden without an API key" classname="ai-assistant.spec.ts" time="0.584">
+</testcase>
+</testsuite>
+<testsuite name="product-registration.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="1" failures="0" skipped="0" time="6.308" errors="0">
+<testcase name="registro sencillo guarda precio y unidades; otra presentación genera su código y suma existencias" classname="product-registration.spec.ts" time="6.308">
+</testcase>
+</testsuite>
+<testsuite name="secretary.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="1" failures="0" skipped="0" time="4.906" errors="0">
+<testcase name="secretary reviews drafts, saves real stock unpublished and prepares a printable catalog" classname="secretary.spec.ts" time="4.906">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-current.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="3" failures="0" skipped="0" time="11.676" errors="0">
+<testcase name="HU-03 perfil y direcciones persisten, cambian principal y confirman eliminación" classname="sprint1-current.spec.ts" time="4.706">
+</testcase>
+<testcase name="HU-20 categorías y marcas: alta, duplicado, edición, actividad y borrado" classname="sprint1-current.spec.ts" time="3.996">
+</testcase>
+<testcase name="EN-01 y HU-30 configuración persistente y canal habilitable" classname="sprint1-current.spec.ts" time="2.974">
+</testcase>
+</testsuite>
+<testsuite name="sprint1-orders.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="1" failures="0" skipped="0" time="11.051" errors="0">
+<testcase name="checkout relee dirección y pedido conserva snapshot; reintento no duplica" classname="sprint1-orders.spec.ts" time="11.051">
+</testcase>
+</testsuite>
+<testsuite name="sprint1.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="3" failures="0" skipped="0" time="8.773" errors="0">
+<testcase name="registro, duplicado, credenciales, sesión persistente, permisos y logout" classname="sprint1.spec.ts" time="5.576">
+</testcase>
+<testcase name="WhatsApp configurado, responsive, accesible y sin cubrir CTA" classname="sprint1.spec.ts" time="1.63">
+</testcase>
+<testcase name="administrador autorizado y visitante rechazado" classname="sprint1.spec.ts" time="1.567">
+</testcase>
+</testsuite>
+<testsuite name="sprint2-current.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="2" failures="0" skipped="0" time="1.404" errors="0">
+<testcase name="HU-32 solicita recuperación sin revelar si la cuenta existe" classname="sprint2-current.spec.ts" time="0.89">
+</testcase>
+<testcase name="HU-32 rechaza confirmación sin token" classname="sprint2-current.spec.ts" time="0.514">
+</testcase>
+</testsuite>
+<testsuite name="sprint2.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="2" failures="0" skipped="0" time="8.882" errors="0">
+<testcase name="administrar catálogo completo con imágenes en almacenamiento real" classname="sprint2.spec.ts" time="8.236">
+</testcase>
+<testcase name="visitante no accede al administrador ni a datos del catálogo" classname="sprint2.spec.ts" time="0.646">
+</testcase>
+</testsuite>
+<testsuite name="sprint3.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="2" failures="0" skipped="0" time="10.496" errors="0">
+<testcase name="variantes estándar, atributos, precio exacto y disponibilidad persisten" classname="sprint3.spec.ts" time="8.337">
+</testcase>
+<testcase name="visitante y cliente no gestionan variantes, precios ni atributos" classname="sprint3.spec.ts" time="2.159">
+</testcase>
+</testsuite>
+<testsuite name="sprint4.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="1" failures="0" skipped="0" time="10.472" errors="0">
+<testcase name="Sprint 4: carrito real, autenticación tardía, cambios, entrega y privacidad" classname="sprint4.spec.ts" time="10.472">
+</testcase>
+</testsuite>
+<testsuite name="sprint5.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="1" failures="0" skipped="0" time="5.331" errors="0">
+<testcase name="Sprint 5: instructions, persistent deadline, report and unique SALE" classname="sprint5.spec.ts" time="5.331">
+</testcase>
+</testsuite>
+<testsuite name="sprint8-reviews.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="1" failures="0" skipped="0" time="8.11" errors="0">
+<testcase name="Sprint 8: compra verificada, reseña pública, reporte y moderación" classname="sprint8-reviews.spec.ts" time="8.11">
+</testcase>
+</testsuite>
+<testsuite name="sprints67.spec.ts" timestamp="2026-11-04T02:28:43.377Z" hostname="desktop" tests="1" failures="0" skipped="0" time="9.542" errors="0">
+<testcase name="Sprints 6/7: rejection correction, funds review, delivery, cancellation and comparison" classname="sprints67.spec.ts" time="9.542">
+</testcase>
+</testsuite>
+</testsuites>

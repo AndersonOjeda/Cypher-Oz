@@ -7,6 +7,7 @@ CORS_ALLOWED_ORIGINS = [FRONTEND_URL]
 CSRF_TRUSTED_ORIGINS = [FRONTEND_URL]
 CATALOG_S3_BUCKET = "tti-catalog-e2e"
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+BREVO_API_KEY = ""
 E2E_TESTING = True
 ROOT_URLCONF = "config.urls_e2e"
 # The isolated browser suite deliberately exercises many logins from one IP.
