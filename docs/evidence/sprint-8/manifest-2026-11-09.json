@@ -78,6 +78,10 @@
     {
       "file": "demo-smoke-2026-11-09.json",
       "sha256": "17cfd24bda3366ff18428841a3a288f24b46aa941fd193c5bfb8779ea479cc70"
+    },
+    {
+      "file": "ci-159.json",
+      "sha256": "4847bf7a265a2f788069b633d82978e5bb3cbe2b0d128b8de7033eaafea9f6a6"
     }
   ]
 }

@@ -24,6 +24,14 @@ se registran cuando ocurran; las pruebas automáticas no sustituyen esa aceptaci
 
 ## Resultados registrados
 
+La [CI 159](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/42648321822)
+terminó **aprobada** para el commit de código `98b1a535`: **423 backend, 143 frontend,
+66 E2E y 28 wireframes**, además de lint, migraciones, tipos, build y almacenamiento
+aislado. [Registro resumido](evidence/sprint-8/ci-159.json). Los commits posteriores
+a `98b1a535` actualizan únicamente documentación/evidencias; no se atribuye a CI 159
+un SHA distinto. El PR de entrega es [#24](https://github.com/AndersonOjeda/Cypher-Oz/pull/24),
+listo para revisión e integración; no se ha integrado en `main` ni desplegado esta rama.
+
 | Verificación | Resultado y evidencia |
 |---|---|
 | Backend completo PostgreSQL | 403 aprobadas; [JUnit](evidence/sprint-8/backend-2026-11-09.xml). Se ejecutó antes de ampliar los casos de reseñas. Advertencia de caché pytest sin efecto en los resultados. |
@@ -38,8 +46,8 @@ se registran cuando ocurran; las pruebas automáticas no sustituyen esa aceptaci
 | Demo de presentación | [Smoke local](evidence/sprint-8/demo-smoke-2026-11-09.json): acceso ADMIN/CLIENT con sus roles, health, catálogo, producto y reseñas públicos aprobados. |
 | Capturas | [Móvil](evidence/sprint-8/reviews-mobile.png), [tablet](evidence/sprint-8/reviews-tablet.png), [escritorio](evidence/sprint-8/reviews-desktop.png). Revisión visual de legibilidad y ausencia de desbordamiento, con datos sintéticos identificados. |
 
-La última CI remota histórica documentada es [CI 149](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/41701949709),
-commit `035a661`. No se atribuye esa ejecución a estas correcciones posteriores.
+La [CI 149](https://github.com/AndersonOjeda/Cypher-Oz/actions/runs/41701949709),
+commit `035a661`, se conserva como antecedente histórico; CI 159 valida las correcciones actuales.
 Render informó el 09/11 que su API está Live en `61e8258`, desplegada el 04/11;
 el smoke confirma disponibilidad HTTP, sin certificar por sí solo una compra real.
 
