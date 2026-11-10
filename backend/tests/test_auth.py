@@ -277,3 +277,28 @@ def test_concurrent_refresh_only_one_succeeds(logged_in):
     with ThreadPoolExecutor(max_workers=2) as executor:
         statuses = list(executor.map(lambda _: refresh(), range(2)))
     assert sorted(statuses) == [200, 401]
+
+
+def test_verify_email_is_idempotent_across_devices(client):
+    from apps.users.models import EmailVerificationToken
+    from apps.users.views import reset_token_hash
+
+    user = User.objects.create_user(
+        "verify_idempotent@example.com", PASSWORD, name="Ana", email_verified=False
+    )
+    raw_token = "tok-device-sync-123"
+    EmailVerificationToken.objects.create(
+        user=user,
+        token_hash=reset_token_hash(raw_token),
+        expires_at=timezone.now() + timedelta(hours=24),
+    )
+
+    first = client.post("/api/v1/auth/verify-email/", {"token": raw_token}, format="json")
+    assert first.status_code == 200
+    user.refresh_from_db()
+    assert user.email_verified is True
+
+    # Opening the same link again on another device succeeds cleanly.
+    second = client.post("/api/v1/auth/verify-email/", {"token": raw_token}, format="json")
+    assert second.status_code == 200
+    assert "confirmado" in second.data["message"].lower()

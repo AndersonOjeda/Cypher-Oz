@@ -206,19 +206,34 @@ class VerifyEmailView(PublicAuthView):
 
     def post(self, request):
         token = str(request.data.get("token", ""))
+        if not token or len(token) > 128:
+            return private_response(
+                {
+                    "code": "INVALID_VERIFICATION_TOKEN",
+                    "message": "El enlace no es válido o ya venció.",
+                },
+                status=400,
+            )
         with transaction.atomic():
             verification = (
                 EmailVerificationToken.objects.select_for_update()
                 .select_related("user")
-                .filter(token_hash=reset_token_hash(token), used_at__isnull=True)
+                .filter(token_hash=reset_token_hash(token))
                 .first()
             )
-            if (
-                not token
-                or len(token) > 128
-                or verification is None
-                or verification.expires_at <= timezone.now()
-            ):
+            if verification is None:
+                return private_response(
+                    {
+                        "code": "INVALID_VERIFICATION_TOKEN",
+                        "message": "El enlace no es válido o ya venció.",
+                    },
+                    status=400,
+                )
+            if verification.user.email_verified:
+                return private_response(
+                    {"message": "Tu correo ya está confirmado. Ya puedes iniciar sesión."}
+                )
+            if verification.used_at is not None or verification.expires_at <= timezone.now():
                 return private_response(
                     {
                         "code": "INVALID_VERIFICATION_TOKEN",

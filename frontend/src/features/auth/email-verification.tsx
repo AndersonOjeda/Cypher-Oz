@@ -1,29 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { api } from "@/services/api";
 
 export function EmailVerification({ token }: { token?: string }) {
   const [status, setStatus] = useState<"loading" | "success" | "error">(token ? "loading" : "error");
   const [message, setMessage] = useState(token ? "Confirmando tu correo…" : "El enlace de verificación está incompleto.");
+  const verifiedTokenRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!token) return;
-    fetch("/api/v1/auth/verify-email/", {
+    if (!token || verifiedTokenRef.current === token) return;
+    verifiedTokenRef.current = token;
+    let active = true;
+
+    api<{ message: string }>("/auth/verify-email/", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
     })
-      .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message || "El enlace no es válido o ya venció.");
+      .then((data) => {
+        if (!active) return;
         setStatus("success");
-        setMessage(data.message);
+        setMessage(data.message || "Correo confirmado. Ya puedes iniciar sesión.");
       })
       .catch((error) => {
+        if (!active) return;
         setStatus("error");
         setMessage(error instanceof Error ? error.message : "No pudimos confirmar tu correo.");
       });
+
+    return () => {
+      active = false;
+    };
   }, [token]);
 
   return (
