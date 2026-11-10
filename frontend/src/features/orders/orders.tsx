@@ -273,7 +273,7 @@ export function OrderDetail({ number }: { number: string }) {
                   </p>
                   <Link
                     href={`/pedidos/${order.number}/pago`}
-                    className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded"
+                    className="button primary inline-flex items-center justify-center w-full text-center text-sm"
                   >
                     Instrucciones y Reporte de Pago
                   </Link>

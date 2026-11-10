@@ -37,8 +37,12 @@
 .purchase-shell a {
   color: #1d4ed8;
 }
-.purchase-shell a.button {
-  color: white;
+.purchase-shell a.button,
+.purchase-shell a.text-white {
+  color: #ffffff;
+}
+.purchase-shell a.button.secondary {
+  color: #0f172a;
 }
 .purchase-layout {
   display: grid;
