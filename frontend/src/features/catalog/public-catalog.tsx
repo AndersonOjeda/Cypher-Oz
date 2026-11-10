@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Package, RefreshCw, X } from "lucide-react";
+import { CartNavLink } from "@/components/cart-nav-link";
 import { cop } from "@/features/orders/types";
 import { Pager, publicTaxonomy, useResource } from "./shared";
 import type { Page, PublicProductSummary, Taxonomy } from "./types";
@@ -143,12 +144,15 @@ export function PublicCatalog() {
 
   return (
     <div className="public-catalog-shell">
-      <header className="public-catalog-header">
-        <h1>Catálogo de Productos</h1>
-        <p>
-          Tecnología y equipos con garantía directa y atención personalizada en
-          Pasto, Nariño.
-        </p>
+      <header className="public-catalog-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1>Catálogo de Productos</h1>
+          <p>
+            Tecnología y equipos con garantía directa y atención personalizada en
+            Pasto, Nariño.
+          </p>
+        </div>
+        <CartNavLink className="button secondary inline-flex items-center gap-2 self-start sm:self-auto" />
       </header>
 
       <div className="catalog-layout">
