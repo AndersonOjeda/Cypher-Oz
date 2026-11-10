@@ -251,5 +251,56 @@ describe("Sprint 6 Frontend Features", () => {
       })
     );
   });
+
+  it("AdminOrderList confirms reported payment directly from order row", async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: string) => {
+        if (url.includes("/auth/csrf/")) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({ csrfToken: "test-csrf" }),
+          });
+        }
+        if (url.includes("/admin/orders/")) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({
+              count: 1,
+              results: [
+                {
+                  ...mockAdminOrders[0],
+                  status: "PENDING",
+                  payment: {
+                    id: 101,
+                    status: "REPORTED",
+                    reference: "NEQUI-7788",
+                    reported_at: "2026-11-10T10:00:00Z",
+                    report_deadline_at: "2026-11-11T10:00:00Z",
+                    review_deadline_at: "2026-11-11T10:00:00Z",
+                    report_window_active: false,
+                  },
+                },
+              ],
+            }),
+          });
+        }
+        return Promise.resolve({ ok: true, json: async () => ({}) });
+      }),
+    );
+
+    render(<AdminOrderList />);
+    const confirmPaymentBtn = await screen.findByRole("button", {
+      name: "Confirmar pago",
+    });
+    expect(screen.getByText("Ref: NEQUI-7788")).toBeInTheDocument();
+
+    await user.click(confirmPaymentBtn);
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/admin/payments/101/confirm/"),
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
 });
 

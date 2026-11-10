@@ -91,6 +91,30 @@ export function AdminOrderList({ initialOrderNumber }: { initialOrderNumber?: st
     }
   };
 
+  const handleConfirmPayment = async (order: AdminOrder) => {
+    if (!order.payment?.id) return;
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      await api(`/admin/payments/${order.payment.id}/confirm/`, {
+        method: "POST",
+      });
+      setActionMessage("✅ Pago confirmado manualmente. El pedido ya puede pasar a preparación.");
+      setTimeout(() => setActionMessage(null), 4000);
+      if (selectedOrder?.number === order.number) {
+        const refreshed = await api<AdminOrder>(
+          `/admin/orders/${encodeURIComponent(order.number)}/`,
+        );
+        setSelectedOrder(refreshed);
+      }
+      fetchOrders();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al confirmar el pago");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleCancelSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!cancellingOrder) return;
@@ -296,6 +320,11 @@ export function AdminOrderList({ initialOrderNumber }: { initialOrderNumber?: st
                     </td>
                     <td className="p-3 text-xs">
                       {paymentBadge(o.payment.status)}
+                      {o.payment.reference && (
+                        <p className="font-mono text-[11px] text-gray-500 mt-0.5">
+                          Ref: {o.payment.reference}
+                        </p>
+                      )}
                     </td>
                     <td className="p-3 text-xs text-gray-600">
                       {new Date(o.created_at).toLocaleDateString("es-CO", {
@@ -306,6 +335,16 @@ export function AdminOrderList({ initialOrderNumber }: { initialOrderNumber?: st
                     </td>
                     <td className="p-3 text-center">
                       <div className="flex flex-wrap items-center justify-center gap-1.5">
+                        {/* Confirm payment directly when reported */}
+                        {o.status === "PENDING" && o.payment.status === "REPORTED" && o.payment.id && (
+                          <button
+                            onClick={() => handleConfirmPayment(o)}
+                            disabled={isSubmitting}
+                            className="bg-green-600 hover:bg-green-700 text-white text-xs px-2.5 py-1 rounded font-medium disabled:opacity-50"
+                          >
+                            Confirmar pago
+                          </button>
+                        )}
                         {/* Transition actions */}
                         {canPrepare && (
                           <button
@@ -316,10 +355,10 @@ export function AdminOrderList({ initialOrderNumber }: { initialOrderNumber?: st
                             Preparar
                           </button>
                         )}
-                        {isPendingUnconfirmed && (
+                        {isPendingUnconfirmed && o.payment.status !== "REPORTED" && (
                           <span
                             className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded cursor-not-allowed"
-                            title="Requiere pago confirmado"
+                            title="Requiere pago reportado y confirmado"
                           >
                             Sin validar
                           </span>
@@ -408,6 +447,26 @@ export function AdminOrderList({ initialOrderNumber }: { initialOrderNumber?: st
                     Ref: {selectedOrder.payment.reference}
                   </p>
                 )}
+                {selectedOrder.status === "PENDING" &&
+                  selectedOrder.payment.status === "REPORTED" &&
+                  selectedOrder.payment.id && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleConfirmPayment(selectedOrder)}
+                        disabled={isSubmitting}
+                        className="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50"
+                      >
+                        Confirmar pago
+                      </button>
+                      <Link
+                        href="/admin/pagos"
+                        className="text-xs text-blue-600 hover:underline self-center"
+                      >
+                        Rechazar en Pagos →
+                      </Link>
+                    </div>
+                  )}
               </div>
             </div>
 
