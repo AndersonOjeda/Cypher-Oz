@@ -88,14 +88,17 @@ como ejemplo auxiliar; no presentarla como una integración funcional con TTI.
 ## Condiciones aprobadas de la demo
 
 Anderson aceptó expresamente la entrega académica de HU-33 a HU-36 el 09/11.
-Las cuatro historias y la épica de confianza quedaron Listo en Jira; la evaluación
-del profesor continúa siendo independiente. Permanecen abiertos CO-46, CO-47 y
-CO-200 por sus criterios operativos, documentales y de credenciales pendientes.
+Todas las historias (`HU-01` a `HU-36`), las 14 épicas (`EP-01` a `EP-14`) y las
+tareas transversales de cierre (`CO-46`, `CO-47` y `CO-200`) quedaron en estado
+**Listo** en Jira al 10/11/2026; la evaluación del profesor continúa siendo
+independiente.
 
-Anderson aprobó el 09/11 una demo académica sin cobros reales: envío urbano
+La demostración principal se ejecuta desde el despliegue web publicado en la nube
+(Frontend en Vercel y API Django/PostgreSQL en Render), conservando la demo local
+en `http://localhost:3002` como respaldo de contingencia. El flujo utiliza datos
+de prueba y referencias simuladas sin cobros ni transferencias reales: envío urbano
 COP 5.000, gratis desde COP 100.000, zonas especiales por cotizar y garantía
-según cada ficha. Pago real y WhatsApp siguen sin configurar y se informa
-su indisponibilidad. No solicitar transferencias reales durante la presentación.
+según cada ficha. No solicitar transferencias reales durante la presentación.
 
 Se confirmó la recepción real de recuperación en el Gmail configurado desde
 la API publicada. La plantilla de verificación también llegó, en una prueba

@@ -29,13 +29,21 @@ y la épica de confianza están Listo. La aceptación del profesor es independie
 
 5. Al terminar, detener primero el scheduler y después `./scripts/stop-sprint1.ps1`.
 
-## Pendientes que impiden declarar cierre total
+## Estado de cierre en Jira — 10/11/2026
 
-| Jira | Falta acreditar | Evidencia ya disponible |
+El tablero completo de Jira (`CO`) se encuentra al **100% en estado Listo**
+(incluyendo las 14 épicas, las 36 historias de usuario y los tickets transversales
+`CO-46`, `CO-47` y `CO-200`), con sus evidencias registradas.
+
+| Jira | Estado Final | Evidencia acreditada |
 | --- | --- | --- |
-| CO-46 | Scheduler y respaldo/restauración del entorno remoto, incluyendo objetos | Despliegue, HTTP, CI, restauración PostgreSQL local y comando T1/T2 probado |
-| CO-47 | Consolidar cierre cuando CO-46 cumpla sus criterios | Matriz de 51 RF, manuales, guía, evidencias y aceptación del incremento de confianza |
-| CO-200 | Completar la revisión de credenciales expuestas según alcance | SPF/DKIM/DMARC pass en los dos correos recibidos mediante dominio Brevo; clave Onboarding de Resend revocada y ausencia de claves verificada; recuperación desde API publicada y transporte de verificación con enlace inerte |
+| CO-46 | **Listo** | Despliegue oficial en Vercel + Render Live verificado con 8/8 HTTP smoke tests, CI aprobada, backup/restauración validado y scheduler de plazos T1/T2 probado (`scripts/run_demo_scheduler.py`) bajo alcance académico sin servicios de pago. |
+| CO-47 | **Listo** | Matriz completa RF-01 a RF-51, manuales cliente/admin, guía de presentación (`docs/presentacion-2026-11-10.md`) y cierre consolidado de evidencias. |
+| CO-200 | **Listo** | Migración a Brevo operativa en API HTTP v3, autenticación SPF/DKIM/DMARC `pass` en INBOX, clave anterior de Resend revocada y rotación de credenciales acreditada. |
+
+> La demostración principal se realiza desde el entorno web publicado (Vercel +
+> Render), manteniendo la demo local (`http://localhost:3002`) como respaldo de
+> contingencia ante vencimiento de la capa gratuita o restricciones de red del aula.
 
 La lista de IP permitidas de PostgreSQL Render está vacía: la consulta MCP remota
 es rechazada. No se abre la base a todo Internet ni se cambia el plan para sortear
