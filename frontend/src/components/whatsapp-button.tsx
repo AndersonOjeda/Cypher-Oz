@@ -29,8 +29,9 @@ export function orderWhatsAppUrl(
     !/^[1-9]\d{7,14}$/.test(settings.whatsapp_number)
   )
     return null;
+  const shortOrder = orderNumber.slice(0, 8);
   const message = paymentReference
-    ? `Hola Cypher Oz, reporto el pago de mi pedido #${orderNumber}${totalAmount ? ` por ${totalAmount}` : ""} con la referencia ${paymentReference}. Adjunto el comprobante/factura para su verificación.`
+    ? `Hola Cypher Oz, reporto el pago de mi pedido #${shortOrder} (${orderNumber})${totalAmount ? ` por ${totalAmount}` : ""} con la referencia ${paymentReference}. Adjunto la foto de mi factura/comprobante para su revisión.`
     : `Hola, necesito asistencia con mi pedido #${orderNumber}`;
   return `https://wa.me/${settings.whatsapp_number}?text=${encodeURIComponent(message)}`;
 }

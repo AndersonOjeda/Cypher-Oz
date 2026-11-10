@@ -202,16 +202,15 @@ export function PaymentInstructions({ number }: { number: string }) {
               ) ? (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded space-y-2">
                   <p className="text-xs text-emerald-900">
-                    Envía la foto de tu comprobante o factura por WhatsApp al administrador con tu pedido{" "}
-                    <strong>#{number}</strong>, total{" "}
-                    <strong>{cop(result.data.total)}</strong> y referencia{" "}
-                    <strong>{payment.reference}</strong>. Recuerda que esto agiliza la revisión, pero el pago solo quedará confirmado cuando el administrador verifique el ingreso real de los fondos.
+                    Envía por WhatsApp tu <strong>número de pedido</strong> (<code>#{number.slice(0, 8)}</code> · <code>{number}</code>),
+                    la <strong>foto de tu factura o comprobante</strong> y tu referencia{" "}
+                    <strong>{payment.reference}</strong> ({cop(result.data.total)}) para que el administrador ubique tu pedido y confirme el pago manualmente.
                   </p>
                   <OrderWhatsAppButton
                     orderNumber={number}
                     paymentReference={payment.reference}
                     totalAmount={cop(result.data.total)}
-                    label="Enviar comprobante por WhatsApp"
+                    label="Enviar número de pedido y factura por WhatsApp"
                     settings={whatsappSettings}
                   />
                 </div>

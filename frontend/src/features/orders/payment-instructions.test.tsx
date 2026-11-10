@@ -182,7 +182,7 @@ test("opens WhatsApp with order and reference after reporting payment when Whats
       name: /Enviar comprobante por WhatsApp sobre el pedido #order-1/,
     });
     expect(waButton).toHaveAttribute("target", "_blank");
-    expect(waButton).toHaveTextContent("Enviar comprobante por WhatsApp");
+    expect(waButton).toHaveTextContent("Enviar número de pedido y factura por WhatsApp");
   } finally {
     openSpy.mockRestore();
     fetchSpy.mockRestore();

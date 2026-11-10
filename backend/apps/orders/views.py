@@ -244,12 +244,13 @@ class AdminPaymentListView(APIView):
         status_param = request.query_params.get("status")
         if status_param:
             qs = qs.filter(status=status_param.upper())
-        search = request.query_params.get("q", "").strip()
+        search = request.query_params.get("q", "").strip().lstrip("#")
         if search:
             qs = qs.filter(
                 Q(order__user__name__icontains=search)
                 | Q(order__user__email__icontains=search)
                 | Q(reference__icontains=search)
+                | Q(order__number__icontains=search)
             )
         pager = CatalogPagination()
         page = pager.paginate_queryset(qs, request)
@@ -297,7 +298,7 @@ class AdminOrderListView(APIView):
         delivery_mode = request.query_params.get("delivery_mode")
         if delivery_mode:
             qs = qs.filter(delivery__mode=delivery_mode.upper())
-        search = request.query_params.get("q", "").strip()
+        search = request.query_params.get("q", "").strip().lstrip("#")
         if search:
             qs = qs.filter(
                 Q(user__name__icontains=search)

@@ -75,5 +75,5 @@ test("orderWhatsAppUrl includes payment reference when reporting receipt", () =>
   const url = new URL(urlString!);
   expect(url.searchParams.get("text")).toContain("ORD-999");
   expect(url.searchParams.get("text")).toContain("REF-7788");
-  expect(url.searchParams.get("text")).toContain("comprobante");
+  expect(url.searchParams.get("text")).toContain("factura/comprobante");
 });

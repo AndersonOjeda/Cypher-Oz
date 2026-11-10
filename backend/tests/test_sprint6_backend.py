@@ -456,3 +456,22 @@ def test_admin_can_cancel_preparing_order_and_cannot_cancel_shipped(sprint6_setu
         {"reason": "Intento de cancelar enviado"},
     )
     assert res_ship.status_code == 409
+
+
+def test_admin_can_search_payments_and_orders_by_order_number_prefix(sprint6_setup):
+    setup = sprint6_setup
+    order = setup["make_order"](setup["user"], payment_status="REPORTED", order_status="PENDING")
+    short_prefix = str(order.number)[:8]
+
+    client = APIClient()
+    client.force_authenticate(user=setup["admin"])
+
+    res_pay = client.get(f"/api/v1/admin/payments/?q=%23{short_prefix}")
+    assert res_pay.status_code == 200
+    assert res_pay.data["count"] == 1
+    assert res_pay.data["results"][0]["order_number"] == str(order.number)
+
+    res_ord = client.get(f"/api/v1/admin/orders/?q=%23{short_prefix}")
+    assert res_ord.status_code == 200
+    assert res_ord.data["count"] == 1
+    assert res_ord.data["results"][0]["number"] == str(order.number)

@@ -173,7 +173,7 @@ export function AdminPaymentList() {
         <div className="flex-1 min-w-[200px]">
           <input
             type="search"
-            placeholder="Buscar por cliente, correo o referencia..."
+            placeholder="Buscar por N° pedido, cliente, correo o referencia..."
             value={search}
             onChange={(e) => { setPage(1); setSearch(e.target.value); }}
             className="w-full border rounded px-3 py-1.5 text-sm bg-white"
