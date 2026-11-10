@@ -175,6 +175,16 @@
   border-bottom: 1px solid #d7dfe7;
   padding: 20px 0;
 }
+.order-items.order-cards-list {
+  display: grid;
+  gap: 14px;
+}
+.order-items.order-cards-list > li {
+  border: 1px solid #d7dfe7;
+  border-radius: 10px;
+  padding: 20px;
+  background: #ffffff;
+}
 .order-detail {
   max-width: 980px;
 }
