@@ -84,6 +84,25 @@ backend anterior; no restaurar sobre una base comercial sin conciliación.
 
 ## Scheduler de pagos
 
+La alternativa sin cron de pago usa `.github/workflows/payment-deadlines.yml`
+en el repositorio público y runners Ubuntu estándar. Invoca únicamente
+`POST /api/v1/ops/payment-deadlines/` con `OPS_SCHEDULER_TOKEN`, guardado como
+secreto en GitHub y Render. El token no permite consultas generales ni descargar
+datos. Configurar `OPS_SCHEDULER_ACTOR_EMAIL` con un ADMIN activo; por defecto
+reutiliza `STAGING_ADMIN_EMAIL`. Sin token de al menos 32 caracteres el endpoint
+queda cerrado. Cookies de usuario no autorizan el proceso.
+
+La programación solicita ejecución cada cinco minutos; GitHub puede retrasar
+los jobs y no ofrece puntualidad estricta. Hay exclusión en el workflow y bloqueo
+transaccional PostgreSQL para evitar solapamientos. El proceso limita cada ciclo
+a 100 candidatos; errores producen salida de fallo en Actions. Revisar las
+notificaciones de fallo y los logs del workflow. Una ejecución manual permite
+`dry_run=true` para inspección sin cambios. Nunca se confirman pagos automáticamente.
+
+Esta alternativa depende de que el servicio y PostgreSQL sigan disponibles.
+No extiende la base gratuita: vence el **12/11/2026 a las 20:42 de Bogotá**
+(`2026-11-13T01:42:50Z`). No equivale a continuidad de producción permanente.
+
 La aplicación `1c48353` quedó publicada en Render y Vercel y pasó el smoke HTTP.
 Esto no activa el scheduler. Un cron nuevo de Render tiene un cargo mínimo de
 US$1/mes, más uso según duración: [facturación oficial](https://render.com/docs/cronjobs).
@@ -109,6 +128,25 @@ incluso antes del siguiente ciclo. Ningún scheduler remoto se considera activad
 solo por existir este comando.
 
 ## Backup y restauración
+
+El 10/11 se verificó recuperación desde los datos remotos reales: una instantánea
+PostgreSQL de Render por TLS, en transacción de solo lectura, fue restaurada
+en otra base local. Coincidieron contenido completo y conteos de las 36 tablas.
+La base temporal se eliminó; el dump se conserva solo en `.runtime`, fuera de Git.
+La cadena de conexión se introdujo en memoria mediante consola oculta y no se
+guardó en archivo. El permiso externo /32 se retiró tras la prueba.
+
+También se copiaron los dos objetos del bucket de catálogo remoto a un prefijo
+aislado de MinIO local y se verificaron sus hashes SHA-256. Inventario contrastado
+con metadatos de Supabase: bucket privado, dos objetos. No se modificaron los
+objetos remotos ni se publicó ninguna URL firmada. Scripts reproducibles:
+`scripts/verify_cloud_database_recovery.py` y
+`scripts/verify_cloud_media_recovery.py --expected-objects 2`. El primero solicita
+la conexión mediante entrada oculta; requiere permitir temporalmente la IP del
+operador y retirarla al terminar. El segundo exige destino de almacenamiento local.
+Las copias de `.runtime` son sensibles: conservarlas en una ubicación privada
+y no adjuntarlas a Jira ni a artefactos públicos. Solo se versionan los resultados
+y hashes. Evidencias: `docs/evidence/sprint-8/cloud-*-recovery-2026-11-10.json`.
 
 Guardar un dump PostgreSQL en formato custom, cifrado y fuera del contenedor del
 backend. Probar `pg_restore --exit-on-error` en **otra base aislada**, comprobar

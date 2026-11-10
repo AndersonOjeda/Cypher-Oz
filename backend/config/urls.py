@@ -13,6 +13,7 @@ from apps.configuration.views import (
     PublicCommercialInfoView,
     PublicSettingsView,
 )
+from apps.core.operations import DeadlineJobView
 from apps.core.views import health
 from apps.users.views import (
     AddressDetailView,
@@ -31,6 +32,7 @@ from apps.users.views import (
 )
 
 urlpatterns = [
+    path("api/v1/ops/payment-deadlines/", DeadlineJobView.as_view()),
     path("api/v1/", include("apps.orders.urls")),
     path("api/v1/", include("apps.reviews.urls")),
     path("api/v1/delivery/quote/", DeliveryQuoteView.as_view()),

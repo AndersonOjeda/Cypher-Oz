@@ -1,0 +1,25 @@
+{
+  "created_at_utc": "2026-11-10T05:28:34.366820+00:00",
+  "scope": "Remote published catalog images restored to isolated local MinIO prefix",
+  "expected_remote_objects": 2,
+  "published_products": 4,
+  "restored_objects": 2,
+  "objects": [
+    {
+      "source_path_sha256": "7f1ba6e53c41d9dab8393692c39b494982951214b2fae319c5e79baba08e07d3",
+      "bytes": 193528,
+      "sha256": "c7cffb98b2e64e2169ea5769e57316adb1cd7c36f98e3379eb2c18c3eef8fadb",
+      "restored_sha256": "c7cffb98b2e64e2169ea5769e57316adb1cd7c36f98e3379eb2c18c3eef8fadb"
+    },
+    {
+      "source_path_sha256": "b3a0aba3d1d0be9849c99f67518e25b6c07d5046d0ee5a1fe607e5eb356e4ead",
+      "bytes": 25152,
+      "sha256": "e165a0bfe2d30797b97e68864426b205d385e0ec4e61a83ffad8e48d5f82efbd",
+      "restored_sha256": "e165a0bfe2d30797b97e68864426b205d385e0ec4e61a83ffad8e48d5f82efbd"
+    }
+  ],
+  "result": "PASS",
+  "remote_objects_modified": false,
+  "source_urls_or_credentials_recorded": false,
+  "limits": "Inventory must be confirmed separately; no PostgreSQL data is included"
+}

@@ -1,0 +1,45 @@
+name: Remote payment deadlines
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Inspect deadlines without changing orders
+        type: boolean
+        default: true
+permissions:
+  contents: read
+concurrency:
+  group: remote-payment-deadlines
+  cancel-in-progress: false
+jobs:
+  deadlines:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Process remote deadlines
+        env:
+          JOB_TOKEN: ${{ secrets.OPS_SCHEDULER_TOKEN }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          token = os.environ['JOB_TOKEN']
+          if len(token) < 32:
+              raise SystemExit('Scheduler secret is missing')
+          request = urllib.request.Request(
+              'https://tti-staging-api.onrender.com/api/v1/ops/payment-deadlines/',
+              data=json.dumps({'dry_run': os.environ['DRY_RUN'].lower() == 'true'}).encode(),
+              headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+              method='POST',
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=180) as response:
+                  result = json.load(response)
+              if result.get('failed_count', 1):
+                  raise ValueError('Deadline processing failed')
+          except Exception:
+              raise SystemExit('Remote deadline job failed; inspect the service and retry') from None
+          print(json.dumps(result))
+          PY
