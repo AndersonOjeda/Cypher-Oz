@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-10",
+  "source": "Original RFC822 Authentication-Results headers read from the authorized owner's Gmail",
+  "receiver": "mx.google.com",
+  "owner_decision": "No owned domain and no domain purchase; keep the existing sender",
+  "messages": [
+    {"gmail_id": "1a1c1a63c9f36704", "flow": "verification template with inert link", "spf": "pass", "dkim": "pass", "dmarc": "pass", "inbox": true},
+    {"gmail_id": "1a1c1a583316be99", "flow": "published API password-reset request", "spf": "pass", "dkim": "pass", "dmarc": "pass", "inbox": true}
+  ],
+  "dkim_domain": "12623822.k1.brevosend.com",
+  "dmarc_header_from": "brevosend.com",
+  "scope": "Authentication of the two received messages through the provider domain; not authentication of gmail.com or an owned business domain",
+  "new_email_sent": false,
+  "credential_rotation_attested": false,
+  "purchases": false,
+  "valid_tokens_or_secret_values_recorded": false
+}

@@ -35,7 +35,7 @@ y la épica de confianza están Listo. La aceptación del profesor es independie
 | --- | --- | --- |
 | CO-46 | Scheduler y respaldo/restauración del entorno remoto, incluyendo objetos | Despliegue, HTTP, CI, restauración PostgreSQL local y comando T1/T2 probado |
 | CO-47 | Consolidar cierre cuando CO-46 cumpla sus criterios | Matriz de 51 RF, manuales, guía, evidencias y aceptación del incremento de confianza |
-| CO-200 | Acreditar autenticación/remitente y rotación de otras credenciales expuestas según alcance | Clave Onboarding de Resend revocada y ausencia de claves verificada; Brevo integrado y recepción de recuperación real; transporte de verificación con enlace inerte |
+| CO-200 | Completar la revisión de credenciales expuestas según alcance | SPF/DKIM/DMARC pass en los dos correos recibidos mediante dominio Brevo; clave Onboarding de Resend revocada y ausencia de claves verificada; recuperación desde API publicada y transporte de verificación con enlace inerte |
 
 La lista de IP permitidas de PostgreSQL Render está vacía: la consulta MCP remota
 es rechazada. No se abre la base a todo Internet ni se cambia el plan para sortear
@@ -48,3 +48,10 @@ de scheduler remoto de CO-46. No se cierran tareas pendientes cambiando su alcan
 Verificación del 10/11: el ejecutor local completó un dry-run con salida 0,
 cero candidatos y cero fallos. No se alteraron pedidos. Ruff y formato aprobados.
 Registro: `docs/evidence/sprint-8/mvp-final-activities-2026-11-10.json`.
+
+Correo sin dominio propio: Anderson confirmó que no tiene dominio ni lo comprará.
+Los encabezados originales recibidos por Gmail acreditan SPF, DKIM y DMARC `pass`
+en ambos mensajes mediante el dominio de Brevo. No hace falta contratar un dominio
+para acreditar esta prueba de autenticación. Esto no autentica `gmail.com` como
+dominio propio ni garantiza entrega de todos los futuros mensajes. Evidencia:
+`docs/evidence/sprint-8/email-authentication-2026-11-10.json`.

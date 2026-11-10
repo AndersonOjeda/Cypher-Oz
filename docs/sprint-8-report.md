@@ -108,7 +108,11 @@ nuevo; no se afirma una nueva prueba completa de alta y activación. No se cambi
 contraseña ni se almacenaron tokens válidos. Registro: `email-requests-2026-11-09.json`.
 El 10/11 se revocó la clave Onboarding de Resend con autorización expresa y se
 verificó que la cuenta ya no tiene claves. Esto no acredita rotación de otros
-proveedores ni autenticación de un dominio propio en Brevo.
+proveedores. El 10/11 se revisaron los encabezados originales en Gmail: SPF,
+DKIM y DMARC `pass` en ambos correos, autenticados mediante el dominio de Brevo.
+Anderson confirmó que no tiene dominio propio ni lo comprará; se conserva el
+remitente existente sin crear ese requisito de compra. Registro:
+`email-authentication-2026-11-10.json`. No se afirma autenticación de `gmail.com`.
 
 Tras registrar la aceptación académica quedan tres issues abiertos: CO-46,
 CO-47 y CO-200. No se declara el proyecto al 100% mientras falten sus criterios

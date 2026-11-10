@@ -118,6 +118,10 @@
     {
       "file": "mvp-final-activities-2026-11-10.json",
       "sha256": "21cf4f7325424fd556b40497ebd81779ca9a067ff4216f3690c9045685152d62"
+    },
+    {
+      "file": "email-authentication-2026-11-10.json",
+      "sha256": "cd7f264843e13ebb3af593e5404d5ca0d17da1e8993d733549064a60ebfd193b"
     }
   ]
 }
