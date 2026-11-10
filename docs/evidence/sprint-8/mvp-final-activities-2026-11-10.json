@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-10",
+  "resend_cleanup": {
+    "key_name": "Onboarding",
+    "owner_confirmation": "Explicit confirmation of project ownership and irreversible revocation",
+    "remove_result": "API key removed successfully",
+    "verification": "No API keys found",
+    "secret_values_recorded": false,
+    "scope": "Resend only; does not attest rotation of other provider credentials"
+  },
+  "demo_scheduler": {
+    "script": "scripts/run_demo_scheduler.py",
+    "scope": "Isolated local tti_sprint1_demo database; not remote",
+    "timestamp_utc": "2026-11-10T05:14:27.068518+00:00",
+    "dry_run": true,
+    "exit_code": 0,
+    "result": {"candidates": 0, "cancelled": 0, "alerted": 0, "skipped": 0, "failed": []},
+    "limits": "Single dry-run with zero candidates does not prove scheduled operation or T1/T2 mutations; business rules are covered by existing CI"
+  },
+  "remote_database": {
+    "read_only_query_attempt": "Blocked by empty external IP allowlist",
+    "network_rules_changed": false,
+    "remote_backup_restore_verified": false
+  },
+  "purchases": false,
+  "hosting_plan_changes": false
+}

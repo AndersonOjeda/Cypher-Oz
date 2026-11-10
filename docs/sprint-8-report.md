@@ -105,8 +105,10 @@ y plantilla de verificación desde la función actual del backend (18:50:59 UTC)
 esta última con enlace inerte. Ambas incluyen MIME multipart/alternative, texto
 y HTML. El reenvío público de verificación respondió 200, pero no produjo correo
 nuevo; no se afirma una nueva prueba completa de alta y activación. No se cambió
-contraseña ni se almacenaron tokens válidos. La rotación/revocación de credenciales
-expuestas sigue sin acreditarse. Registro: `email-requests-2026-11-09.json`.
+contraseña ni se almacenaron tokens válidos. Registro: `email-requests-2026-11-09.json`.
+El 10/11 se revocó la clave Onboarding de Resend con autorización expresa y se
+verificó que la cuenta ya no tiene claves. Esto no acredita rotación de otros
+proveedores ni autenticación de un dominio propio en Brevo.
 
 Tras registrar la aceptación académica quedan tres issues abiertos: CO-46,
 CO-47 y CO-200. No se declara el proyecto al 100% mientras falten sus criterios
@@ -117,6 +119,12 @@ Se acepta esa limitación para la demo. Aprobación registrada en
 `demo-approval-2026-11-09.json` y en CO-197/CO-187.
 
 ## Decisión de alcance del usuario
+
+Últimas actividades del 10/11: ejecutor `scripts/run_demo_scheduler.py` para T1/T2
+en la base local de demo, dry-run aprobado con salida 0 y sin candidatos/fallos.
+Ruff/formato aprobados. No se afirma scheduler remoto activo. Guía final:
+[cierre del MVP](mvp-final-checklist.md). Evidencia:
+`mvp-final-activities-2026-11-10.json`.
 
 Anderson indicó el 09/11 que presenta mañana y que no necesita extender ni comprar
 servicios. No se realizaron compras, cambios de plan ni se activó un cron de pago.

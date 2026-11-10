@@ -9,6 +9,7 @@ se verifican en el [informe vigente de Sprint 7](docs/sprint-7-report.md), junto
 los pendientes reales del entorno remoto. [Sprint 6](docs/sprint-6-report.md) y
 [cierre integrado de Sprint 4/5](docs/sprints-4-5-verification.md) conservan su alcance.
 [Operación, scheduler y recuperación](docs/operations.md).
+[Últimas actividades y cierre del MVP académico](docs/mvp-final-checklist.md).
 
 **Exposición del Sprint 1:** [guion, acceso demo y evidencias](docs/sprint-1-current.md).
 [Arquitectura vigente](docs/architecture-current.md) y [28 wireframes](docs/wireframes.html).
