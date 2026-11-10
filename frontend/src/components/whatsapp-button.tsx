@@ -22,6 +22,7 @@ export function orderWhatsAppUrl(
   settings: WhatsAppSettings,
   orderNumber: string,
   paymentReference?: string,
+  totalAmount?: string,
 ) {
   if (
     !settings.whatsapp_enabled ||
@@ -29,8 +30,8 @@ export function orderWhatsAppUrl(
   )
     return null;
   const message = paymentReference
-    ? `Hola, acabo de reportar el pago de mi pedido #${orderNumber} con la referencia ${paymentReference}. Adjunto el comprobante de transferencia para su verificación.`
-    : `Hola, necesito asistencia con mi pedido #${orderNumber}`;
+    ? `Hola Cypher Oz, reporto el pago de mi pedido #${orderNumber}${totalAmount ? ` por ${totalAmount}` : ""} con la referencia ${paymentReference}. Adjunto el comprobante/factura para su verificación.`
+    : `Hola Cypher Oz, necesito asistencia con mi pedido #${orderNumber}`;
   return `https://wa.me/${settings.whatsapp_number}?text=${encodeURIComponent(message)}`;
 }
 
@@ -65,11 +66,13 @@ export function WhatsAppLink({ settings }: { settings: WhatsAppSettings }) {
 export function OrderWhatsAppButton({
   orderNumber,
   paymentReference,
+  totalAmount,
   label = "Asistencia por WhatsApp",
   settings: propSettings,
 }: {
   orderNumber: string;
   paymentReference?: string;
+  totalAmount?: string;
   label?: string;
   settings?: WhatsAppSettings;
 }) {
@@ -93,7 +96,12 @@ export function OrderWhatsAppButton({
 
   const effectiveSettings = propSettings ?? settings;
   if (!effectiveSettings) return null;
-  const url = orderWhatsAppUrl(effectiveSettings, orderNumber, paymentReference);
+  const url = orderWhatsAppUrl(
+    effectiveSettings,
+    orderNumber,
+    paymentReference,
+    totalAmount,
+  );
   if (!url) return null;
 
   return (

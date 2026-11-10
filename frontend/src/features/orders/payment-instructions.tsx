@@ -83,6 +83,7 @@ export function PaymentInstructions({ number }: { number: string }) {
           whatsappSettings,
           number,
           saved.reference || cleanedRef,
+          result.data?.total ? cop(result.data.total) : undefined,
         );
         if (waUrl && typeof window !== "undefined") {
           window.open(waUrl, "_blank", "noopener,noreferrer");
@@ -192,19 +193,34 @@ export function PaymentInstructions({ number }: { number: string }) {
                   (Bogotá)
                 </p>
               )}
-              {whatsappSettings && orderWhatsAppUrl(whatsappSettings, number, payment.reference) && (
+              {whatsappSettings &&
+              orderWhatsAppUrl(
+                whatsappSettings,
+                number,
+                payment.reference,
+                cop(result.data.total),
+              ) ? (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded space-y-2">
                   <p className="text-xs text-emerald-900">
-                    Envía tu comprobante o factura por WhatsApp al administrador indicando la referencia{" "}
+                    Envía la foto de tu comprobante o factura por WhatsApp al administrador con tu pedido{" "}
+                    <strong>#{number}</strong>, total{" "}
+                    <strong>{cop(result.data.total)}</strong> y referencia{" "}
                     <strong>{payment.reference}</strong>. Recuerda que esto agiliza la revisión, pero el pago solo quedará confirmado cuando el administrador verifique el ingreso real de los fondos.
                   </p>
                   <OrderWhatsAppButton
                     orderNumber={number}
                     paymentReference={payment.reference}
+                    totalAmount={cop(result.data.total)}
                     label="Enviar comprobante por WhatsApp"
                     settings={whatsappSettings}
                   />
                 </div>
+              ) : (
+                <p className="text-xs text-slate-600">
+                  Canal de WhatsApp no disponible en la configuración actual de la tienda. Guarda tu referencia{" "}
+                  <strong>{payment.reference}</strong> para seguimiento en{" "}
+                  <Link href={`/pedidos/${number}`}>tu pedido</Link>.
+                </p>
               )}
             </section>
           ) : (payment?.status === "PENDING" || payment?.status === "REJECTED") &&
