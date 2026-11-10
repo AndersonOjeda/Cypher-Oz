@@ -45,6 +45,12 @@ Cada despliegue debe identificar su commit. Una vista previa de Vercel lista no
 demuestra que Render ejecute el backend correspondiente. Ver el informe de Sprint 7
 para las versiones verificadas y los pendientes del entorno remoto.
 
+El registro web siempre crea cuentas `CLIENT`; navegar sin cuenta es acceso de
+visitante, no un rol persistido. `STAGING_ADMIN_EMAIL` solo crea un administrador
+bloqueado si aún no existe esa dirección. Si ya pertenece a una cuenta pública,
+el bootstrap falla explícitamente y no cambia su rol; un operador autorizado debe
+provisionar el acceso administrativo fuera del registro público.
+
 Publicación del 09/11/2026: PR #24 integrado, frontend oficial Vercel READY y API
 Render Live en `e91f29ed5bad70b4cbaa1cc6e8a523b8fb049b86`; smoke HTTP 8/8.
 El autodespliegue de Render mostraba activo pero no produjo ejecución tras el merge:
@@ -163,4 +169,3 @@ Antes de operación real quedan por acreditar: backup y restauración del Postgr
 remoto, recuperación de objetos, scheduler remoto y alertas de fallo. La base
 gratuita Render tenía vencimiento registrado para 13/11/2026; revisar su continuidad
 en el panel antes de esa fecha.
-

@@ -26,9 +26,10 @@ def test_register_persists_hash_and_client_role(client):
         format="json",
     )
     assert r.status_code == 201
+    assert r.data["role"] == User.Role.CLIENT
     user = User.objects.get(email="ana@example.com")
     assert user.check_password(PASSWORD) and user.password != PASSWORD
-    assert user.role == "CLIENT"
+    assert user.role == User.Role.CLIENT
     assert "password" not in r.data
     assert r["Cache-Control"] == "no-store"
 
@@ -286,6 +287,7 @@ def test_verify_email_is_idempotent_across_devices(client):
     user = User.objects.create_user(
         "verify_idempotent@example.com", PASSWORD, name="Ana", email_verified=False
     )
+    assert user.role == User.Role.CLIENT
     raw_token = "tok-device-sync-123"
     EmailVerificationToken.objects.create(
         user=user,
@@ -297,8 +299,11 @@ def test_verify_email_is_idempotent_across_devices(client):
     assert first.status_code == 200
     user.refresh_from_db()
     assert user.email_verified is True
+    assert user.role == User.Role.CLIENT
 
     # Opening the same link again on another device succeeds cleanly.
     second = client.post("/api/v1/auth/verify-email/", {"token": raw_token}, format="json")
     assert second.status_code == 200
     assert "confirmado" in second.data["message"].lower()
+    user.refresh_from_db()
+    assert user.role == User.Role.CLIENT

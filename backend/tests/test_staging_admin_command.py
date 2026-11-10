@@ -1,4 +1,6 @@
+import pytest
 from django.core.management import call_command
+from django.core.management.base import CommandError
 
 from apps.users.models import User
 
@@ -23,11 +25,12 @@ def test_bootstrap_staging_admin_creates_locked_admin(db, monkeypatch):
     assert not user.has_usable_password()
 
 
-def test_bootstrap_staging_admin_promotes_existing_user(db, monkeypatch, user):
+def test_bootstrap_staging_admin_does_not_promote_existing_user(db, monkeypatch, user):
     monkeypatch.setenv("STAGING_ADMIN_EMAIL", user.email.upper())
 
-    call_command("bootstrap_staging_admin")
+    with pytest.raises(CommandError, match="Public accounts are never promoted"):
+        call_command("bootstrap_staging_admin")
 
     user.refresh_from_db()
-    assert user.role == User.Role.ADMIN
+    assert user.role == User.Role.CLIENT
     assert user.has_usable_password()

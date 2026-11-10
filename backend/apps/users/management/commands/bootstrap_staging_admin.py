@@ -1,13 +1,13 @@
 import os
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from apps.users.models import User
 
 
 class Command(BaseCommand):
-    help = "Create or promote the staging administrator configured by environment variable."
+    help = "Create the staging administrator configured by environment variable."
 
     @transaction.atomic
     def handle(self, *args, **options):
@@ -27,6 +27,9 @@ class Command(BaseCommand):
             return
 
         if user.role != User.Role.ADMIN:
-            user.role = User.Role.ADMIN
-            user.save(update_fields=["role"])
+            raise CommandError(
+                "The configured staging admin email belongs to a non-admin account. "
+                "Public accounts are never promoted during deployment; provision admin access "
+                "through an authorized operator action."
+            )
         self.stdout.write(self.style.SUCCESS("Staging administrator is ready."))

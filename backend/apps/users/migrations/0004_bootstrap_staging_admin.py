@@ -19,11 +19,6 @@ def bootstrap_staging_admin(apps, schema_editor):
             role="ADMIN",
             is_active=True,
         )
-        return
-
-    if user.role != "ADMIN":
-        user.role = "ADMIN"
-        user.save(update_fields=["role"])
 
 
 class Migration(migrations.Migration):
