@@ -412,11 +412,18 @@ export function Purchase() {
                 }
               />
               {!user ? (
-                <div className="purchase-actions">
-                  <Link className="button primary" href="/login?next=/comprar">
-                    Iniciar sesión para continuar
-                  </Link>
-                  <Link href="/registro?next=/comprar">Crear cuenta</Link>
+                <div className="purchase-actions space-y-2 p-3 bg-blue-50 border border-blue-200 rounded">
+                  <p className="text-xs text-blue-900 m-0">
+                    Para confirmar tu compra y elegir la entrega necesitas una cuenta. Tu carrito seguirá guardado al volver.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Link className="button primary" href="/login?next=/comprar">
+                      Iniciar sesión para continuar
+                    </Link>
+                    <Link className="button secondary" href="/registro?next=/comprar">
+                      Crear cuenta
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <>
