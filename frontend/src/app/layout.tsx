@@ -37,7 +37,6 @@ export default function RootLayout({
           </Link>
           <nav aria-label="Navegación principal">
             <Link href="/catalogo">Catálogo</Link>
-            <Link href="/comprar">Comprar</Link>
             <CartNavLink />
             <Link href="/cuenta">Mi cuenta</Link>
             <Link className="header-login" href="/login">
