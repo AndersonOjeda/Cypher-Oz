@@ -4,7 +4,7 @@ import { WhatsAppButton } from "@/components/whatsapp-button";
 import { AiAssistant } from "@/components/ai-assistant";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "TTI · Tienda Tecnológica Inteligente",
+  title: "Cypher Oz · Tienda Tecnológica",
   description:
     "Tecnología cerca de ti. Tu tienda tecnológica en Pasto, Nariño.",
 };
@@ -24,14 +24,14 @@ export default function RootLayout({
           de ti
         </div>
         <header className="site-header">
-          <Link className="brand" href="/" aria-label="TTI, inicio">
+          <Link className="brand" href="/" aria-label="Cypher Oz, inicio">
             <span className="brand-mark">
-              tti<span>·</span>
+              Cypher Oz<span>·</span>
             </span>
             <span className="brand-description">
               TIENDA TECNOLÓGICA
               <br />
-              INTELIGENTE
+              PASTO
             </span>
           </Link>
           <nav aria-label="Navegación principal">
@@ -46,14 +46,14 @@ export default function RootLayout({
         <main id="contenido">{children}</main>
         <footer>
           <Link className="brand-mark" href="/">
-            tti<span>·</span>
+            Cypher Oz<span>·</span>
           </Link>
           <p>
             Tecnología con atención cercana.
             <br />
             <span>Pasto, Nariño · Colombia</span>
           </p>
-          <span className="footer-note">Tienda Tecnológica Inteligente</span>
+          <span className="footer-note">Cypher Oz · Comercio Electrónico</span>
         </footer>
         <WhatsAppButton />
         <AiAssistant />

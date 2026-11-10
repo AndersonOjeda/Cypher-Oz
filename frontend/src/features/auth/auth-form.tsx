@@ -96,7 +96,7 @@ export function AuthForm({
 
   return (
     <div className="form-card">
-      <p className="eyebrow">TU ESPACIO EN TTI</p>
+      <p className="eyebrow">TU ESPACIO EN CYPHER OZ</p>
       <h1>{registerMode ? "Crea tu cuenta" : "Qué bueno verte de nuevo"}</h1>
       <p>
         {registerMode
@@ -185,7 +185,7 @@ export function AuthForm({
             <br />
           </>
         )}
-        {registerMode ? "¿Ya tienes una cuenta?" : "¿Primera vez en TTI?"}{" "}
+        {registerMode ? "¿Ya tienes una cuenta?" : "¿Primera vez en Cypher Oz?"}{" "}
         <Link
           href={`${registerMode ? "/login" : "/registro"}${returnTo ? `?next=${returnTo}` : ""}`}
         >

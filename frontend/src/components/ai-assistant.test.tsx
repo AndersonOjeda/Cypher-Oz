@@ -71,11 +71,11 @@ describe("AiAssistant component", () => {
     fireEvent.click(toggleBtn);
 
     expect(
-      screen.getByRole("dialog", { name: /Asistente virtual de TTI/i }),
+      screen.getByRole("dialog", { name: /Asistente virtual de Cypher Oz/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Asistente TTI")).toBeInTheDocument();
+    expect(screen.getByText("Asistente Cypher Oz")).toBeInTheDocument();
     expect(
-      screen.getByText(/¡Hola! 👋 Soy el asistente virtual de TTI/i),
+      screen.getByText(/¡Hola! 👋 Soy el asistente virtual de Cypher Oz/i),
     ).toBeInTheDocument();
   });
 

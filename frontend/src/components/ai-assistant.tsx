@@ -14,7 +14,7 @@ const INITIAL_MESSAGES: Message[] = [
   {
     role: "assistant",
     content:
-      "¡Hola! 👋 Soy el asistente virtual de TTI. Puedo ayudarte a buscar productos, consultar disponibilidad y precios. ¿En qué te puedo ayudar?",
+      "¡Hola! 👋 Soy el asistente virtual de Cypher Oz. Puedo ayudarte a buscar productos, consultar disponibilidad y precios. ¿En qué te puedo ayudar?",
   },
 ];
 
@@ -158,7 +158,7 @@ export function AiAssistant() {
           id="ai-assistant-panel"
           className="ai-assistant-panel"
           role="dialog"
-          aria-label="Asistente virtual de TTI"
+          aria-label="Asistente virtual de Cypher Oz"
           onKeyDown={(event) => {
             if (event.key === "Escape") {
               setOpen(false);
@@ -168,7 +168,7 @@ export function AiAssistant() {
         >
           <header className="ai-assistant-header">
             <div>
-              <strong>Asistente TTI</strong>
+              <strong>Asistente Cypher Oz</strong>
               <small>Consulta el catálogo de la tienda</small>
             </div>
             <button

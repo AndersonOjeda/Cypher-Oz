@@ -230,7 +230,7 @@ export function Purchase() {
   return (
     <section className="purchase-shell">
       <div className="purchase-heading">
-        <h1>Comprar en TTI</h1>
+        <h1>Comprar en Cypher Oz</h1>
         <Link href="/pedidos">Mis pedidos</Link>
         <Link href="/cuenta">Mi cuenta</Link>
       </div>

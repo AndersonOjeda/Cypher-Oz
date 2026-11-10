@@ -138,3 +138,53 @@ test("a failed request preserves the reference and permits retry", async () => {
   expect(screen.getByLabelText("Referencia del pago")).toHaveValue("REF-123");
   expect(screen.getByRole("button", { name: "Reportar pago" })).toBeEnabled();
 });
+
+test("opens WhatsApp with order and reference after reporting payment when WhatsApp is enabled", async () => {
+  const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      whatsapp_enabled: true,
+      whatsapp_number: "573001234567",
+      whatsapp_message: "Hola",
+    }),
+  } as Response);
+  const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+
+  vi.mocked(api)
+    .mockResolvedValueOnce(instructions)
+    .mockResolvedValueOnce({
+      ...payment,
+      status: "REPORTED",
+      reference: "NEQUI-9988",
+      reported_at: "2026-10-06T17:00:00Z",
+      review_deadline_at: "2026-10-07T17:00:00Z",
+      report_window_active: false,
+    });
+
+  try {
+    render(<PaymentInstructions number="order-1" />);
+    await userEvent.type(
+      await screen.findByLabelText("Referencia del pago"),
+      "NEQUI-9988",
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Reportar pago" }));
+
+    expect(
+      await screen.findByText("Pendiente de revisión. Fondos aún no confirmados."),
+    ).toBeVisible();
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    const openedUrl = String(openSpy.mock.calls[0][0]);
+    expect(openedUrl).toContain("https://wa.me/573001234567");
+    expect(decodeURIComponent(openedUrl)).toContain("order-1");
+    expect(decodeURIComponent(openedUrl)).toContain("NEQUI-9988");
+
+    const waButton = screen.getByRole("link", {
+      name: /Enviar comprobante por WhatsApp sobre el pedido #order-1/,
+    });
+    expect(waButton).toHaveAttribute("target", "_blank");
+    expect(waButton).toHaveTextContent("Enviar comprobante por WhatsApp");
+  } finally {
+    openSpy.mockRestore();
+    fetchSpy.mockRestore();
+  }
+});

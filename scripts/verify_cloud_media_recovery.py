@@ -70,6 +70,7 @@ def main():
     archive = root / ".runtime" / ("cloud-media-backup-" + stamp)
     archive.mkdir(parents=True, exist_ok=False)
     records = []
+    recovery_map = []
     for index, (source_path, source_url) in enumerate(sorted(images.items()), 1):
         content = read(source_url)
         with Image.open(io.BytesIO(content)) as image:
@@ -93,6 +94,16 @@ def main():
                 "restored_sha256": digest,
             }
         )
+        recovery_map.append(
+            {
+                "source_path": source_path,
+                "backup_file": f"{index}.bin",
+                "local_restore_key": key,
+            }
+        )
+    (archive / "recovery-map.json").write_text(
+        json.dumps(recovery_map, indent=2) + "\n", encoding="utf-8"
+    )
     result = {
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "scope": "Remote published catalog images restored to isolated local MinIO prefix",

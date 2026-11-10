@@ -43,7 +43,7 @@ export function AdminNavigation({ pathname }: { pathname: string }) {
       }}
     >
       <div className="admin-navigation-title">
-        <span>TTI</span>
+        <span>Cypher Oz</span>
         <strong>Administración</strong>
       </div>
       <button

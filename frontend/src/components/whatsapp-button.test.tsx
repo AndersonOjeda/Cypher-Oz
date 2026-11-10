@@ -68,3 +68,12 @@ test("CO-72 HU-31: OrderWhatsAppButton renders link with order context and priva
   expect(link.getAttribute("href")).not.toContain("password");
   expect(link.getAttribute("href")).not.toContain("token");
 });
+
+test("orderWhatsAppUrl includes payment reference when reporting receipt", () => {
+  const urlString = orderWhatsAppUrl(settings, "ORD-999", "REF-7788");
+  expect(urlString).not.toBeNull();
+  const url = new URL(urlString!);
+  expect(url.searchParams.get("text")).toContain("ORD-999");
+  expect(url.searchParams.get("text")).toContain("REF-7788");
+  expect(url.searchParams.get("text")).toContain("comprobante");
+});

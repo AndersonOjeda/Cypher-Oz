@@ -19,7 +19,7 @@ test("assistant handles a conversation, errors and keyboard access", async ({
   await page.goto("/catalogo");
   const toggle = page.getByRole("button", { name: "Abrir asistente virtual" });
   await toggle.click();
-  const dialog = page.getByRole("dialog", { name: "Asistente virtual de TTI" });
+  const dialog = page.getByRole("dialog", { name: "Asistente virtual de Cypher Oz" });
   const input = page.getByRole("textbox", { name: "Escribe tu mensaje" });
   await expect(input).toBeFocused();
   await input.fill("¿Tienen cargadores?");

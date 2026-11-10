@@ -55,7 +55,7 @@ describe("QA - UTF-8 and Spanish Orthography Verification (CO-74)", () => {
     const detailContent = fs.readFileSync(detailPath, "utf-8");
 
     expect(detailContent).toContain("Catálogo");
-    expect(detailContent).toContain("Garantía TTI");
+    expect(detailContent).toContain("Garantía Cypher Oz");
     expect(detailContent).toContain("Descripción del producto");
     expect(detailContent).toContain("¡Añadido al carrito con éxito!");
     expect(detailContent).toContain("Añadir al carrito");

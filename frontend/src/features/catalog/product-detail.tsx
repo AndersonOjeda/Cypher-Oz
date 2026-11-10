@@ -403,7 +403,7 @@ export function ProductDetail({ slug }: { slug: string }) {
             <div className="warranty-badge">
               <ShieldCheck size={20} />
               <span>
-                <strong>Garantía TTI:</strong> {product.warranty}
+                <strong>Garantía Cypher Oz:</strong> {product.warranty}
               </span>
             </div>
           )}

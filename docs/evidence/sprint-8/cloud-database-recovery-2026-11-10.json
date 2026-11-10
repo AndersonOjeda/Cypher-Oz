@@ -48,5 +48,7 @@
   "source_modified": false,
   "isolated_restore_database_removed": true,
   "dsn_persisted": false,
-  "data_dump_location": "ignored .runtime directory; not published"
+  "data_dump_location": "ignored .runtime directory; not published",
+  "temporary_ip_rule_removed": true,
+  "external_ip_allowlist_after_restore": []
 }

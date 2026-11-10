@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AdminCatalog } from "@/features/catalog/admin-catalog";
 
 export const metadata: Metadata = {
-  title: "Administrar catálogo · TTI",
+  title: "Administrar catálogo · Cypher Oz",
   robots: { index: false, follow: false },
 };
 

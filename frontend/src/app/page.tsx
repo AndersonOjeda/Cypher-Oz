@@ -27,7 +27,7 @@ export default function Home() {
             </Link>
           </div>
           <p className="hero-secondary">
-            ¿Ya eres parte de TTI? <Link href="/login">Inicia sesión</Link>
+            ¿Ya eres parte de Cypher Oz? <Link href="/login">Inicia sesión</Link>
           </p>
         </div>
         <div className="hero-art" aria-hidden="true">
@@ -36,7 +36,7 @@ export default function Home() {
           <div className="orb orb-back" />
           <div className="orb orb-front">
             <span>
-              tti<span className="orb-dot">·</span>
+              Cypher Oz<span className="orb-dot">·</span>
             </span>
           </div>
           <div className="art-caption">
@@ -46,7 +46,7 @@ export default function Home() {
           <span className="art-coordinate">01 / PASTO, COLOMBIA</span>
         </div>
       </section>
-      <section className="values" aria-label="Sobre TTI">
+      <section className="values" aria-label="Sobre Cypher Oz">
         <article>
           <span className="value-number">01</span>
           <h2>Hecha desde Pasto</h2>
@@ -55,7 +55,7 @@ export default function Home() {
         <article>
           <span className="value-number">02</span>
           <h2>Tu cuenta, tu espacio</h2>
-          <p>Un acceso sencillo para mantenerte conectado con TTI.</p>
+          <p>Un acceso sencillo para mantenerte conectado con Cypher Oz.</p>
         </article>
         <article>
           <span className="value-number">03</span>

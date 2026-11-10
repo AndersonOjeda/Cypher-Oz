@@ -1,8 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Copy, Check, Send } from "lucide-react";
+import {
+  OrderWhatsAppButton,
+  orderWhatsAppUrl,
+  type WhatsAppSettings,
+} from "@/components/whatsapp-button";
 import { api } from "@/services/api";
 import { errorText, useResource } from "@/features/catalog/shared";
 import { cop, type Payment } from "./types";
@@ -15,6 +20,7 @@ export function PaymentInstructions({ number }: { number: string }) {
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState("");
+  const [whatsappSettings, setWhatsappSettings] = useState<WhatsAppSettings>();
   const submitting = useRef(false);
   const result = useResource<{
     instructions: string;
@@ -25,6 +31,21 @@ export function PaymentInstructions({ number }: { number: string }) {
     payment: Payment;
   }>(`/orders/${encodeURIComponent(number)}/payment-instructions/`, revision);
   const payment = reported ?? result.data?.payment;
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/v1/settings/public/")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (active && data) setWhatsappSettings(data);
+      })
+      .catch(() => {
+        if (active) setWhatsappSettings(undefined);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function copyInstructions() {
     setCopied(false);
@@ -47,16 +68,26 @@ export function PaymentInstructions({ number }: { number: string }) {
     submitting.current = true;
     setBusy(true);
     setError("");
+    const cleanedRef = reference.trim();
     try {
-      setReported(
-        await api<Payment>(
-          `/orders/${encodeURIComponent(number)}/payment-report/`,
-          {
-            method: "POST",
-            body: JSON.stringify({ reference: reference.trim() }),
-          },
-        ),
+      const saved = await api<Payment>(
+        `/orders/${encodeURIComponent(number)}/payment-report/`,
+        {
+          method: "POST",
+          body: JSON.stringify({ reference: cleanedRef }),
+        },
       );
+      setReported(saved);
+      if (whatsappSettings) {
+        const waUrl = orderWhatsAppUrl(
+          whatsappSettings,
+          number,
+          saved.reference || cleanedRef,
+        );
+        if (waUrl && typeof window !== "undefined") {
+          window.open(waUrl, "_blank", "noopener,noreferrer");
+        }
+      }
     } catch (err) {
       setError(errorText(err));
       setRevision((value) => value + 1);
@@ -142,7 +173,7 @@ export function PaymentInstructions({ number }: { number: string }) {
             </section>
           )}
           {payment?.status === "REPORTED" ? (
-            <section aria-label="Pago reportado">
+            <section aria-label="Pago reportado" className="space-y-3">
               <h2>Pago reportado</h2>
               <p role="status">
                 Pendiente de revisión. Fondos aún no confirmados.
@@ -160,6 +191,20 @@ export function PaymentInstructions({ number }: { number: string }) {
                   )}{" "}
                   (Bogotá)
                 </p>
+              )}
+              {whatsappSettings && orderWhatsAppUrl(whatsappSettings, number, payment.reference) && (
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded space-y-2">
+                  <p className="text-xs text-emerald-900">
+                    Envía tu comprobante o factura por WhatsApp al administrador indicando la referencia{" "}
+                    <strong>{payment.reference}</strong>. Recuerda que esto agiliza la revisión, pero el pago solo quedará confirmado cuando el administrador verifique el ingreso real de los fondos.
+                  </p>
+                  <OrderWhatsAppButton
+                    orderNumber={number}
+                    paymentReference={payment.reference}
+                    label="Enviar comprobante por WhatsApp"
+                    settings={whatsappSettings}
+                  />
+                </div>
               )}
             </section>
           ) : (payment?.status === "PENDING" || payment?.status === "REJECTED") &&

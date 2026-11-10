@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SettingsManager } from "@/features/configuration/settings-manager";
 
 export const metadata: Metadata = {
-  title: "Configuración · TTI",
+  title: "Configuración · Cypher Oz",
   robots: { index: false, follow: false },
 };
 

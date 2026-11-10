@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { ProductComparisonView } from "@/features/catalog/product-comparator";
 
 export const metadata = {
-  title: "Comparador de Productos — Cypher-Oz TTI",
+  title: "Comparador de Productos · Cypher Oz",
   description: "Compara especificaciones técnicas, precios y disponibilidad entre productos compatibles de la tienda.",
 };
 

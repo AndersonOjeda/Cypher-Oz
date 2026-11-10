@@ -18,13 +18,19 @@ export function whatsappUrl(settings: WhatsAppSettings) {
   return `https://wa.me/${settings.whatsapp_number}?text=${encodeURIComponent(settings.whatsapp_message)}`;
 }
 
-export function orderWhatsAppUrl(settings: WhatsAppSettings, orderNumber: string) {
+export function orderWhatsAppUrl(
+  settings: WhatsAppSettings,
+  orderNumber: string,
+  paymentReference?: string,
+) {
   if (
     !settings.whatsapp_enabled ||
     !/^[1-9]\d{7,14}$/.test(settings.whatsapp_number)
   )
     return null;
-  const message = `Hola, necesito asistencia con mi pedido #${orderNumber}`;
+  const message = paymentReference
+    ? `Hola, acabo de reportar el pago de mi pedido #${orderNumber} con la referencia ${paymentReference}. Adjunto el comprobante de transferencia para su verificación.`
+    : `Hola, necesito asistencia con mi pedido #${orderNumber}`;
   return `https://wa.me/${settings.whatsapp_number}?text=${encodeURIComponent(message)}`;
 }
 
@@ -58,9 +64,13 @@ export function WhatsAppLink({ settings }: { settings: WhatsAppSettings }) {
 
 export function OrderWhatsAppButton({
   orderNumber,
+  paymentReference,
+  label = "Asistencia por WhatsApp",
   settings: propSettings,
 }: {
   orderNumber: string;
+  paymentReference?: string;
+  label?: string;
   settings?: WhatsAppSettings;
 }) {
   const [settings, setSettings] = useState<WhatsAppSettings | undefined>(propSettings);
@@ -83,7 +93,7 @@ export function OrderWhatsAppButton({
 
   const effectiveSettings = propSettings ?? settings;
   if (!effectiveSettings) return null;
-  const url = orderWhatsAppUrl(effectiveSettings, orderNumber);
+  const url = orderWhatsAppUrl(effectiveSettings, orderNumber, paymentReference);
   if (!url) return null;
 
   return (
@@ -91,7 +101,11 @@ export function OrderWhatsAppButton({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`Contactar por WhatsApp sobre el pedido #${orderNumber} (abre en pestaña nueva)`}
+      aria-label={
+        paymentReference
+          ? `Enviar comprobante por WhatsApp sobre el pedido #${orderNumber} (abre en pestaña nueva)`
+          : `Contactar por WhatsApp sobre el pedido #${orderNumber} (abre en pestaña nueva)`
+      }
       className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs px-3.5 py-2 rounded shadow-sm transition"
     >
       <svg
@@ -106,7 +120,7 @@ export function OrderWhatsAppButton({
         <path d="M21 11.5a9 9 0 0 1-13.3 7.9L3 21l1.6-4.7A9 9 0 1 1 21 11.5Z" />
         <path d="M8 7c0 5 4 9 9 9l1-3-3-1-1 1c-2-1-3-2-4-4l1-1-1-2Z" />
       </svg>
-      <span>Asistencia por WhatsApp</span>
+      <span>{label}</span>
     </a>
   );
 }

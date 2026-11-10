@@ -715,7 +715,7 @@ function CatalogBuilder({ active }: { active: boolean }) {
             data-print-active={active}
             aria-label="Vista previa del catálogo"
           >
-            <p className="eyebrow">TTI · TIENDA TECNOLÓGICA INTELIGENTE</p>
+            <p className="eyebrow">CYPHER OZ · TIENDA TECNOLÓGICA</p>
             <h2>{catalog.title}</h2>
             <p>{catalog.introduction}</p>
             <div className="secretary-catalog-grid">

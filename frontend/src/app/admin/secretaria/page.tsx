@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Secretary } from "@/features/catalog/secretary";
 
 export const metadata: Metadata = {
-  title: "Secretaria IA · TTI",
+  title: "Secretaria IA · Cypher Oz",
   robots: { index: false, follow: false },
 };
 export default function Page() {
