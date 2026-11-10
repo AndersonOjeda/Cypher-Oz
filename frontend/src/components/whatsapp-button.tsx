@@ -31,7 +31,7 @@ export function orderWhatsAppUrl(
     return null;
   const message = paymentReference
     ? `Hola Cypher Oz, reporto el pago de mi pedido #${orderNumber}${totalAmount ? ` por ${totalAmount}` : ""} con la referencia ${paymentReference}. Adjunto el comprobante/factura para su verificación.`
-    : `Hola Cypher Oz, necesito asistencia con mi pedido #${orderNumber}`;
+    : `Hola, necesito asistencia con mi pedido #${orderNumber}`;
   return `https://wa.me/${settings.whatsapp_number}?text=${encodeURIComponent(message)}`;
 }
 
