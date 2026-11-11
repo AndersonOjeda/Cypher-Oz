@@ -291,3 +291,97 @@ def test_assistant_function_calling_loop(client, monkeypatch):
 
     assert r.status_code == 200
     assert r.data["reply"] == reply_msg
+
+
+def test_assistant_search_ignores_accents_and_orders_cheapest_first():
+    cat = Category.objects.create(name="Audífonos", slug="audifonos")
+    brand_s = Brand.objects.create(name="Samsung", slug="samsung")
+    brand_l = Brand.objects.create(name="Lenovo", slug="lenovo")
+
+    expensive = Product.objects.create(
+        name="Audifonos Samsung Buds 4 pro",
+        slug="audifonos-samsung-buds-4-pro-111",
+        category=cat,
+        brand=brand_s,
+        is_active=True,
+    )
+    v_exp = Variant.objects.create(
+        product=expensive,
+        sku="SAM-B4P",
+        name="Negro",
+        price=500000,
+        is_active=True,
+    )
+    InventoryBalance.objects.filter(variant=v_exp).update(available_quantity=4)
+
+    cheap = Product.objects.create(
+        name="Audífonos Inalámbricos Lenovo EA175 In-ear",
+        slug="audifonos-inalambricos-lenovo-ea175-in-ear-222",
+        category=cat,
+        brand=brand_l,
+        is_active=True,
+    )
+    v_cheap = Variant.objects.create(
+        product=cheap,
+        sku="LEN-EA175",
+        name="Blanco",
+        price=100000,
+        is_active=True,
+    )
+    InventoryBalance.objects.filter(variant=v_cheap).update(available_quantity=3)
+
+    results = _search_products("audifonos")
+    assert [item["slug"] for item in results] == [cheap.slug, expensive.slug]
+
+    multi_word = _search_products("audifonos economicos")
+    assert [item["slug"] for item in multi_word] == [cheap.slug, expensive.slug]
+
+
+def test_assistant_returns_found_products_if_followup_gemini_times_out(client, monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "fake-key")
+    cat = Category.objects.create(name="Audio", slug="audio")
+    brand = Brand.objects.create(name="Lenovo", slug="lenovo")
+    prod = Product.objects.create(
+        name="Audífonos Inalámbricos Lenovo EA175 In-ear",
+        slug="audifonos-inalambricos-lenovo-ea175-in-ear",
+        category=cat,
+        brand=brand,
+        is_active=True,
+    )
+    v = Variant.objects.create(
+        product=prod,
+        sku="LEN-EA175-BLK",
+        name="Negro",
+        price=100000,
+        is_active=True,
+    )
+    InventoryBalance.objects.filter(variant=v).update(available_quantity=2)
+
+    fn_call_response = {
+        "candidates": [
+            {
+                "content": {
+                    "role": "model",
+                    "parts": [
+                        {
+                            "functionCall": {
+                                "name": "search_products",
+                                "args": {"query": "audifonos"},
+                            }
+                        }
+                    ],
+                }
+            }
+        ]
+    }
+    with patch("apps.assistant.views._call_gemini", side_effect=[fn_call_response, TimeoutError]):
+        response = client.post(
+            "/api/v1/assistant/chat/",
+            {"message": "Busco audífonos económicos"},
+            format="json",
+        )
+
+    assert response.status_code == 200
+    assert "Lenovo EA175" in response.data["reply"]
+    assert "$100.000 COP" in response.data["reply"]
+    assert response.data["products"][0]["slug"] == prod.slug

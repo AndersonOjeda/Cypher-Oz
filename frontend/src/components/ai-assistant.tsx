@@ -8,6 +8,7 @@ type Message = {
   role: "user" | "assistant";
   content: string;
   products?: ReferencedProduct[];
+  isError?: boolean;
 };
 
 const INITIAL_MESSAGES: Message[] = [
@@ -74,11 +75,14 @@ export function AiAssistant() {
         body: JSON.stringify({
           message: text,
           history: messages
-            .filter((message) => message !== INITIAL_MESSAGES[0])
+            .filter(
+              (message) => message !== INITIAL_MESSAGES[0] && !message.isError,
+            )
+            .map(({ role, content }) => ({ role, content }))
             .slice(-10),
         }),
       });
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(
           response.status === 429
@@ -99,6 +103,7 @@ export function AiAssistant() {
         ...prev,
         {
           role: "assistant",
+          isError: true,
           content:
             error instanceof Error && error.name === "Error"
               ? error.message

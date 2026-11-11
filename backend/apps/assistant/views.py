@@ -1,7 +1,10 @@
 import json
 import logging
 import os
+import re
+import unicodedata
 import urllib.request
+from decimal import Decimal
 from urllib.error import HTTPError, URLError
 
 from django.db.models import Prefetch, Q
@@ -24,8 +27,13 @@ SYSTEM_PROMPT = (
     "ayuda con compras.\n"
     "- Si te preguntan sobre temas que no sean de la tienda, redirige amablemente al "
     "catálogo.\n"
-    "- Usa las funciones search_products y get_product_detail para consultar información "
-    "real y actualizada.\n"
+    "- Usa search_products con una palabra clave corta y general (por ejemplo: "
+    '"audifonos", "mouse", "cargador"), sin adjetivos como "barato" o "economico". '
+    "La búsqueda devuelve hasta 8 coincidencias ordenadas de menor a mayor precio.\n"
+    "- Usa get_product_detail solo si el cliente pide especificaciones detalladas, "
+    "garantía o variantes exactas de un producto.\n"
+    "- Revisa todas las opciones devueltas antes de decir que no hay alternativas "
+    "más económicas.\n"
     "- NUNCA inventes productos, precios ni disponibilidad. Si no encuentras algo, dilo "
     "honestamente.\n"
     "- Los precios están en pesos colombianos (COP). Formatea como $100.000 COP.\n"
@@ -39,7 +47,8 @@ GEMINI_TOOLS = [
             {
                 "name": "search_products",
                 "description": (
-                    "Busca productos en el catálogo de la tienda por nombre. "
+                    "Busca productos en el catálogo de la tienda por nombre, marca o "
+                    "categoría (sin importar tildes), ordenados de menor a mayor precio. "
                     "Opcionalmente filtra por categoría."
                 ),
                 "parameters": {
@@ -47,7 +56,7 @@ GEMINI_TOOLS = [
                     "properties": {
                         "query": {
                             "type": "STRING",
-                            "description": "Texto de búsqueda para el nombre del producto.",
+                            "description": "Palabra clave de búsqueda para el producto.",
                         },
                         "category": {
                             "type": "STRING",
@@ -86,8 +95,21 @@ FALLBACK_REPLY = "Lo siento, ocurrió un error al procesar tu solicitud. Por fav
 # ---------------------------------------------------------------------------
 
 
-def _search_products(query: str, category: str | None = None) -> list[dict]:
-    """Search active products matching *query*, optionally filtered by category slug."""
+def _strip_accents(text: str) -> str:
+    """Return *text* without diacritical marks so searches ignore tildes."""
+    return "".join(
+        ch for ch in unicodedata.normalize("NFD", text) if unicodedata.category(ch) != "Mn"
+    )
+
+
+def _format_cop(amount: float | Decimal | None) -> str:
+    if amount is None:
+        return "precio por confirmar"
+    return f"${int(round(float(amount))):,}".replace(",", ".") + " COP"
+
+
+def _search_products(query: str = "", category: str | None = None) -> list[dict]:
+    """Search active products matching *query* (accent-insensitive), ordered by price."""
     qs = (
         Product.objects.visible()
         .select_related("category", "brand")
@@ -99,35 +121,70 @@ def _search_products(query: str, category: str | None = None) -> list[dict]:
         )
     )
 
-    if query:
-        qs = qs.filter(Q(name__icontains=query))
-
     if category:
         qs = qs.filter(category__slug=category)
 
-    qs = qs[:5]
+    clean_query = (query or "").strip()
+    tokens: list[str] = []
+    if clean_query:
+        ascii_query = _strip_accents(clean_query)
+        raw_tokens = re.findall(r"[a-z0-9]+", ascii_query.lower())
+        tokens = [t for t in raw_tokens if len(t) >= 2] or raw_tokens
+        slug_phrase = "-".join(raw_tokens)
 
-    results = []
-    for p in qs:
+        text_filter = (
+            Q(name__icontains=clean_query)
+            | Q(name__icontains=ascii_query)
+            | Q(category__name__icontains=ascii_query)
+            | Q(brand__name__icontains=ascii_query)
+        )
+        if slug_phrase:
+            text_filter |= Q(slug__icontains=slug_phrase)
+        for token in tokens[:6]:
+            text_filter |= (
+                Q(slug__icontains=token)
+                | Q(name__icontains=token)
+                | Q(category__slug__icontains=token)
+                | Q(brand__slug__icontains=token)
+            )
+        qs = qs.filter(text_filter).distinct()
+
+    candidates = []
+    for p in qs[:30]:
         variants = p.variants.all()
         prices = [v.price for v in variants]
         min_price = min(prices) if prices else None
+        max_price = max(prices) if prices else None
         total_stock = sum(
             getattr(v, "inventory_balance", None) and v.inventory_balance.available_quantity or 0
             for v in variants
         )
-        results.append(
-            {
-                "name": p.name,
-                "slug": p.slug,
-                "category": p.category.name,
-                "brand": p.brand.name,
-                "min_price": float(min_price) if min_price is not None else None,
-                "total_stock": total_stock,
-                "is_available": total_stock > 0 and len(prices) > 0,
-            }
+        is_available = total_stock > 0 and len(prices) > 0
+        searchable = _strip_accents(
+            f"{p.name} {p.slug} {p.category.name} {p.brand.name}"
+        ).lower()
+        score = sum(1 for token in tokens if token in searchable) if tokens else 0
+        candidates.append(
+            (
+                -score,
+                not is_available,
+                min_price if min_price is not None else Decimal("999999999999"),
+                p.name.lower(),
+                {
+                    "name": p.name,
+                    "slug": p.slug,
+                    "category": p.category.name,
+                    "brand": p.brand.name,
+                    "min_price": float(min_price) if min_price is not None else None,
+                    "max_price": float(max_price) if max_price is not None else None,
+                    "total_stock": total_stock,
+                    "is_available": is_available,
+                },
+            )
         )
-    return results
+
+    candidates.sort(key=lambda item: item[:4])
+    return [item[4] for item in candidates[:8]]
 
 
 def _get_product_detail(slug: str) -> dict | None:
@@ -304,10 +361,40 @@ class AssistantChatView(APIView):
         history = payload.validated_data["history"]
 
         contents = _build_contents(message, history)
+        referenced_products: dict[str, dict] = {}
+        found_catalog_items: list[dict] = []
+
+        def _build_catalog_fallback_reply() -> str | None:
+            if not found_catalog_items:
+                return None
+            lines = []
+            seen_slugs = set()
+            for item in found_catalog_items:
+                slug = item.get("slug")
+                if not slug or slug in seen_slugs:
+                    continue
+                seen_slugs.add(slug)
+                price_txt = _format_cop(item.get("min_price"))
+                stock_txt = (
+                    f"{item.get('total_stock', 0)} disponibles"
+                    if item.get("is_available")
+                    else "agotado"
+                )
+                lines.append(f"- {item.get('name')} — {price_txt} ({stock_txt})")
+                if len(lines) >= 5:
+                    break
+            if not lines:
+                return None
+            return (
+                "Encontré estas opciones en nuestro catálogo de Cypher Oz (de menor a mayor "
+                "precio):\n"
+                + "\n".join(lines)
+                + "\n\nPuedes ver más detalles haciendo clic en los enlaces o entrando a "
+                "/catalogo."
+            )
 
         try:
             response = _call_gemini(api_key, contents)
-            referenced_products: dict[str, dict] = {}
 
             # Bound upstream calls to fit within the web request timeout.
             for round_number in range(2):
@@ -329,12 +416,14 @@ class AssistantChatView(APIView):
                         if isinstance(result, list):
                             for product in result:
                                 if isinstance(product, dict) and product.get("slug"):
+                                    found_catalog_items.append(product)
                                     referenced_products[product["slug"]] = {
                                         "name": product.get("name", ""),
                                         "slug": product["slug"],
                                         "is_available": bool(product.get("is_available")),
                                     }
                         elif isinstance(result, dict) and result.get("slug"):
+                            found_catalog_items.append(result)
                             referenced_products[result["slug"]] = {
                                 "name": result.get("name", ""),
                                 "slug": result["slug"],
@@ -359,10 +448,21 @@ class AssistantChatView(APIView):
             if text:
                 return Response({"reply": text, "products": list(referenced_products.values())})
 
+            fallback_text = _build_catalog_fallback_reply()
+            if fallback_text:
+                return Response(
+                    {"reply": fallback_text, "products": list(referenced_products.values())}
+                )
+
             return Response({"reply": FALLBACK_REPLY}, status=503)
 
         except (HTTPError, URLError, TimeoutError) as exc:
             logger.warning("Gemini API error: %s", type(exc).__name__)
+            fallback_text = _build_catalog_fallback_reply()
+            if fallback_text:
+                return Response(
+                    {"reply": fallback_text, "products": list(referenced_products.values())}
+                )
             return Response({"reply": FALLBACK_REPLY}, status=503)
         except Exception:
             logger.exception("Unexpected error in assistant chat")
