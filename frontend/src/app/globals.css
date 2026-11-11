@@ -746,6 +746,45 @@ footer p span {
   background: #ffe4e6;
   border-color: #fda4af;
 }
+.account-columns.is-admin {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+}
+.account-panel-icon.is-admin-shield {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.admin-privileges-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.admin-privilege-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 13px 16px;
+  background: #f8fafc;
+}
+.admin-privilege-item strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+.admin-privilege-item p {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+}
+.admin-config-shortcut {
+  margin-top: 6px;
+  align-self: flex-start;
+  min-height: 42px;
+  padding: 8px 16px;
+  font-size: 13px;
+  gap: 8px;
+}
 .account-footer-bar {
   display: flex;
   flex-wrap: wrap;

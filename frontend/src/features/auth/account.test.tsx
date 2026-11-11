@@ -101,3 +101,25 @@ test("network failure shows controlled error", async () => {
     "No pudimos conectar.",
   );
 });
+
+test("admin account shows administration tools and does not show customer addresses", async () => {
+  vi.mocked(api).mockResolvedValueOnce({
+    name: "Anderson Admin",
+    email: "admin@tti.example",
+    role: "ADMIN",
+    addresses: [],
+  });
+  render(<Account />);
+  expect(
+    await screen.findByRole("heading", { name: "Hola, Anderson Admin" }),
+  ).toBeVisible();
+  expect(
+    screen.getByRole("link", { name: "Administrar catálogo" }),
+  ).toBeVisible();
+  expect(
+    screen.queryByRole("heading", { name: "Direcciones" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: "Panel de administración" }),
+  ).toHaveAttribute("href", "/admin/catalogo");
+});

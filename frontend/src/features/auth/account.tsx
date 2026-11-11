@@ -9,6 +9,8 @@ import {
   MapPin,
   Package,
   ArrowLeft,
+  ShieldCheck,
+  SlidersHorizontal,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -261,7 +263,9 @@ export function Account() {
 
           {user.role === "ADMIN" && <AdminAccountMenu />}
 
-          <div className="account-columns">
+          <div
+            className={`account-columns${user.role === "ADMIN" ? " is-admin" : ""}`}
+          >
             <form className="account-panel" onSubmit={saveProfile}>
               <div className="account-panel-header">
                 <span className="account-panel-icon" aria-hidden="true">
@@ -270,7 +274,9 @@ export function Account() {
                 <div>
                   <h2>Datos personales</h2>
                   <p className="account-panel-subtitle">
-                    Mantén tu nombre y correo actualizados para tus pedidos.
+                    {user.role === "ADMIN"
+                      ? "Información de contacto de tu cuenta administrativa."
+                      : "Mantén tu nombre y correo actualizados para tus pedidos."}
                   </p>
                 </div>
               </div>
@@ -336,321 +342,384 @@ export function Account() {
               </fieldset>
             </form>
 
-            <section
-              className="address-section account-panel"
-              aria-labelledby="addresses-title"
-            >
-              <div className="account-panel-header">
-                <span className="account-panel-icon" aria-hidden="true">
-                  <MapPin size={20} />
-                </span>
-                <div>
-                  <h2 id="addresses-title">Direcciones</h2>
-                  <p className="account-panel-subtitle">
-                    Gestiona tus puntos de entrega en Pasto y Nariño.
-                  </p>
-                </div>
-              </div>
-              {(user.addresses ?? []).length > 0 ? (
-                <div className="address-list">
-                  {(user.addresses ?? []).map((address) => (
-                    <article
-                      className={`address-item${address.is_default ? " is-default" : ""}`}
-                      key={address.id}
-                    >
-                      <div className="address-item-info">
-                        <strong>
-                          {address.label}
-                          {address.is_default ? " - principal" : ""}
-                        </strong>
-                        <p>
-                          {address.recipient_name} - {address.phone}
-                        </p>
-                        <p>
-                          {address.address_line}, {address.city},{" "}
-                          {address.state}
-                        </p>
-                        {address.notes && <p>{address.notes}</p>}
-                      </div>
-                      <div className="address-actions">
-                        <button
-                          className="button subtle"
-                          type="button"
-                          onClick={() => editAddress(address)}
-                          title={`Editar ${address.label}`}
-                          aria-label={`Editar ${address.label}`}
-                          disabled={busy}
-                        >
-                          <Pencil size={18} aria-hidden="true" />
-                        </button>
-                        <button
-                          className="button danger"
-                          type="button"
-                          onClick={() => deleteAddress(address.id)}
-                          title={`Eliminar ${address.label}`}
-                          aria-label={`Eliminar ${address.label}`}
-                          disabled={busy}
-                        >
-                          <Trash2 size={18} aria-hidden="true" />
-                        </button>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <p className="address-empty-state">
-                  No tienes direcciones guardadas.
-                </p>
-              )}
-
-              <form
-                ref={addressEditor}
-                className="address-editor-form"
-                onSubmit={saveAddress}
+            {user.role === "ADMIN" ? (
+              <section
+                className="account-panel account-admin-privileges"
+                aria-labelledby="admin-privileges-title"
               >
-                <h3>
-                  {editingAddressId ? "Editar dirección" : "Nueva dirección"}
-                </h3>
-                <fieldset disabled={busy}>
-                  <div className="field-grid">
-                    <div className="field">
-                      <label htmlFor="address-label">Etiqueta</label>
-                      <input
-                        id="address-label"
-                        maxLength={60}
-                        placeholder="Ej. Casa, Oficina"
-                        aria-invalid={!!fieldErrors["address-label"]}
-                        aria-describedby={
-                          fieldErrors["address-label"]
-                            ? "address-label-error"
-                            : undefined
-                        }
-                        value={addressForm.label}
-                        onChange={(event) =>
-                          setAddressForm((current) => ({
-                            ...current,
-                            label: event.target.value,
-                          }))
-                        }
-                        required
-                      />
-                      {fieldErrors["address-label"] && (
-                        <span id="address-label-error" className="field-error">
-                          {fieldErrors["address-label"]}
-                        </span>
-                      )}
-                    </div>
-                    <div className="field">
-                      <label htmlFor="address-recipient">Recibe</label>
-                      <input
-                        id="address-recipient"
-                        maxLength={150}
-                        autoComplete="shipping name"
-                        aria-invalid={!!fieldErrors["address-recipient_name"]}
-                        aria-describedby={
-                          fieldErrors["address-recipient_name"]
-                            ? "address-recipient-error"
-                            : undefined
-                        }
-                        value={addressForm.recipient_name}
-                        onChange={(event) =>
-                          setAddressForm((current) => ({
-                            ...current,
-                            recipient_name: event.target.value,
-                          }))
-                        }
-                        required
-                      />
-                      {fieldErrors["address-recipient_name"] && (
-                        <span
-                          id="address-recipient-error"
-                          className="field-error"
-                        >
-                          {fieldErrors["address-recipient_name"]}
-                        </span>
-                      )}
-                    </div>
+                <div className="account-panel-header">
+                  <span
+                    className="account-panel-icon is-admin-shield"
+                    aria-hidden="true"
+                  >
+                    <ShieldCheck size={20} />
+                  </span>
+                  <div>
+                    <h2 id="admin-privileges-title">Perfil de Administrador</h2>
+                    <p className="account-panel-subtitle">
+                      Control operativo y seguridad de la tienda Cypher Oz.
+                    </p>
                   </div>
-                  <div className="field-grid">
-                    <div className="field">
-                      <label htmlFor="address-phone">Teléfono</label>
-                      <input
-                        id="address-phone"
-                        type="tel"
-                        maxLength={30}
-                        autoComplete="shipping tel"
-                        aria-invalid={!!fieldErrors["address-phone"]}
-                        aria-describedby={
-                          fieldErrors["address-phone"]
-                            ? "address-phone-error"
-                            : undefined
-                        }
-                        value={addressForm.phone}
-                        onChange={(event) =>
-                          setAddressForm((current) => ({
-                            ...current,
-                            phone: event.target.value,
-                          }))
-                        }
-                        required
-                      />
-                      {fieldErrors["address-phone"] && (
-                        <span id="address-phone-error" className="field-error">
-                          {fieldErrors["address-phone"]}
-                        </span>
-                      )}
-                    </div>
-                    <div className="field">
-                      <label htmlFor="address-line">Dirección</label>
-                      <input
-                        id="address-line"
-                        maxLength={240}
-                        autoComplete="shipping street-address"
-                        aria-invalid={!!fieldErrors["address-address_line"]}
-                        aria-describedby={
-                          fieldErrors["address-address_line"]
-                            ? "address-line-error"
-                            : undefined
-                        }
-                        value={addressForm.address_line}
-                        onChange={(event) =>
-                          setAddressForm((current) => ({
-                            ...current,
-                            address_line: event.target.value,
-                          }))
-                        }
-                        required
-                      />
-                      {fieldErrors["address-address_line"] && (
-                        <span id="address-line-error" className="field-error">
-                          {fieldErrors["address-address_line"]}
-                        </span>
-                      )}
-                    </div>
+                </div>
+
+                <div className="admin-privileges-content">
+                  <div className="admin-privilege-item">
+                    <strong>Rol en la plataforma</strong>
+                    <p>
+                      Administrador general con acceso de lectura y escritura
+                      en todos los módulos operativos.
+                    </p>
                   </div>
-                  <div className="field-grid">
-                    <div className="field">
-                      <label htmlFor="address-city">Ciudad</label>
-                      <input
-                        id="address-city"
-                        maxLength={80}
-                        autoComplete="shipping address-level2"
-                        aria-invalid={!!fieldErrors["address-city"]}
-                        aria-describedby={
-                          fieldErrors["address-city"]
-                            ? "address-city-error"
-                            : undefined
-                        }
-                        value={addressForm.city}
-                        onChange={(event) =>
-                          setAddressForm((current) => ({
-                            ...current,
-                            city: event.target.value,
-                          }))
-                        }
-                        required
-                      />
+                  <div className="admin-privilege-item">
+                    <strong>Direcciones de entrega</strong>
+                    <p>
+                      Las cuentas administrativas gestionan la logística y
+                      cobertura de entregas en Pasto y Nariño desde la sección
+                      de configuración, sin necesidad de asociar direcciones de
+                      compra personal.
+                    </p>
+                  </div>
+                  <div className="admin-privilege-item">
+                    <strong>Gestión del sistema</strong>
+                    <p>
+                      Control total sobre catálogo de productos, inventario en
+                      bodega, validación y confirmación de pagos de clientes y
+                      reportes de ventas.
+                    </p>
+                  </div>
+                  <Link
+                    className="button subtle admin-config-shortcut"
+                    href="/admin/configuracion"
+                  >
+                    <SlidersHorizontal size={17} aria-hidden="true" />
+                    Configuración de tienda y envíos
+                  </Link>
+                </div>
+              </section>
+            ) : (
+              <section
+                className="address-section account-panel"
+                aria-labelledby="addresses-title"
+              >
+                <div className="account-panel-header">
+                  <span className="account-panel-icon" aria-hidden="true">
+                    <MapPin size={20} />
+                  </span>
+                  <div>
+                    <h2 id="addresses-title">Direcciones</h2>
+                    <p className="account-panel-subtitle">
+                      Gestiona tus puntos de entrega en Pasto y Nariño.
+                    </p>
+                  </div>
+                </div>
+                {(user.addresses ?? []).length > 0 ? (
+                  <div className="address-list">
+                    {(user.addresses ?? []).map((address) => (
+                      <article
+                        className={`address-item${address.is_default ? " is-default" : ""}`}
+                        key={address.id}
+                      >
+                        <div className="address-item-info">
+                          <strong>
+                            {address.label}
+                            {address.is_default ? " - principal" : ""}
+                          </strong>
+                          <p>
+                            {address.recipient_name} - {address.phone}
+                          </p>
+                          <p>
+                            {address.address_line}, {address.city},{" "}
+                            {address.state}
+                          </p>
+                          {address.notes && <p>{address.notes}</p>}
+                        </div>
+                        <div className="address-actions">
+                          <button
+                            className="button subtle"
+                            type="button"
+                            onClick={() => editAddress(address)}
+                            title={`Editar ${address.label}`}
+                            aria-label={`Editar ${address.label}`}
+                            disabled={busy}
+                          >
+                            <Pencil size={18} aria-hidden="true" />
+                          </button>
+                          <button
+                            className="button danger"
+                            type="button"
+                            onClick={() => deleteAddress(address.id)}
+                            title={`Eliminar ${address.label}`}
+                            aria-label={`Eliminar ${address.label}`}
+                            disabled={busy}
+                          >
+                            <Trash2 size={18} aria-hidden="true" />
+                          </button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="address-empty-state">
+                    No tienes direcciones guardadas.
+                  </p>
+                )}
+
+                <form
+                  ref={addressEditor}
+                  className="address-editor-form"
+                  onSubmit={saveAddress}
+                >
+                  <h3>
+                    {editingAddressId ? "Editar dirección" : "Nueva dirección"}
+                  </h3>
+                  <fieldset disabled={busy}>
+                    <div className="field-grid">
+                      <div className="field">
+                        <label htmlFor="address-label">Etiqueta</label>
+                        <input
+                          id="address-label"
+                          maxLength={60}
+                          placeholder="Ej. Casa, Oficina"
+                          aria-invalid={!!fieldErrors["address-label"]}
+                          aria-describedby={
+                            fieldErrors["address-label"]
+                              ? "address-label-error"
+                              : undefined
+                          }
+                          value={addressForm.label}
+                          onChange={(event) =>
+                            setAddressForm((current) => ({
+                              ...current,
+                              label: event.target.value,
+                            }))
+                          }
+                          required
+                        />
+                        {fieldErrors["address-label"] && (
+                          <span id="address-label-error" className="field-error">
+                            {fieldErrors["address-label"]}
+                          </span>
+                        )}
+                      </div>
+                      <div className="field">
+                        <label htmlFor="address-recipient">Recibe</label>
+                        <input
+                          id="address-recipient"
+                          maxLength={150}
+                          autoComplete="shipping name"
+                          aria-invalid={!!fieldErrors["address-recipient_name"]}
+                          aria-describedby={
+                            fieldErrors["address-recipient_name"]
+                              ? "address-recipient-error"
+                              : undefined
+                          }
+                          value={addressForm.recipient_name}
+                          onChange={(event) =>
+                            setAddressForm((current) => ({
+                              ...current,
+                              recipient_name: event.target.value,
+                            }))
+                          }
+                          required
+                        />
+                        {fieldErrors["address-recipient_name"] && (
+                          <span
+                            id="address-recipient-error"
+                            className="field-error"
+                          >
+                            {fieldErrors["address-recipient_name"]}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    {fieldErrors["address-city"] && (
-                      <span id="address-city-error" className="field-error">
-                        {fieldErrors["address-city"]}
+                    <div className="field-grid">
+                      <div className="field">
+                        <label htmlFor="address-phone">Teléfono</label>
+                        <input
+                          id="address-phone"
+                          type="tel"
+                          maxLength={30}
+                          autoComplete="shipping tel"
+                          aria-invalid={!!fieldErrors["address-phone"]}
+                          aria-describedby={
+                            fieldErrors["address-phone"]
+                              ? "address-phone-error"
+                              : undefined
+                          }
+                          value={addressForm.phone}
+                          onChange={(event) =>
+                            setAddressForm((current) => ({
+                              ...current,
+                              phone: event.target.value,
+                            }))
+                          }
+                          required
+                        />
+                        {fieldErrors["address-phone"] && (
+                          <span id="address-phone-error" className="field-error">
+                            {fieldErrors["address-phone"]}
+                          </span>
+                        )}
+                      </div>
+                      <div className="field">
+                        <label htmlFor="address-line">Dirección</label>
+                        <input
+                          id="address-line"
+                          maxLength={240}
+                          autoComplete="shipping street-address"
+                          aria-invalid={!!fieldErrors["address-address_line"]}
+                          aria-describedby={
+                            fieldErrors["address-address_line"]
+                              ? "address-line-error"
+                              : undefined
+                          }
+                          value={addressForm.address_line}
+                          onChange={(event) =>
+                            setAddressForm((current) => ({
+                              ...current,
+                              address_line: event.target.value,
+                            }))
+                          }
+                          required
+                        />
+                        {fieldErrors["address-address_line"] && (
+                          <span id="address-line-error" className="field-error">
+                            {fieldErrors["address-address_line"]}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="field-grid">
+                      <div className="field">
+                        <label htmlFor="address-city">Ciudad</label>
+                        <input
+                          id="address-city"
+                          maxLength={80}
+                          autoComplete="shipping address-level2"
+                          aria-invalid={!!fieldErrors["address-city"]}
+                          aria-describedby={
+                            fieldErrors["address-city"]
+                              ? "address-city-error"
+                              : undefined
+                          }
+                          value={addressForm.city}
+                          onChange={(event) =>
+                            setAddressForm((current) => ({
+                              ...current,
+                              city: event.target.value,
+                            }))
+                          }
+                          required
+                        />
+                      </div>
+                      {fieldErrors["address-city"] && (
+                        <span id="address-city-error" className="field-error">
+                          {fieldErrors["address-city"]}
+                        </span>
+                      )}
+                      <div className="field">
+                        <label htmlFor="address-state">Departamento</label>
+                        <input
+                          id="address-state"
+                          maxLength={80}
+                          autoComplete="shipping address-level1"
+                          aria-invalid={!!fieldErrors["address-state"]}
+                          aria-describedby={
+                            fieldErrors["address-state"]
+                              ? "address-state-error"
+                              : undefined
+                          }
+                          value={addressForm.state}
+                          onChange={(event) =>
+                            setAddressForm((current) => ({
+                              ...current,
+                              state: event.target.value,
+                            }))
+                          }
+                          required
+                        />
+                      </div>
+                    </div>
+                    {fieldErrors["address-state"] && (
+                      <span id="address-state-error" className="field-error">
+                        {fieldErrors["address-state"]}
                       </span>
                     )}
                     <div className="field">
-                      <label htmlFor="address-state">Departamento</label>
+                      <label htmlFor="address-notes">Notas</label>
                       <input
-                        id="address-state"
-                        maxLength={80}
-                        autoComplete="shipping address-level1"
-                        aria-invalid={!!fieldErrors["address-state"]}
+                        id="address-notes"
+                        maxLength={300}
+                        placeholder="Barrio, edificio, punto de referencia (opcional)"
+                        aria-invalid={!!fieldErrors["address-notes"]}
                         aria-describedby={
-                          fieldErrors["address-state"]
-                            ? "address-state-error"
+                          fieldErrors["address-notes"]
+                            ? "address-notes-error"
                             : undefined
                         }
-                        value={addressForm.state}
+                        value={addressForm.notes}
                         onChange={(event) =>
                           setAddressForm((current) => ({
                             ...current,
-                            state: event.target.value,
+                            notes: event.target.value,
                           }))
                         }
-                        required
                       />
                     </div>
-                  </div>
-                  {fieldErrors["address-state"] && (
-                    <span id="address-state-error" className="field-error">
-                      {fieldErrors["address-state"]}
-                    </span>
-                  )}
-                  <div className="field">
-                    <label htmlFor="address-notes">Notas</label>
-                    <input
-                      id="address-notes"
-                      maxLength={300}
-                      placeholder="Barrio, edificio, punto de referencia (opcional)"
-                      aria-invalid={!!fieldErrors["address-notes"]}
-                      aria-describedby={
-                        fieldErrors["address-notes"]
-                          ? "address-notes-error"
-                          : undefined
-                      }
-                      value={addressForm.notes}
-                      onChange={(event) =>
-                        setAddressForm((current) => ({
-                          ...current,
-                          notes: event.target.value,
-                        }))
-                      }
-                    />
-                  </div>
-                  {fieldErrors["address-notes"] && (
-                    <span id="address-notes-error" className="field-error">
-                      {fieldErrors["address-notes"]}
-                    </span>
-                  )}
-                  <label className="checkbox-row">
-                    <input
-                      type="checkbox"
-                      checked={addressForm.is_default}
-                      onChange={(event) =>
-                        setAddressForm((current) => ({
-                          ...current,
-                          is_default: event.target.checked,
-                        }))
-                      }
-                    />
-                    Usar como dirección principal
-                  </label>
-                  <div className="form-actions">
-                    <button className="button primary" disabled={busy}>
-                      {editingAddressId
-                        ? "Guardar dirección"
-                        : "Agregar dirección"}
-                    </button>
-                    {editingAddressId && (
-                      <button
-                        className="button subtle"
-                        type="button"
-                        onClick={resetAddressForm}
-                        disabled={busy}
-                      >
-                        Cancelar
-                      </button>
+                    {fieldErrors["address-notes"] && (
+                      <span id="address-notes-error" className="field-error">
+                        {fieldErrors["address-notes"]}
+                      </span>
                     )}
-                  </div>
-                </fieldset>
-              </form>
-            </section>
+                    <label className="checkbox-row">
+                      <input
+                        type="checkbox"
+                        checked={addressForm.is_default}
+                        onChange={(event) =>
+                          setAddressForm((current) => ({
+                            ...current,
+                            is_default: event.target.checked,
+                          }))
+                        }
+                      />
+                      Usar como dirección principal
+                    </label>
+                    <div className="form-actions">
+                      <button className="button primary" disabled={busy}>
+                        {editingAddressId
+                          ? "Guardar dirección"
+                          : "Agregar dirección"}
+                      </button>
+                      {editingAddressId && (
+                        <button
+                          className="button subtle"
+                          type="button"
+                          onClick={resetAddressForm}
+                          disabled={busy}
+                        >
+                          Cancelar
+                        </button>
+                      )}
+                    </div>
+                  </fieldset>
+                </form>
+              </section>
+            )}
           </div>
 
           <div className="account-footer-bar">
             <div className="account-footer-links">
-              <Link className="button subtle" href="/pedidos">
-                <Package size={18} aria-hidden="true" />
-                Mis pedidos
-              </Link>
+              {user.role === "ADMIN" ? (
+                <Link className="button subtle" href="/admin/catalogo">
+                  <SlidersHorizontal size={18} aria-hidden="true" />
+                  Panel de administración
+                </Link>
+              ) : (
+                <Link className="button subtle" href="/pedidos">
+                  <Package size={18} aria-hidden="true" />
+                  Mis pedidos
+                </Link>
+              )}
               <Link className="back-link" href="/">
                 <ArrowLeft size={15} aria-hidden="true" />
                 Volver al inicio
