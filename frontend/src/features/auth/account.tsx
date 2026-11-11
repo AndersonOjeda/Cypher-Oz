@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Pencil, Trash2, LogOut } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  LogOut,
+  User as UserIcon,
+  MapPin,
+  Package,
+  ArrowLeft,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Address, api, ApiError, User } from "@/services/api";
@@ -201,17 +209,44 @@ export function Account() {
 
   return (
     <section className="account-card" aria-busy={busy}>
-      <p className="eyebrow">MI CUENTA</p>
       {user ? (
         <>
-          <h1>Hola, {user.name}</h1>
-          <p>Tu sesión está activa.</p>
-          <dl>
-            <dt>Correo electrónico</dt>
-            <dd>{user.email}</dd>
-            <dt>Tipo de cuenta</dt>
-            <dd>{user.role === "ADMIN" ? "Administrador" : "Cliente"}</dd>
-          </dl>
+          <div className="account-hero">
+            <div className="account-hero-identity">
+              <div className="account-avatar" aria-hidden="true">
+                {(user.name || "U").trim().slice(0, 2).toUpperCase()}
+              </div>
+              <div>
+                <p className="eyebrow">
+                  <span className="blue-dot" /> MI CUENTA
+                </p>
+                <h1>Hola, {user.name}</h1>
+                <p className="account-status-pill">
+                  <span className="status-dot" aria-hidden="true" />
+                  Tu sesión está activa.
+                </p>
+              </div>
+            </div>
+
+            <dl className="account-meta">
+              <div className="account-meta-box">
+                <dt>Correo electrónico</dt>
+                <dd>{user.email}</dd>
+              </div>
+              <div className="account-meta-box">
+                <dt>Tipo de cuenta</dt>
+                <dd
+                  className={
+                    user.role === "ADMIN"
+                      ? "account-role-badge is-admin"
+                      : "account-role-badge is-client"
+                  }
+                >
+                  {user.role === "ADMIN" ? "Administrador" : "Cliente"}
+                </dd>
+              </div>
+            </dl>
+          </div>
 
           {message && (
             <p role="status" className="success-message">
@@ -223,9 +258,22 @@ export function Account() {
               {error}
             </p>
           )}
+
+          {user.role === "ADMIN" && <AdminAccountMenu />}
+
           <div className="account-columns">
-            <form onSubmit={saveProfile}>
-              <h2>Datos personales</h2>
+            <form className="account-panel" onSubmit={saveProfile}>
+              <div className="account-panel-header">
+                <span className="account-panel-icon" aria-hidden="true">
+                  <UserIcon size={20} />
+                </span>
+                <div>
+                  <h2>Datos personales</h2>
+                  <p className="account-panel-subtitle">
+                    Mantén tu nombre y correo actualizados para tus pedidos.
+                  </p>
+                </div>
+              </div>
               <fieldset disabled={busy}>
                 <div className="field">
                   <label htmlFor="profile-name">Nombre completo</label>
@@ -289,15 +337,28 @@ export function Account() {
             </form>
 
             <section
-              className="address-section"
+              className="address-section account-panel"
               aria-labelledby="addresses-title"
             >
-              <h2 id="addresses-title">Direcciones</h2>
+              <div className="account-panel-header">
+                <span className="account-panel-icon" aria-hidden="true">
+                  <MapPin size={20} />
+                </span>
+                <div>
+                  <h2 id="addresses-title">Direcciones</h2>
+                  <p className="account-panel-subtitle">
+                    Gestiona tus puntos de entrega en Pasto y Nariño.
+                  </p>
+                </div>
+              </div>
               {(user.addresses ?? []).length > 0 ? (
                 <div className="address-list">
                   {(user.addresses ?? []).map((address) => (
-                    <article className="address-item" key={address.id}>
-                      <div>
+                    <article
+                      className={`address-item${address.is_default ? " is-default" : ""}`}
+                      key={address.id}
+                    >
+                      <div className="address-item-info">
                         <strong>
                           {address.label}
                           {address.is_default ? " - principal" : ""}
@@ -337,122 +398,136 @@ export function Account() {
                   ))}
                 </div>
               ) : (
-                <p>No tienes direcciones guardadas.</p>
+                <p className="address-empty-state">
+                  No tienes direcciones guardadas.
+                </p>
               )}
 
-              <form ref={addressEditor} onSubmit={saveAddress}>
+              <form
+                ref={addressEditor}
+                className="address-editor-form"
+                onSubmit={saveAddress}
+              >
                 <h3>
                   {editingAddressId ? "Editar dirección" : "Nueva dirección"}
                 </h3>
                 <fieldset disabled={busy}>
-                  <div className="field">
-                    <label htmlFor="address-label">Etiqueta</label>
-                    <input
-                      id="address-label"
-                      maxLength={60}
-                      aria-invalid={!!fieldErrors["address-label"]}
-                      aria-describedby={
-                        fieldErrors["address-label"]
-                          ? "address-label-error"
-                          : undefined
-                      }
-                      value={addressForm.label}
-                      onChange={(event) =>
-                        setAddressForm((current) => ({
-                          ...current,
-                          label: event.target.value,
-                        }))
-                      }
-                      required
-                    />
+                  <div className="field-grid">
+                    <div className="field">
+                      <label htmlFor="address-label">Etiqueta</label>
+                      <input
+                        id="address-label"
+                        maxLength={60}
+                        placeholder="Ej. Casa, Oficina"
+                        aria-invalid={!!fieldErrors["address-label"]}
+                        aria-describedby={
+                          fieldErrors["address-label"]
+                            ? "address-label-error"
+                            : undefined
+                        }
+                        value={addressForm.label}
+                        onChange={(event) =>
+                          setAddressForm((current) => ({
+                            ...current,
+                            label: event.target.value,
+                          }))
+                        }
+                        required
+                      />
+                      {fieldErrors["address-label"] && (
+                        <span id="address-label-error" className="field-error">
+                          {fieldErrors["address-label"]}
+                        </span>
+                      )}
+                    </div>
+                    <div className="field">
+                      <label htmlFor="address-recipient">Recibe</label>
+                      <input
+                        id="address-recipient"
+                        maxLength={150}
+                        autoComplete="shipping name"
+                        aria-invalid={!!fieldErrors["address-recipient_name"]}
+                        aria-describedby={
+                          fieldErrors["address-recipient_name"]
+                            ? "address-recipient-error"
+                            : undefined
+                        }
+                        value={addressForm.recipient_name}
+                        onChange={(event) =>
+                          setAddressForm((current) => ({
+                            ...current,
+                            recipient_name: event.target.value,
+                          }))
+                        }
+                        required
+                      />
+                      {fieldErrors["address-recipient_name"] && (
+                        <span
+                          id="address-recipient-error"
+                          className="field-error"
+                        >
+                          {fieldErrors["address-recipient_name"]}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  {fieldErrors["address-label"] && (
-                    <span id="address-label-error" className="field-error">
-                      {fieldErrors["address-label"]}
-                    </span>
-                  )}
-                  <div className="field">
-                    <label htmlFor="address-recipient">Recibe</label>
-                    <input
-                      id="address-recipient"
-                      maxLength={150}
-                      autoComplete="shipping name"
-                      aria-invalid={!!fieldErrors["address-recipient_name"]}
-                      aria-describedby={
-                        fieldErrors["address-recipient_name"]
-                          ? "address-recipient-error"
-                          : undefined
-                      }
-                      value={addressForm.recipient_name}
-                      onChange={(event) =>
-                        setAddressForm((current) => ({
-                          ...current,
-                          recipient_name: event.target.value,
-                        }))
-                      }
-                      required
-                    />
+                  <div className="field-grid">
+                    <div className="field">
+                      <label htmlFor="address-phone">Teléfono</label>
+                      <input
+                        id="address-phone"
+                        type="tel"
+                        maxLength={30}
+                        autoComplete="shipping tel"
+                        aria-invalid={!!fieldErrors["address-phone"]}
+                        aria-describedby={
+                          fieldErrors["address-phone"]
+                            ? "address-phone-error"
+                            : undefined
+                        }
+                        value={addressForm.phone}
+                        onChange={(event) =>
+                          setAddressForm((current) => ({
+                            ...current,
+                            phone: event.target.value,
+                          }))
+                        }
+                        required
+                      />
+                      {fieldErrors["address-phone"] && (
+                        <span id="address-phone-error" className="field-error">
+                          {fieldErrors["address-phone"]}
+                        </span>
+                      )}
+                    </div>
+                    <div className="field">
+                      <label htmlFor="address-line">Dirección</label>
+                      <input
+                        id="address-line"
+                        maxLength={240}
+                        autoComplete="shipping street-address"
+                        aria-invalid={!!fieldErrors["address-address_line"]}
+                        aria-describedby={
+                          fieldErrors["address-address_line"]
+                            ? "address-line-error"
+                            : undefined
+                        }
+                        value={addressForm.address_line}
+                        onChange={(event) =>
+                          setAddressForm((current) => ({
+                            ...current,
+                            address_line: event.target.value,
+                          }))
+                        }
+                        required
+                      />
+                      {fieldErrors["address-address_line"] && (
+                        <span id="address-line-error" className="field-error">
+                          {fieldErrors["address-address_line"]}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  {fieldErrors["address-recipient_name"] && (
-                    <span id="address-recipient-error" className="field-error">
-                      {fieldErrors["address-recipient_name"]}
-                    </span>
-                  )}
-                  <div className="field">
-                    <label htmlFor="address-phone">Teléfono</label>
-                    <input
-                      id="address-phone"
-                      type="tel"
-                      maxLength={30}
-                      autoComplete="shipping tel"
-                      aria-invalid={!!fieldErrors["address-phone"]}
-                      aria-describedby={
-                        fieldErrors["address-phone"]
-                          ? "address-phone-error"
-                          : undefined
-                      }
-                      value={addressForm.phone}
-                      onChange={(event) =>
-                        setAddressForm((current) => ({
-                          ...current,
-                          phone: event.target.value,
-                        }))
-                      }
-                      required
-                    />
-                  </div>
-                  {fieldErrors["address-phone"] && (
-                    <span id="address-phone-error" className="field-error">
-                      {fieldErrors["address-phone"]}
-                    </span>
-                  )}
-                  <div className="field">
-                    <label htmlFor="address-line">Dirección</label>
-                    <input
-                      id="address-line"
-                      maxLength={240}
-                      autoComplete="shipping street-address"
-                      aria-invalid={!!fieldErrors["address-address_line"]}
-                      aria-describedby={
-                        fieldErrors["address-address_line"]
-                          ? "address-line-error"
-                          : undefined
-                      }
-                      value={addressForm.address_line}
-                      onChange={(event) =>
-                        setAddressForm((current) => ({
-                          ...current,
-                          address_line: event.target.value,
-                        }))
-                      }
-                      required
-                    />
-                  </div>
-                  {fieldErrors["address-address_line"] && (
-                    <span id="address-line-error" className="field-error">
-                      {fieldErrors["address-address_line"]}
-                    </span>
-                  )}
                   <div className="field-grid">
                     <div className="field">
                       <label htmlFor="address-city">Ciudad</label>
@@ -514,6 +589,7 @@ export function Account() {
                     <input
                       id="address-notes"
                       maxLength={300}
+                      placeholder="Barrio, edificio, punto de referencia (opcional)"
                       aria-invalid={!!fieldErrors["address-notes"]}
                       aria-describedby={
                         fieldErrors["address-notes"]
@@ -569,26 +645,41 @@ export function Account() {
             </section>
           </div>
 
-          {user.role === "ADMIN" && <AdminAccountMenu />}
-          <Link className="button subtle" href="/pedidos">
-            Mis pedidos
-          </Link>
-          <button className="button primary" onClick={logout} disabled={busy}>
-            <LogOut size={18} aria-hidden="true" />
-            {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
-          </button>
+          <div className="account-footer-bar">
+            <div className="account-footer-links">
+              <Link className="button subtle" href="/pedidos">
+                <Package size={18} aria-hidden="true" />
+                Mis pedidos
+              </Link>
+              <Link className="back-link" href="/">
+                <ArrowLeft size={15} aria-hidden="true" />
+                Volver al inicio
+              </Link>
+            </div>
+            <button
+              className="button danger-outline"
+              onClick={logout}
+              disabled={busy}
+            >
+              <LogOut size={18} aria-hidden="true" />
+              {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
+            </button>
+          </div>
         </>
       ) : (
-        !error && <p role="status">Cargando tu cuenta...</p>
+        <div className="account-loading-box">
+          <p className="eyebrow">MI CUENTA</p>
+          {!error && <p role="status">Cargando tu cuenta...</p>}
+          {error && (
+            <p role="alert" className="error-message">
+              {error}
+            </p>
+          )}
+          <Link className="back-link" href="/">
+            Volver al inicio
+          </Link>
+        </div>
       )}
-      {!user && error && (
-        <p role="alert" className="error-message">
-          {error}
-        </p>
-      )}
-      <Link className="back-link" href="/">
-        Volver al inicio
-      </Link>
     </section>
   );
 }
