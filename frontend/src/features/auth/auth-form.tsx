@@ -57,6 +57,9 @@ export function AuthForm({
       });
       if (registerMode) setSuccess(true);
       else {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("auth-changed"));
+        }
         router.push(returnTo ?? "/cuenta");
         router.refresh();
       }

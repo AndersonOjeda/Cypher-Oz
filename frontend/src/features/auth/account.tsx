@@ -200,6 +200,9 @@ export function Account() {
     try {
       await api("/auth/logout/", { method: "POST" });
       setUser(undefined);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("auth-changed"));
+      }
       router.replace("/login");
       router.refresh();
     } catch (err) {

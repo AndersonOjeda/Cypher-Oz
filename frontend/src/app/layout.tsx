@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CartNavLink } from "@/components/cart-nav-link";
+import { AuthNavLink } from "@/components/auth-nav-link";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { AiAssistant } from "@/components/ai-assistant";
 import "./globals.css";
@@ -38,10 +39,7 @@ export default function RootLayout({
           <nav aria-label="Navegación principal">
             <Link href="/catalogo">Catálogo</Link>
             <CartNavLink />
-            <Link href="/cuenta">Mi cuenta</Link>
-            <Link className="header-login" href="/login">
-              Iniciar sesión <span aria-hidden="true">↗</span>
-            </Link>
+            <AuthNavLink />
           </nav>
         </header>
         <main id="contenido">{children}</main>
