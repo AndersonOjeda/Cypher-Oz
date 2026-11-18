@@ -17,6 +17,7 @@ export function errorText(error: unknown): string {
       brand: "Marca",
       file: "Imagen",
       alt_text: "Descripción de imagen",
+      variant_id: "Variante de la imagen",
       description: "Descripción",
       warranty: "Garantía",
       sku: "SKU",

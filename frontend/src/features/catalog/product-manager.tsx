@@ -505,6 +505,7 @@ export function ProductManager() {
           key={editing.id}
           productId={editing.id}
           initialImages={editing.images}
+          variantsRevision={revision}
           limits={options.limits}
         />
       )}

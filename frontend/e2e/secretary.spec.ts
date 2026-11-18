@@ -14,7 +14,13 @@ test("secretary reviews drafts, saves real stock unpublished and prepares a prin
   await page.goto("/login");
   await page.getByLabel("Correo electrónico").fill("admin@tti.example");
   await page.getByLabel("Contraseña").fill("E2e-Only!TestPassword8472");
+  const login = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/v1/auth/login/") &&
+      response.request().method() === "POST",
+  );
   await page.getByRole("button", { name: "Iniciar sesión" }).click();
+  expect((await login).status()).toBe(200);
   await expect(
     page.getByRole("link", { name: "Administrar catálogo", exact: true }),
   ).toBeVisible();

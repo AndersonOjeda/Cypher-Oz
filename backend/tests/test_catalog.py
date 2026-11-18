@@ -436,6 +436,45 @@ def test_image_upload_order_edit_delete_and_storage_cleanup(
     assert admin.get(url)["Cache-Control"] == "no-store"
 
 
+def test_image_variant_assignment_upload_reassign_clear_and_public_detail(admin, product, storage):
+    first = Variant.objects.create(product=product, name="Negro", sku="BLACK", price="100")
+    second = Variant.objects.create(product=product, name="Blanco", sku="WHITE", price="105")
+    url = f"/api/v1/admin/products/{product.pk}/images/"
+    result = admin.post(url, {"file": picture(), "alt_text": "Blanco", "variant_id": second.pk})
+    assert result.status_code == 201
+    image_id = result.data["id"]
+    assert result.data["variant_id"] == second.pk
+    public = APIClient().get(f"/api/v1/products/{product.slug}/")
+    assert public.status_code == 200
+    assert public.data["images"][0]["variant_id"] == second.pk
+    updated = admin.patch(f"{url}{image_id}/", {"variant_id": first.pk}, format="json")
+    assert updated.status_code == 200
+    assert updated.data["variant_id"] == first.pk
+    assert CatalogChange.objects.filter(
+        entity="productimage", entity_id=image_id, action="update"
+    ).exists()
+    cleared = admin.patch(f"{url}{image_id}/", {"variant_id": None}, format="json")
+    assert cleared.status_code == 200
+    assert cleared.data["variant_id"] is None
+
+
+def test_image_rejects_variant_from_another_product_before_storage(admin, product, storage):
+    other = Product.objects.create(
+        name="Otro", slug="otro", category=product.category, brand=product.brand
+    )
+    variant = Variant.objects.create(product=other, name="Blanco", sku="OTHER", price="100")
+    url = f"/api/v1/admin/products/{product.pk}/images/"
+    result = admin.post(url, {"file": picture(), "alt_text": "Blanco", "variant_id": variant.pk})
+    assert result.status_code == 400
+    storage.put_object.assert_not_called()
+    image = admin.post(url, {"file": picture(), "alt_text": "General"}).data
+    result = admin.patch(f"{url}{image['id']}/", {"variant_id": variant.pk}, format="json")
+    assert result.status_code == 400
+    assert ProductImage.objects.get(pk=image["id"]).variant_id is None
+    anonymous = APIClient().patch(f"{url}{image['id']}/", {"variant_id": None}, format="json")
+    assert anonymous.status_code == 401
+
+
 def test_upload_failure_has_no_metadata_and_retains_compensation(admin, product, storage):
     storage.put_object.side_effect = EndpointConnectionError(endpoint_url="http://offline.test")
     result = admin.post(

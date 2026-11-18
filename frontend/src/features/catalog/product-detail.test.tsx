@@ -21,15 +21,24 @@ vi.mock("@/services/api", async (importOriginal) => {
           images: [
             {
               id: 101,
+              variant_id: 201,
               url: "https://example.com/thinkpad-1.webp",
               alt_text: "Vista frontal",
               sort_order: 1,
             },
             {
               id: 102,
+              variant_id: 202,
               url: "https://example.com/thinkpad-2.webp",
               alt_text: "Vista lateral",
               sort_order: 2,
+            },
+            {
+              id: 103,
+              variant_id: null,
+              url: "https://example.com/general.webp",
+              alt_text: "Imagen general",
+              sort_order: 3,
             },
           ],
           variants: [
@@ -124,6 +133,33 @@ describe("ProductDetail Component (HU-06 / HU-08)", () => {
         screen.getByRole("button", { name: "Producto agotado" }),
       ).toBeDisabled();
     });
+  });
+
+  it("switches the gallery to the selected variant and resets a manually selected image", async () => {
+    const { container } = render(<ProductDetail slug="laptop-thinkpad" />);
+    await screen.findByText(/LNV-TP-16/);
+    const mainImage = () => container.querySelector(".main-image-box img");
+    expect(mainImage()).toHaveAttribute(
+      "src",
+      "https://example.com/thinkpad-1.webp",
+    );
+    expect(screen.queryByAltText("Vista lateral")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTitle("Ver imagen 2"));
+    expect(mainImage()).toHaveAttribute(
+      "src",
+      "https://example.com/general.webp",
+    );
+    fireEvent.click(screen.getByRole("radio", { name: /32GB RAM/ }));
+    expect(mainImage()).toHaveAttribute(
+      "src",
+      "https://example.com/thinkpad-2.webp",
+    );
+    expect(screen.queryByAltText("Vista frontal")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("radio", { name: /16GB RAM/ }));
+    expect(mainImage()).toHaveAttribute(
+      "src",
+      "https://example.com/thinkpad-1.webp",
+    );
   });
 
   it("adds variant to anonymous cart in localStorage without login", async () => {

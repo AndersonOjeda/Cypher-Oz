@@ -2,7 +2,7 @@ databases:
   - name: tti-staging-db
     databaseName: tti_staging
     user: tti_staging
-    plan: free
+    plan: 0.1c-256mb
     region: virginia
     postgresMajorVersion: "17"
     ipAllowList: []
@@ -11,7 +11,7 @@ services:
   - type: web
     name: tti-staging-api
     runtime: python
-    plan: free
+    plan: 0.5c-512mb
     region: virginia
     branch: main
     rootDir: backend

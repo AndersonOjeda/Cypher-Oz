@@ -6,6 +6,7 @@ export type Taxonomy = {
   is_active: boolean;
 };
 export type ProductImage = {
+  variant_id?: number | null;
   id: number;
   url: string;
   alt_text: string;
@@ -116,6 +117,7 @@ export type PublicVariant = {
 };
 
 export type PublicProductImage = {
+  variant_id?: number | null;
   id: number;
   url: string;
   alt_text: string;

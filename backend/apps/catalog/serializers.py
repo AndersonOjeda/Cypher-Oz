@@ -42,14 +42,33 @@ class BrandSerializer(CategorySerializer):
 
 class ImageSerializer(StrictModelSerializer):
     url = serializers.SerializerMethodField()
+    variant_id = serializers.IntegerField(required=False, allow_null=True, min_value=1)
 
     class Meta:
         model = ProductImage
-        fields = ["id", "url", "alt_text", "sort_order", "width", "height", "byte_size"]
+        fields = [
+            "id",
+            "url",
+            "alt_text",
+            "sort_order",
+            "width",
+            "height",
+            "byte_size",
+            "variant_id",
+        ]
         read_only_fields = ["id", "url", "width", "height", "byte_size"]
 
     def get_url(self, obj):
         return image_url(obj.storage_key)
+
+    def validate_variant_id(self, value):
+        product_id = self.instance.product_id if self.instance else self.context.get("product_id")
+        if (
+            value is not None
+            and not Variant.objects.filter(pk=value, product_id=product_id).exists()
+        ):
+            raise serializers.ValidationError("Selecciona una variante de este producto.")
+        return value
 
 
 class ProductSerializer(StrictModelSerializer):

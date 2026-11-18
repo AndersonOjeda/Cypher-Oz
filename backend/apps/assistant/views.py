@@ -160,9 +160,7 @@ def _search_products(query: str = "", category: str | None = None) -> list[dict]
             for v in variants
         )
         is_available = total_stock > 0 and len(prices) > 0
-        searchable = _strip_accents(
-            f"{p.name} {p.slug} {p.category.name} {p.brand.name}"
-        ).lower()
+        searchable = _strip_accents(f"{p.name} {p.slug} {p.category.name} {p.brand.name}").lower()
         score = sum(1 for token in tokens if token in searchable) if tokens else 0
         candidates.append(
             (

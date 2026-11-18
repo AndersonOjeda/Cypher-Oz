@@ -1,0 +1,14 @@
+<testsuites id="" name="" tests="3" failures="0" skipped="0" errors="0" time="54.736159">
+<testsuite name="variant-images.spec.ts" timestamp="2026-11-18T01:15:18.916Z" hostname="mobile" tests="1" failures="0" skipped="0" time="11.062" errors="0">
+<testcase name="variant images persist and change with the selected model" classname="variant-images.spec.ts" time="11.062">
+</testcase>
+</testsuite>
+<testsuite name="variant-images.spec.ts" timestamp="2026-11-18T01:15:18.916Z" hostname="tablet" tests="1" failures="0" skipped="0" time="7.941" errors="0">
+<testcase name="variant images persist and change with the selected model" classname="variant-images.spec.ts" time="7.941">
+</testcase>
+</testsuite>
+<testsuite name="variant-images.spec.ts" timestamp="2026-11-18T01:15:18.916Z" hostname="desktop" tests="1" failures="0" skipped="0" time="8.134" errors="0">
+<testcase name="variant images persist and change with the selected model" classname="variant-images.spec.ts" time="8.134">
+</testcase>
+</testsuite>
+</testsuites>

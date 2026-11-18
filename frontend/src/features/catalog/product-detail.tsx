@@ -37,7 +37,9 @@ export function ProductDetail({ slug }: { slug: string }) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [addedNotice, setAddedNotice] = useState(false);
-  const [recommendations, setRecommendations] = useState<PublicProductSummary[]>([]);
+  const [recommendations, setRecommendations] = useState<
+    PublicProductSummary[]
+  >([]);
 
   useEffect(() => {
     if (!product?.category.slug) return;
@@ -46,7 +48,12 @@ export function ProductDetail({ slug }: { slug: string }) {
       `/products/?category=${encodeURIComponent(product.category.slug)}&page_size=4&ordering=name`,
     )
       .then((result) => {
-        if (active) setRecommendations(result.results.filter((item) => item.slug !== product.slug).slice(0, 3));
+        if (active)
+          setRecommendations(
+            result.results
+              .filter((item) => item.slug !== product.slug)
+              .slice(0, 3),
+          );
       })
       .catch(() => {
         if (active) setRecommendations([]);
@@ -77,6 +84,7 @@ export function ProductDetail({ slug }: { slug: string }) {
 
   function handleVariantChange(variantId: number) {
     setSelectedVariantId(variantId);
+    setActiveImageIndex(0);
     setQuantity(1);
     setAddedNotice(false);
   }
@@ -132,7 +140,14 @@ export function ProductDetail({ slug }: { slug: string }) {
     );
   }
 
-  const images = product.images || [];
+  const allImages = product.images || [];
+  const images = [
+    ...allImages.filter(
+      (image) =>
+        image.variant_id != null && image.variant_id === selectedVariant?.id,
+    ),
+    ...allImages.filter((image) => image.variant_id == null),
+  ];
   const currentImage = images[activeImageIndex] ?? images[0];
   const maxAvailableQuantity = selectedVariant
     ? Math.min(selectedVariant.stock, 10)
@@ -158,14 +173,22 @@ export function ProductDetail({ slug }: { slug: string }) {
       </nav>
 
       {recommendations.length > 0 && (
-        <aside className="product-recommendation" aria-label="Sugerencias de productos">
+        <aside
+          className="product-recommendation"
+          aria-label="Sugerencias de productos"
+        >
           <div>
-            <span className="product-recommendation-kicker">Sugerencia para ti</span>
+            <span className="product-recommendation-kicker">
+              Sugerencia para ti
+            </span>
             <strong>También puedes revisar estos productos similares</strong>
           </div>
           <div className="product-recommendation-links">
             {recommendations.map((item) => (
-              <Link key={item.id} href={`/catalogo/${encodeURIComponent(item.slug)}`}>
+              <Link
+                key={item.id}
+                href={`/catalogo/${encodeURIComponent(item.slug)}`}
+              >
                 {item.name}
               </Link>
             ))}
@@ -354,18 +377,18 @@ export function ProductDetail({ slug }: { slug: string }) {
                 disabled={!selectedVariant || selectedVariant.stock <= 0}
                 onClick={handleAddToCart}
               >
-              <ShoppingCart
-                size={18}
-                style={{
-                  display: "inline",
-                  verticalAlign: "middle",
-                  marginRight: 8,
-                }}
-              />
-              {selectedVariant && selectedVariant.stock > 0
-                ? "Añadir al carrito"
-                : "Producto agotado"}
-            </button>
+                <ShoppingCart
+                  size={18}
+                  style={{
+                    display: "inline",
+                    verticalAlign: "middle",
+                    marginRight: 8,
+                  }}
+                />
+                {selectedVariant && selectedVariant.stock > 0
+                  ? "Añadir al carrito"
+                  : "Producto agotado"}
+              </button>
               <CompareButton
                 item={{
                   id: product.id,
@@ -408,8 +431,16 @@ export function ProductDetail({ slug }: { slug: string }) {
             </div>
           )}
 
-          <ProductReviews slug={product.slug} summary={product.reviews_summary} />
-          {!product.warranty && <p className="review-meta">La condición de garantía está pendiente de definición para este producto.</p>}
+          <ProductReviews
+            slug={product.slug}
+            summary={product.reviews_summary}
+          />
+          {!product.warranty && (
+            <p className="review-meta">
+              La condición de garantía está pendiente de definición para este
+              producto.
+            </p>
+          )}
           <CommercialInfo />
 
           {/* Description */}
