@@ -150,6 +150,9 @@ class VariantAttributeValue(models.Model):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="images")
+    variant = models.ForeignKey(
+        Variant, null=True, blank=True, on_delete=models.SET_NULL, related_name="images"
+    )
     storage_key = models.CharField(max_length=250, unique=True)
     storage_url = models.URLField(max_length=1000)
     alt_text = models.CharField(max_length=200)

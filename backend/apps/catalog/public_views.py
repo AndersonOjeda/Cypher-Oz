@@ -338,6 +338,7 @@ class PublicProductDetailView(APIView):
                 "url": public_image_url(img),
                 "alt_text": img.alt_text,
                 "sort_order": img.sort_order,
+                "variant_id": img.variant_id,
             }
             for img in product.images.all()
         ]

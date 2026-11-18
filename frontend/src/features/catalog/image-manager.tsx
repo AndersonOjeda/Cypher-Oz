@@ -4,7 +4,7 @@ import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
 import { api } from "@/services/api";
 import { errorText, Feedback } from "./shared";
-import type { Limits, ProductImage } from "./types";
+import type { Limits, Page, ProductImage, Variant } from "./types";
 
 export function ImageManager({
   productId,
@@ -12,17 +12,55 @@ export function ImageManager({
   limits,
   defaultAlt = "",
   onBusyChange,
+  variantsRevision = 0,
 }: {
   productId: number;
   initialImages: ProductImage[];
   limits: Limits;
   defaultAlt?: string;
   onBusyChange?: (busy: boolean) => void;
+  variantsRevision?: number;
 }) {
   const [images, setImages] = useState(initialImages);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [variants, setVariants] = useState<Variant[]>([]);
+  const [variantsError, setVariantsError] = useState("");
+  const [variantsReady, setVariantsReady] = useState(false);
+  const [retryVariants, setRetryVariants] = useState(0);
+  useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    async function load() {
+      await Promise.resolve();
+      if (!active) return;
+      setVariantsReady(false);
+      setVariantsError("");
+      const items: Variant[] = [];
+      try {
+        for (let page = 1; ; page++) {
+          const result = await api<Page<Variant>>(
+            `/admin/products/${productId}/variants/?page_size=100&page=${page}`,
+            { signal: controller.signal },
+          );
+          items.push(...result.results);
+          if (!result.next) break;
+        }
+        if (active) {
+          setVariants(items);
+          setVariantsReady(true);
+        }
+      } catch (err) {
+        if (active) setVariantsError(errorText(err));
+      }
+    }
+    void load();
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [productId, variantsRevision, retryVariants]);
   useEffect(() => {
     onBusyChange?.(busy);
   }, [busy, onBusyChange]);
@@ -63,7 +101,7 @@ export function ImageManager({
   }
   async function change(
     id: number,
-    body?: { alt_text: string; sort_order: number },
+    body?: { alt_text: string; sort_order: number; variant_id: number | null },
   ) {
     if (!body && !window.confirm("¿Eliminar esta imagen del producto?")) return;
     setBusy(true);
@@ -93,6 +131,24 @@ export function ImageManager({
         imágenes. La primera según el orden es la principal.
       </p>
       <Feedback error={error} message={message} />
+      <p className="catalog-help">
+        Asigna cada foto a su variante o modelo para mostrarla al seleccionarlo.
+        Las imágenes generales se comparten entre todas las variantes.
+      </p>
+      {variantsError && (
+        <p role="alert">
+          {variantsError}{" "}
+          <button
+            type="button"
+            onClick={() => setRetryVariants((value) => value + 1)}
+          >
+            Reintentar carga de variantes
+          </button>
+        </p>
+      )}
+      {!variantsReady && !variantsError && (
+        <p role="status">Cargando variantes…</p>
+      )}
       {!images.length && (
         <p className="catalog-empty">Este producto aún no tiene imágenes.</p>
       )}
@@ -114,10 +170,32 @@ export function ImageManager({
                 change(item.id, {
                   alt_text: String(data.get("alt_text")),
                   sort_order: Number(data.get("sort_order")),
+                  variant_id: data.get("variant_id")
+                    ? Number(data.get("variant_id"))
+                    : null,
                 });
               }}
             >
-              <fieldset disabled={busy}>
+              <fieldset disabled={busy || !variantsReady}>
+                <div className="field">
+                  <label htmlFor={`variant-image-${item.id}`}>
+                    Variante / modelo de la imagen
+                  </label>
+                  <select
+                    key={`${item.id}-${item.variant_id ?? "general"}-${variantsReady}`}
+                    id={`variant-image-${item.id}`}
+                    name="variant_id"
+                    defaultValue={item.variant_id ?? ""}
+                  >
+                    <option value="">General (todas las variantes)</option>
+                    {variants.map((variant) => (
+                      <option key={variant.id} value={variant.id}>
+                        {variant.name}
+                        {!variant.is_active ? " (inactiva)" : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div className="field">
                   <label htmlFor={`alt-${item.id}`}>
                     Descripción de imagen
@@ -158,7 +236,25 @@ export function ImageManager({
         ))}
       </div>
       <form onSubmit={upload}>
-        <fieldset disabled={busy || images.length >= limits.max_images}>
+        <fieldset
+          disabled={
+            busy || !variantsReady || images.length >= limits.max_images
+          }
+        >
+          <div className="field">
+            <label htmlFor="new-image-variant">
+              Variante / modelo de la nueva imagen
+            </label>
+            <select id="new-image-variant" name="variant_id" defaultValue="">
+              <option value="">General (todas las variantes)</option>
+              {variants.map((variant) => (
+                <option key={variant.id} value={variant.id}>
+                  {variant.name}
+                  {!variant.is_active ? " (inactiva)" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="field">
             <label htmlFor="new-image">Archivo de imagen</label>
             <input

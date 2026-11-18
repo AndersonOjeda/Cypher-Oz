@@ -105,6 +105,13 @@ function ProductIntake() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const review = useRef<HTMLHeadingElement>(null);
+  const focusReview = useRef(false);
+  useEffect(() => {
+    if (!focusReview.current) return;
+    focusReview.current = false;
+    review.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    review.current?.focus({ preventScroll: true });
+  }, [drafts]);
   useEffect(() => {
     let active = true;
     Promise.all([allTaxonomy("categories"), allTaxonomy("brands")])
@@ -171,6 +178,7 @@ function ProductIntake() {
           signal: AbortSignal.timeout(25000),
         },
       );
+      focusReview.current = true;
       setDrafts(
         result.products.map((product) => ({
           ...product,
@@ -194,10 +202,6 @@ function ProductIntake() {
           ? "Borradores preparados. Revisa cada dato antes de guardar."
           : "No identifiqué productos. Prueba con una foto más clara o un texto con nombres de productos.",
       );
-      requestAnimationFrame(() => {
-        review.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-        review.current?.focus({ preventScroll: true });
-      });
     } catch (err) {
       setError(errorText(err));
     } finally {
@@ -504,6 +508,11 @@ function CatalogBuilder({ active }: { active: boolean }) {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const preview = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (!catalog) return;
+    preview.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    preview.current?.focus({ preventScroll: true });
+  }, [catalog]);
   const products = useResource<Page<PublicProductSummary>>(
     `/products/?page_size=100&page=${page}&search=${encodeURIComponent(search)}`,
   );
@@ -527,10 +536,6 @@ function CatalogBuilder({ active }: { active: boolean }) {
         body: JSON.stringify({ brief, product_ids: selected.map((p) => p.id) }),
       });
       setCatalog(result);
-      requestAnimationFrame(() => {
-        preview.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-        preview.current?.focus({ preventScroll: true });
-      });
     } catch (err) {
       setError(errorText(err));
     } finally {

@@ -178,11 +178,17 @@ class ProductImagesView(PrivateAdminMixin, APIView):
     def post(self, request, product_id):
         get_object_or_404(Product, pk=product_id)
         if (
-            set(request.data.keys()) - {"file", "alt_text"}
+            set(request.data.keys()) - {"file", "alt_text", "variant_id"}
             or len(request.FILES.getlist("file")) != 1
         ):
             raise serializers.ValidationError({"file": "Selecciona una sola imagen."})
-        metadata = ImageSerializer(data={"alt_text": request.data.get("alt_text", "")})
+        metadata = ImageSerializer(
+            data={
+                "alt_text": request.data.get("alt_text", ""),
+                "variant_id": request.data.get("variant_id") or None,
+            },
+            context={"product_id": product_id},
+        )
         metadata.is_valid(raise_exception=True)
         content, width, height = validate_image(request.FILES["file"])
         key = f"products/{product_id}/{uuid4().hex}.webp"

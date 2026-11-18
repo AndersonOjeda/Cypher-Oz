@@ -80,10 +80,14 @@ test("reviews missing values and saves only on explicit confirmation, unpublishe
   );
   await user.click(screen.getByRole("button", { name: "Preparar borradores" }));
   const price = await screen.findByLabelText("Precio de venta (COP)");
+  expect(
+    screen.getByRole("heading", { name: "2. Revisa y guarda" }),
+  ).toHaveFocus();
   expect(price).toHaveValue(null);
   expect(screen.getByLabelText("Unidades disponibles")).toHaveValue(null);
   expect(api).toHaveBeenCalledTimes(1);
   await user.type(price, "120000");
+  expect(price).toHaveFocus();
   await user.type(screen.getByLabelText("Unidades disponibles"), "4");
   await user.click(
     screen.getByRole("button", { name: "Confirmar y guardar sin publicar" }),
@@ -129,6 +133,9 @@ test("catalog preview uses the returned database snapshot and supports print", a
   const preview = await screen.findByRole("article", {
     name: "Vista previa del catálogo",
   });
+  expect(
+    screen.getByRole("heading", { name: "2. Revisa y comparte" }),
+  ).toHaveFocus();
   expect(
     within(preview).getByText("4 unidades disponibles"),
   ).toBeInTheDocument();
